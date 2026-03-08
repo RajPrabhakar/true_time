@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen>
       '${localTime.hour.toString().padLeft(2, '0')}:${localTime.minute.toString().padLeft(2, '0')}:${localTime.second.toString().padLeft(2, '0')}';
 
   // Calculate delta components
-  final deltaString = _formatDelta(delta);
+  final deltaString = formatDelta(delta);
 
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
@@ -228,24 +228,28 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-  /// Formats a Duration as a human-readable delta string.
-  /// Example: "IST - 08 MIN 55 SEC"
-  String _formatDelta(Duration delta) {
-    final isNegative = delta.isNegative;
-    final abs = delta.abs();
+}
 
-    final hours = abs.inHours;
-    final minutes = abs.inMinutes.remainder(60);
-    final seconds = abs.inSeconds.remainder(60);
+/// Formats a Duration as a human-readable delta string used throughout the UI.
+///
+/// The string always begins with "DELTA: IST" followed by a plus or minus
+/// sign and a zero-padded HH:MM:SS value. Negative durations produce a
+/// leading `-` sign but never a double negative.
+String formatDelta(Duration delta) {
+  final isNegative = delta.isNegative;
+  final abs = delta.abs();
 
-    final sign = isNegative ? '−' : '+'; // Using minus sign for readability
+  final hours = abs.inHours;
+  final minutes = abs.inMinutes.remainder(60);
+  final seconds = abs.inSeconds.remainder(60);
 
-    if (hours > 0) {
-      return '$sign${hours.toString().padLeft(2, '0')} HR ${minutes.toString().padLeft(2, '0')} MIN ${seconds.toString().padLeft(2, '0')} SEC';
-    } else {
-      return '$sign${minutes.toString().padLeft(2, '0')} MIN ${seconds.toString().padLeft(2, '0')} SEC';
-    }
-  }
+  final sign = isNegative ? '-' : '+';
+
+  final hh = hours.toString().padLeft(2, '0');
+  final mm = minutes.toString().padLeft(2, '0');
+  final ss = seconds.toString().padLeft(2, '0');
+
+  return 'DELTA: IST $sign $hh:$mm:$ss';
 }
 
 /// A pulsing green circle that animates during GPS acquisition.
