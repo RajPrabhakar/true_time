@@ -48,7 +48,7 @@ void main() {
       final result = service.calculateLocalMeanTime(78.0, referenceTime: localTime);
 
       // 78° × 4 min/deg = 312 minutes = 5:12
-      final longitudeOffset = const Duration(minutes: 312);
+      const longitudeOffset = Duration(minutes: 312);
       final timezoneOffset = localTime.timeZoneOffset;
       
       // tzDelta should equal: longitude offset - timezone offset
