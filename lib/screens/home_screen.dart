@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:true_time/providers/true_time_provider.dart';
@@ -58,6 +59,30 @@ class _HomeScreenState extends State<HomeScreen>
     _provider.pauseTimer();
   }
 
+  /// Updates the system chrome (status bar and navigation bar) to match the background.
+  /// Uses the background color's luminance to determine icon brightness.
+  void _updateSystemChromeStyle(Color backgroundColor) {
+    final luminance = backgroundColor.computeLuminance();
+    
+    // For dark backgrounds (luminance < 0.5), use light icons
+    // For light backgrounds (luminance >= 0.5), use dark icons
+    final brightness = luminance < 0.5 ? Brightness.light : Brightness.dark;
+    
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        // Status bar (top)
+        statusBarColor: backgroundColor,
+        statusBarBrightness: brightness,
+        statusBarIconBrightness: brightness,
+        
+        // Navigation bar (bottom)
+        systemNavigationBarColor: backgroundColor,
+        systemNavigationBarDividerColor: backgroundColor,
+        systemNavigationBarIconBrightness: brightness,
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _lifecycleListener.dispose();
@@ -76,6 +101,9 @@ class _HomeScreenState extends State<HomeScreen>
             final themeColors = themeProvider.getCurrentThemeColors(
               localMeanTime: timeProvider.currentTimeResult?.localMeanTime,
             );
+            
+            // Update system chrome (status bar and navigation bar) to match background
+            _updateSystemChromeStyle(themeColors.backgroundColor);
             
             // For Solar Dynamic theme, animate background color
             final isSolarDynamic = themeProvider.currentTheme == AppThemeType.solarDynamic;
