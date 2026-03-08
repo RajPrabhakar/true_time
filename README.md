@@ -1,4 +1,4 @@
-# True Time
+# TruTime
 
 **Solar Time at Your Fingertips. No Timezones. No Politics. Just Physics.**
 
@@ -14,7 +14,7 @@ Timezones are a political fiction. The "official" noon in your timezone—whethe
 
 IST, for example, spans nearly 30° of longitude from northwest India to the northeast, yet the sun reaches its zenith hours apart across this span. Most of the Indian subcontinent runs an hour or more ahead of their local solar noon.
 
-**True Time** strips away this convention and shows you *Local Mean Time (Solar Time)*—the time your longitude actually experiences based on the sun's position. It's a radical simplification: no timezone database, no political boundaries, no battery drain from network calls.
+**TruTime** strips away this convention and shows you *Local Mean Time (Solar Time)*—the time your longitude actually experiences based on the sun's position. It's a radical simplification: no timezone database, no political boundaries, no battery drain from network calls.
 
 Just GPS, math, and the physics of Earth's rotation.
 
@@ -189,7 +189,7 @@ test/
 ### v0.3.0 (Future)
 - **Persistent Settings** — Save user preferences (refresh rate, theme, units)
 - **Widget Support** — Quick-access home screen widgets
-- **Wear OS Support** — True Time for smartwatches
+- **Wear OS Support** — TruTime for smartwatches
 - **Accuracy Metrics** — Display GPS accuracy indicator and last-update timestamp
 
 ### v1.0.0 (Stable Release)
@@ -201,7 +201,7 @@ test/
 
 ## Contributing
 
-Contributions are welcome! Please submit issues and pull requests to help improve True Time.
+Contributions are welcome! Please submit issues and pull requests to help improve TruTime.
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/YourFeature`)

@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:true_time/models/local_time_result.dart';
 import 'package:true_time/services/time_calculator_service.dart';
 
-/// Manages the state of the True Time clock.
+/// Manages the state of the TruTime clock.
 ///
 /// Responsibilities:
 /// - Request and handle location permissions
@@ -70,7 +70,7 @@ class TrueTimeProvider extends ChangeNotifier {
     _longitude = position.longitude;
   }
 
-  /// Starts a timer that updates True Time every second.
+  /// Starts a timer that updates TruTime every second.
   void _startTimerUpdates() {
     // Immediate first calculation
     _updateTime();

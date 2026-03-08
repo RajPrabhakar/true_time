@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:true_time/providers/true_time_provider.dart';
 
-/// The main screen of the True Time app.
+/// The main screen of the TruTime app.
 /// Displays Local Mean Time in a hyper-minimalist design.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
