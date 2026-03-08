@@ -1,0 +1,43 @@
+name: Flutter CI
+
+# Triggers the workflow on pushes and pull requests to the main branch
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    # Run on the latest Ubuntu environment
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Java 17 (required for Flutter Android builds)
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Step 3: Set up Flutter environment (stable channel)
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
+      # Step 4: Install Flutter dependencies
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Step 5: Run static analysis (linting and syntax checks)
+      - name: Analyze code
+        run: flutter analyze
+
+      # Step 6: Run unit and widget tests
+      - name: Run tests
+        run: flutter test
