@@ -6,17 +6,21 @@ class LocalTimeResult {
   /// The current time in the device's standard timezone.
   final DateTime standardTimezoneTime;
 
-  /// The exact difference between Local Mean Time and Standard Timezone Time.
-  final Duration delta;
+  /// Delta from UTC (longitude offset): LMT - UTC
+  final Duration utcDelta;
+
+  /// Delta from device timezone: (longitude offset) - (timezone offset)
+  final Duration tzDelta;
 
   /// Creates a [LocalTimeResult] with the three time values.
   const LocalTimeResult({
     required this.localMeanTime,
     required this.standardTimezoneTime,
-    required this.delta,
+    required this.utcDelta,
+    required this.tzDelta,
   });
 
   @override
   String toString() =>
-      'LocalTimeResult(localMeanTime: $localMeanTime, standardTimezoneTime: $standardTimezoneTime, delta: $delta)';
+      'LocalTimeResult(localMeanTime: $localMeanTime, standardTimezoneTime: $standardTimezoneTime, utcDelta: $utcDelta, tzDelta: $tzDelta)';
 }

@@ -112,14 +112,16 @@ class _HomeScreenState extends State<HomeScreen>
   /// Builds the main time display with Local Mean Time and Delta.
   Widget _buildTimeDisplay(dynamic result) {
   final localTime = result.localMeanTime;
-  final Duration delta = result.delta;
+  final Duration utcDelta = result.utcDelta;
+  final Duration tzDelta = result.tzDelta;
 
   // Format as HH:mm:ss
   final timeString =
       '${localTime.hour.toString().padLeft(2, '0')}:${localTime.minute.toString().padLeft(2, '0')}:${localTime.second.toString().padLeft(2, '0')}';
 
   // Calculate delta components
-  final deltaString = formatDelta(delta);
+  final utcDeltaString = formatDelta(utcDelta);
+  final tzDeltaString = formatDelta(tzDelta);
 
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
@@ -148,14 +150,27 @@ class _HomeScreenState extends State<HomeScreen>
 
       const SizedBox(height: 32),
 
-      // Delta offset in muted gray
+      // UTC Delta (longitude offset from UTC)
       Text(
-        deltaString,
+        'UTC Delta: $utcDeltaString',
         style: const TextStyle(
-          fontSize: 16,
+          fontSize: 14,
+          fontWeight: FontWeight.w300,
+          color: Color(0xFF606060), // Dimmer gray
+          letterSpacing: 1.2,
+        ),
+      ),
+
+      const SizedBox(height: 8),
+
+      // TZ Delta (offset from device timezone)
+      Text(
+        'TZ Delta: $tzDeltaString',
+        style: const TextStyle(
+          fontSize: 14,
           fontWeight: FontWeight.w300,
           color: Color(0xFF808080), // Muted gray
-          letterSpacing: 1.5,
+          letterSpacing: 1.2,
         ),
       ),
     ],
@@ -232,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen>
 
 /// Formats a Duration as a human-readable delta string used throughout the UI.
 ///
-/// The string always begins with "DELTA: IST" followed by a plus or minus
+/// The string always begins with "DELTA: UTC" followed by a plus or minus
 /// sign and a zero-padded HH:MM:SS value. Negative durations produce a
 /// leading `-` sign but never a double negative.
 String formatDelta(Duration delta) {

@@ -27,14 +27,15 @@ class TimeCalculatorService {
   ///   A [LocalTimeResult] containing:
   ///   - [localMeanTime]: The calculated Local Mean Time
   ///   - [standardTimezoneTime]: The device's current time in its standard timezone
-  ///   - [delta]: The Duration offset between the two times
+  ///   - [utcDelta]: The time difference between LMT and the reference time
+  ///   - [tzDelta]: The offset difference (longitude offset - timezone offset)
   ///
   /// Example:
   ///   ```dart
   ///   final service = TimeCalculatorService();
   ///   final result = service.calculateLocalMeanTime(82.9);
   ///   print(result.localMeanTime);  // Local Mean Time
-  ///   print(result.delta);           // Offset from standard timezone
+  ///   print(result.tzDelta);        // Offset from standard timezone
   ///   ```
   /// Calculates Local Mean Time and computes the delta relative to the
   /// device's current clock.
@@ -72,13 +73,20 @@ class TimeCalculatorService {
     // Step 6: Calculate the delta between Local Mean Time and the device clock
     // (i.e. `localMeanTime - now`). This yields a negative Duration when the
     // sun is behind the wall clock, as requested by the user.
-    final delta = localMeanTime.difference(standardTimezoneTime);
+    final utcDelta = localMeanTime.difference(standardTimezoneTime);
+
+    // The device's timezone offset
+    final tzOffsetDuration = now.timeZoneOffset;
+
+    // Delta = LMT offset from UTC - IST offset from UTC
+    final tzDelta = offsetDuration - tzOffsetDuration;
 
     // Step 7: Return the result object with all three values
     return LocalTimeResult(
       localMeanTime: localMeanTime,
       standardTimezoneTime: standardTimezoneTime,
-      delta: delta,
+      utcDelta: utcDelta,
+      tzDelta: tzDelta,
     );
   }
 }
