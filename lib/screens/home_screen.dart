@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen>
       '${localTime.hour.toString().padLeft(2, '0')}:${localTime.minute.toString().padLeft(2, '0')}:${localTime.second.toString().padLeft(2, '0')}';
 
   // Calculate delta components
-  final utcDeltaString = formatDelta(utcDelta);
+  final utcDeltaString = formatDelta(utcDelta, timeZoneLabel: 'UTC');
   final tzDeltaString = formatDelta(tzDelta);
 
   return Column(
@@ -247,10 +247,11 @@ class _HomeScreenState extends State<HomeScreen>
 
 /// Formats a Duration as a human-readable delta string used throughout the UI.
 ///
-/// The string always begins with "DELTA: UTC" followed by a plus or minus
-/// sign and a zero-padded HH:MM:SS value. Negative durations produce a
-/// leading `-` sign but never a double negative.
-String formatDelta(Duration delta) {
+/// The string begins with "DELTA:" followed by a timezone label (defaults to
+/// the device's timezone abbreviation), a plus or minus sign, and a zero-padded
+/// HH:MM:SS value. Negative durations produce a leading `-` sign but never a
+/// double negative.
+String formatDelta(Duration delta, {String? timeZoneLabel}) {
   final isNegative = delta.isNegative;
   final abs = delta.abs();
 
@@ -264,7 +265,10 @@ String formatDelta(Duration delta) {
   final mm = minutes.toString().padLeft(2, '0');
   final ss = seconds.toString().padLeft(2, '0');
 
-  return 'DELTA: UTC $sign $hh:$mm:$ss';
+  // Use provided label or default to device's timezone abbreviation
+  final label = timeZoneLabel ?? DateTime.now().timeZoneName;
+
+  return '$label $sign $hh:$mm:$ss';
 }
 
 /// A pulsing green circle that animates during GPS acquisition.
