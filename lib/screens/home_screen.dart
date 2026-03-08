@@ -1,11 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:true_time/providers/true_time_provider.dart';
 
 /// The main screen of the True Time app.
 /// Displays Local Mean Time in a hyper-minimalist design.
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen>
+    with WidgetsBindingObserver {
+  late TrueTimeProvider _provider;
+  late AppLifecycleListener _lifecycleListener;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    
+    // Enable screen wake lock
+    WakelockPlus.enable();
+
+    // Listen to app lifecycle events
+    _lifecycleListener = AppLifecycleListener(
+      onResume: _handleAppResumed,
+      onPause: _handleAppPaused,
+      onDetach: _handleAppDetached,
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _provider = Provider.of<TrueTimeProvider>(context, listen: false);
+  }
+
+  void _handleAppResumed() {
+    _provider.resumeTimer();
+  }
+
+  void _handleAppPaused() {
+    _provider.pauseTimer();
+  }
+
+  void _handleAppDetached() {
+    _provider.pauseTimer();
+  }
+
+  @override
+  void dispose() {
+    _lifecycleListener.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    WakelockPlus.disable();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
