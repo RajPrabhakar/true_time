@@ -249,7 +249,7 @@ String formatDelta(Duration delta) {
   final mm = minutes.toString().padLeft(2, '0');
   final ss = seconds.toString().padLeft(2, '0');
 
-  return 'DELTA: IST $sign $hh:$mm:$ss';
+  return 'DELTA: UTC $sign $hh:$mm:$ss';
 }
 
 /// A pulsing green circle that animates during GPS acquisition.

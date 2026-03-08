@@ -36,9 +36,23 @@ class TimeCalculatorService {
   ///   print(result.localMeanTime);  // Local Mean Time
   ///   print(result.delta);           // Offset from standard timezone
   ///   ```
-  LocalTimeResult calculateLocalMeanTime(double longitude) {
-    // Step 1: Get current UTC time from system clock
-    final utcNow = DateTime.now().toUtc();
+  /// Calculates Local Mean Time and computes the delta relative to the
+  /// device's current clock.
+  ///
+  /// The [longitude] parameter is given in degrees (East positive, West
+  /// negative). By default the service uses `DateTime.now()` for both UTC
+  /// reference and local device time, but a [referenceTime] can be supplied
+  /// for testing or deterministic calculations.
+  LocalTimeResult calculateLocalMeanTime(
+    double longitude, {
+    DateTime? referenceTime,
+  }) {
+    // allow caller to inject a fixed point in time (useful for unit tests)
+    final now = referenceTime ?? DateTime.now();
+
+    // Step 1: Get current UTC time from system clock (converted from the
+    // chosen reference time).
+    final utcNow = now.toUtc();
 
     // Step 2: Calculate the offset in minutes
     // Each degree of longitude = 4 minutes of solar time
@@ -52,10 +66,12 @@ class TimeCalculatorService {
     // Step 4: Calculate Local Mean Time by adding offset to UTC
     final localMeanTime = utcNow.add(offsetDuration);
 
-    // Step 5: Get the device's current standard timezone time
-    final standardTimezoneTime = DateTime.now();
+    // Step 5: The device's current local time (standard timezone time)
+    final standardTimezoneTime = now;
 
-    // Step 6: Calculate the delta between Local Mean Time and Standard Timezone Time
+    // Step 6: Calculate the delta between Local Mean Time and the device clock
+    // (i.e. `localMeanTime - now`). This yields a negative Duration when the
+    // sun is behind the wall clock, as requested by the user.
     final delta = localMeanTime.difference(standardTimezoneTime);
 
     // Step 7: Return the result object with all three values
