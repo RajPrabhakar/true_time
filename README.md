@@ -34,6 +34,12 @@ $$\text{Local Mean Time} = \text{UTC} + (\text{Longitude} \times 4 \text{ minute
 3. The longitude offset is calculated instantly, client-side
 4. Local Mean Time is displayed in real-time
 
+**Delta Calculation:** The app also shows the difference between Local Mean Time and your device's official local time (e.g., IST). This delta is calculated as:
+
+$$\text{Delta} = \text{Local Mean Time} - \text{Device Local Time}$$
+
+A negative delta means the sun is behind your wall clock (common in timezones ahead of solar time).
+
 **Zero Backend. Zero APIs. 100% Offline.** All computation happens on your device. No server calls, no cloud dependency, no privacy concerns.
 
 ---
@@ -46,6 +52,7 @@ $$\text{Local Mean Time} = \text{UTC} + (\text{Longitude} \times 4 \text{ minute
 - **Battery-Efficient GPS Polling** — Smart location updates that respect power constraints and only fetch coordinates at reasonable intervals
 - **Offline Operation** — Works entirely without internet; no permissions beyond location access
 - **Lightweight Footprint** — Minimal dependencies, fast startup, minimal RAM overhead
+- **Automated Testing & CI/CD** — Comprehensive unit tests and GitHub Actions workflow for reliable code quality
 
 ---
 
@@ -55,8 +62,9 @@ $$\text{Local Mean Time} = \text{UTC} + (\text{Longitude} \times 4 \text{ minute
 - **Dart** — Type-safe, performant language
 - **geolocator** — Hardware GPS access with permission handling
 - **intl** — Time and date formatting utilities
+- **provider** — State management for reactive UI updates
 - **wakelock_plus** — Screen-on management for continuous time display
-- **platform_channels** (optional) — Direct access to native GPS APIs for precision tuning
+- **flutter_test** — Unit and widget testing framework
 
 ---
 
@@ -108,6 +116,22 @@ No other permissions are required.
 
 ---
 
+## Testing
+
+The project includes comprehensive unit tests for core logic:
+
+- **format_delta_test.dart** — Tests the delta formatting function with various positive, negative, and zero offset scenarios
+- **time_calculator_service_test.dart** — Validates Local Mean Time calculations and delta logic
+
+Run tests locally:
+```bash
+flutter test
+```
+
+Tests are also executed automatically via GitHub Actions CI on every push and pull request to the main branch.
+
+---
+
 ## Building for Release
 
 ### iOS
@@ -135,11 +159,22 @@ flutter build appbundle --release
 
 ```
 lib/
-├── main.dart              # App entry point
-├── models/                # Data structures (Location, Time calculations)
-├── services/              # GPS service, time calculation logic
-├── screens/               # UI pages (Home screen with time display)
-└── utils/                 # Formatting, constants
+├── main.dart              # App entry point with provider setup
+├── models/
+│   └── local_time_result.dart  # Data model for time calculations
+├── providers/
+│   └── true_time_provider.dart # State management for GPS and time updates
+├── screens/
+│   └── home_screen.dart        # Main UI with time display and delta
+├── services/
+│   └── time_calculator_service.dart # Core solar time calculation logic
+└── utils/                 # Formatting utilities (formatDelta function)
+test/
+├── format_delta_test.dart      # Unit tests for delta formatting
+└── time_calculator_service_test.dart # Unit tests for time calculations
+.github/
+└── workflows/
+    └── flutter_ci.yml          # GitHub Actions CI pipeline
 ```
 
 ---
