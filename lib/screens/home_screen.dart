@@ -16,6 +16,7 @@ class _HomeScreenState extends State<HomeScreen>
     with WidgetsBindingObserver {
   late TrueTimeProvider _provider;
   late AppLifecycleListener _lifecycleListener;
+  bool _initialized = false;
 
   @override
   void initState() {
@@ -37,6 +38,10 @@ class _HomeScreenState extends State<HomeScreen>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _provider = Provider.of<TrueTimeProvider>(context, listen: false);
+    if (!_initialized) {
+      _provider.initialize();
+      _initialized = true;
+    }
   }
 
   void _handleAppResumed() {

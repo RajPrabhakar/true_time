@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'screens/home_screen.dart';
+import 'providers/true_time_provider.dart';
 
 void main() {
   runApp(const MainApp());
@@ -9,11 +12,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+    return ChangeNotifierProvider(
+      create: (_) => TrueTimeProvider(),
+      child: const MaterialApp(
+        home: HomeScreen(),
       ),
     );
   }
