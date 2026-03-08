@@ -5,7 +5,7 @@ import 'package:true_time/providers/true_time_provider.dart';
 /// The main screen of the True Time app.
 /// Displays Local Mean Time in a hyper-minimalist design.
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -99,14 +99,14 @@ class HomeScreen extends StatelessWidget {
 
   /// Builds a minimalist loading indicator.
   Widget _buildLoadingIndicator() {
-    return Column(
+    return const Column(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
         // Animated dots
-        const _AnimatedDots(),
-        const SizedBox(height: 24),
-        const Text(
+        _AnimatedDots(),
+        SizedBox(height: 24),
+        Text(
           'Acquiring GPS Lock...',
           style: TextStyle(
             fontSize: 14,
@@ -217,8 +217,8 @@ class _PulsingCircleState extends State<_PulsingCircle>
       child: Container(
         width: 8,
         height: 8,
-        decoration: BoxDecoration(
-          color: const Color(0xFF00FF00), // Bright green
+        decoration: const BoxDecoration(
+          color: Color(0xFF00FF00), // Bright green
           shape: BoxShape.circle,
         ),
       ),
