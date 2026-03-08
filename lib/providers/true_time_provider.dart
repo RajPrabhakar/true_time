@@ -1,0 +1,120 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:true_time/models/local_time_result.dart';
+import 'package:true_time/services/time_calculator_service.dart';
+
+/// Manages the state of the True Time clock.
+///
+/// Responsibilities:
+/// - Request and handle location permissions
+/// - Fetch user's GPS longitude
+/// - Update Local Mean Time every second
+/// - Provide loading and error states to the UI
+class TrueTimeProvider extends ChangeNotifier {
+  final TimeCalculatorService _timeCalculator = TimeCalculatorService();
+
+  // State properties
+  bool _isLoading = true;
+  String? _error;
+  double? _longitude;
+  LocalTimeResult? _currentTimeResult;
+  Timer? _timer;
+
+  // Getters
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+  double? get longitude => _longitude;
+  LocalTimeResult? get currentTimeResult => _currentTimeResult;
+
+  /// Initializes the provider by requesting permissions and fetching location.
+  Future<void> initialize() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // Step 1: Request location permissions
+      await _requestLocationPermission();
+
+      // Step 2: Fetch the user's current GPS longitude
+      await _fetchLongitude();
+
+      // Step 3: Start the timer to update time every second
+      _startTimerUpdates();
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Requests location permission (When In Use).
+  Future<void> _requestLocationPermission() async {
+    final permission = await Geolocator.requestPermission();
+
+    if (permission == LocationPermission.denied) {
+      throw Exception('Location permission denied by user.');
+    } else if (permission == LocationPermission.deniedForever) {
+      throw Exception('Location permission permanently denied. Enable in settings.');
+    }
+    // If permission is granted (whileInUse or always), proceed
+  }
+
+  /// Fetches the user's current GPS longitude.
+  Future<void> _fetchLongitude() async {
+    final position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    _longitude = position.longitude;
+  }
+
+  /// Starts a timer that updates True Time every second.
+  void _startTimerUpdates() {
+    // Immediate first calculation
+    _updateTime();
+
+    // Then set up recurring updates every second
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      _updateTime();
+    });
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  /// Calculates and updates the current Local Mean Time.
+  void _updateTime() {
+    if (_longitude == null) return;
+
+    _currentTimeResult = _timeCalculator.calculateLocalMeanTime(_longitude!);
+    notifyListeners();
+  }
+
+  /// Requests a fresh GPS location update.
+  /// Useful if the user wants to re-lock onto a new location.
+  Future<void> refreshLocation() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      await _fetchLongitude();
+
+      // Reset timer and start fresh
+      _timer?.cancel();
+      _startTimerUpdates();
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Cleans up resources (especially the timer).
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+}
