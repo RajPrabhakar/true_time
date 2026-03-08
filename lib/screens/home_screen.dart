@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen>
   late TrueTimeProvider _provider;
   late AppLifecycleListener _lifecycleListener;
   bool _initialized = false;
+  bool _menuOpen = false;
 
   @override
   void initState() {
@@ -113,25 +114,30 @@ class _HomeScreenState extends State<HomeScreen>
               body: SafeArea(
                 child: Stack(
                   children: [
-                    // Main centered time display
-                    Center(
-                      child: Builder(
-                        builder: (context) {
-                          if (timeProvider.isLoading) {
-                            return _buildLoadingIndicator(themeColors);
-                          }
+                    // Main time display with Squeeze animation
+                    AnimatedAlign(
+                      alignment: _menuOpen ? const Alignment(0, -0.5) : Alignment.center,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOutCubic,
+                      child: RepaintBoundary(
+                        child: Builder(
+                          builder: (context) {
+                            if (timeProvider.isLoading) {
+                              return _buildLoadingIndicator(themeColors);
+                            }
 
-                          if (timeProvider.error != null) {
-                            return _buildErrorState(timeProvider.error!, themeColors);
-                          }
+                            if (timeProvider.error != null) {
+                              return _buildErrorState(timeProvider.error!, themeColors);
+                            }
 
-                          final result = timeProvider.currentTimeResult;
-                          if (result == null) {
-                            return _buildLoadingIndicator(themeColors);
-                          }
+                            final result = timeProvider.currentTimeResult;
+                            if (result == null) {
+                              return _buildLoadingIndicator(themeColors);
+                            }
 
-                          return _buildTimeDisplay(result, themeColors);
-                        },
+                            return _buildTimeDisplay(result, themeColors);
+                          },
+                        ),
                       ),
                     ),
 
@@ -140,7 +146,11 @@ class _HomeScreenState extends State<HomeScreen>
                       top: 16,
                       left: 16,
                       child: GestureDetector(
-                        onTap: () => _showThemeSelectBottomSheet(context, themeProvider),
+                        onTap: () {
+                          setState(() {
+                            _menuOpen = !_menuOpen;
+                          });
+                        },
                         child: Container(
                           width: 40,
                           height: 40,
@@ -166,6 +176,34 @@ class _HomeScreenState extends State<HomeScreen>
                       right: 16,
                       child: _buildGpsIndicator(timeProvider.isLoading, themeColors),
                     ),
+
+                    // Custom animated theme menu at the bottom
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOutCubic,
+                        height: _menuOpen
+                            ? MediaQuery.of(context).size.height * 0.4
+                            : 0,
+                        decoration: BoxDecoration(
+                          color: themeColors.backgroundColor,
+                          border: _menuOpen
+                              ? Border(
+                                  top: BorderSide(
+                                    color: themeColors.accentColor.withValues(alpha: 0.3),
+                                    width: 1,
+                                  ),
+                                )
+                              : null,
+                        ),
+                        child: _menuOpen
+                            ? _buildThemeMenu(context, themeProvider, themeColors)
+                            : const SizedBox.shrink(),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -188,63 +226,60 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   /// Show the theme selection bottom sheet
-  void _showThemeSelectBottomSheet(BuildContext context, ThemeProvider themeProvider) {
-    final themeColors = themeProvider.getCurrentThemeColors();
-    
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: themeColors.backgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (bottomSheetContext) {
-        return Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Choose Theme',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w300,
-                  color: themeColors.textColor,
-                  letterSpacing: 1.5,
-                ),
+  /// Builds the inline theme selection menu for the bottom slider
+  Widget _buildThemeMenu(BuildContext context, ThemeProvider themeProvider, AppThemeColors themeColors) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Choose Theme',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w300,
+                color: themeColors.textColor,
+                letterSpacing: 1.5,
               ),
-              const SizedBox(height: 24),
-              ...ThemeDefinitions.getAllThemes().map((theme) {
-                final colors = ThemeDefinitions.getTheme(theme);
-                final isActive = themeProvider.currentTheme == theme;
-                
-                return GestureDetector(
-                  onTap: () {
-                    themeProvider.setTheme(theme);
-                    Navigator.pop(bottomSheetContext);
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: isActive ? colors.textColor : themeColors.secondaryTextColor,
-                        width: isActive ? 2 : 1,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
+            ),
+            const SizedBox(height: 20),
+            ...ThemeDefinitions.getAllThemes().map((theme) {
+              final colors = ThemeDefinitions.getTheme(theme);
+              final isActive = themeProvider.currentTheme == theme;
+              
+              return GestureDetector(
+                onTap: () {
+                  themeProvider.setTheme(theme);
+                  // Close menu after selection
+                  setState(() {
+                    _menuOpen = false;
+                  });
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: isActive ? colors.textColor : themeColors.secondaryTextColor,
+                      width: isActive ? 2 : 1,
                     ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: colors.backgroundColor,
-                            border: Border.all(color: colors.textColor, width: 1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: colors.backgroundColor,
+                          border: Border.all(color: colors.textColor, width: 1),
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                        const SizedBox(width: 16),
-                        Column(
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
@@ -260,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen>
                               Text(
                                 'Default: Pure OLED Black',
                                 style: TextStyle(
-                                  fontSize: 11,
+                                  fontSize: 10,
                                   color: themeColors.secondaryTextColor,
                                 ),
                               )
@@ -268,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen>
                               Text(
                                 'Technical: Deep Blue with Cyan',
                                 style: TextStyle(
-                                  fontSize: 11,
+                                  fontSize: 10,
                                   color: themeColors.secondaryTextColor,
                                 ),
                               )
@@ -276,7 +311,7 @@ class _HomeScreenState extends State<HomeScreen>
                               Text(
                                 'Time-Based: Sunrise to Sunset Colors',
                                 style: TextStyle(
-                                  fontSize: 11,
+                                  fontSize: 10,
                                   color: themeColors.secondaryTextColor,
                                 ),
                               )
@@ -284,28 +319,27 @@ class _HomeScreenState extends State<HomeScreen>
                               Text(
                                 'High Visibility: White Background',
                                 style: TextStyle(
-                                  fontSize: 11,
+                                  fontSize: 10,
                                   color: themeColors.secondaryTextColor,
                                 ),
                               ),
                           ],
                         ),
-                        const Spacer(),
-                        if (isActive)
-                          Icon(
-                            Icons.check_circle,
-                            color: colors.textColor,
-                            size: 24,
-                          ),
-                      ],
-                    ),
+                      ),
+                      if (isActive)
+                        Icon(
+                          Icons.check_circle,
+                          color: colors.textColor,
+                          size: 24,
+                        ),
+                    ],
                   ),
-                );
-              }),
-            ],
-          ),
-        );
-      },
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
     );
   }
 
