@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>True Time needs your location to calculate Local Mean Solar Time based on your GPS longitude.</string>
 </dict>
 </plist>
