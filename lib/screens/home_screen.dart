@@ -70,73 +70,90 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {
-        final themeColors = themeProvider.getCurrentThemeColors();
-        
-        return Scaffold(
-          backgroundColor: themeColors.backgroundColor,
-          body: SafeArea(
-            child: Stack(
-              children: [
-                // Main centered time display
-                Center(
-                  child: Consumer<TrueTimeProvider>(
-                    builder: (context, provider, _) {
-                      if (provider.isLoading) {
-                        return _buildLoadingIndicator(themeColors);
-                      }
+        return Consumer<TrueTimeProvider>(
+          builder: (context, timeProvider, _) {
+            // Get theme colors (pass localMeanTime for Solar Dynamic)
+            final themeColors = themeProvider.getCurrentThemeColors(
+              localMeanTime: timeProvider.currentTimeResult?.localMeanTime,
+            );
+            
+            // For Solar Dynamic theme, animate background color
+            final isSolarDynamic = themeProvider.currentTheme == AppThemeType.solarDynamic;
+            
+            final scaffold = Scaffold(
+              backgroundColor: isSolarDynamic ? Colors.transparent : themeColors.backgroundColor,
+              body: SafeArea(
+                child: Stack(
+                  children: [
+                    // Main centered time display
+                    Center(
+                      child: Builder(
+                        builder: (context) {
+                          if (timeProvider.isLoading) {
+                            return _buildLoadingIndicator(themeColors);
+                          }
 
-                      if (provider.error != null) {
-                        return _buildErrorState(provider.error!, themeColors);
-                      }
+                          if (timeProvider.error != null) {
+                            return _buildErrorState(timeProvider.error!, themeColors);
+                          }
 
-                      final result = provider.currentTimeResult;
-                      if (result == null) {
-                        return _buildLoadingIndicator(themeColors);
-                      }
+                          final result = timeProvider.currentTimeResult;
+                          if (result == null) {
+                            return _buildLoadingIndicator(themeColors);
+                          }
 
-                      return _buildTimeDisplay(result, themeColors);
-                    },
-                  ),
-                ),
-
-                // Theme selector button (top left)
-                Positioned(
-                  top: 16,
-                  left: 16,
-                  child: GestureDetector(
-                    onTap: () => _showThemeSelectBottomSheet(context, themeProvider),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: themeColors.accentColor.withValues(alpha: 0.2),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: themeColors.accentColor, width: 1),
+                          return _buildTimeDisplay(result, themeColors);
+                        },
                       ),
-                      child: Center(
-                        child: Icon(
-                          Icons.palette,
-                          color: themeColors.accentColor,
-                          size: 20,
+                    ),
+
+                    // Theme selector button (top left)
+                    Positioned(
+                      top: 16,
+                      left: 16,
+                      child: GestureDetector(
+                        onTap: () => _showThemeSelectBottomSheet(context, themeProvider),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: themeColors.accentColor.withValues(alpha: 0.2),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: themeColors.accentColor, width: 1),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.palette,
+                              color: themeColors.accentColor,
+                              size: 20,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
 
-                // GPS lock indicator (top right)
-                Positioned(
-                  top: 16,
-                  right: 16,
-                  child: Consumer<TrueTimeProvider>(
-                    builder: (context, provider, _) {
-                      return _buildGpsIndicator(provider.isLoading, themeColors);
-                    },
-                  ),
+                    // GPS lock indicator (top right)
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: _buildGpsIndicator(timeProvider.isLoading, themeColors),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+            
+            // If Solar Dynamic, wrap with AnimatedContainer for background color animation
+            if (isSolarDynamic) {
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 2000),
+                color: themeColors.backgroundColor,
+                child: scaffold,
+              );
+            }
+            
+            return scaffold;
+          }
         );
       },
     );
@@ -222,6 +239,14 @@ class _HomeScreenState extends State<HomeScreen>
                             else if (colors.name == 'Blueprint')
                               Text(
                                 'Technical: Deep Blue with Cyan',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: themeColors.secondaryTextColor,
+                                ),
+                              )
+                            else if (colors.name == 'Solar Dynamic')
+                              Text(
+                                'Time-Based: Sunrise to Sunset Colors',
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: themeColors.secondaryTextColor,

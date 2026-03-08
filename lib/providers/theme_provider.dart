@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:true_time/models/app_theme.dart';
 
@@ -44,7 +44,22 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   /// Get the colors for the current theme
-  AppThemeColors getCurrentThemeColors() {
+  /// For Solar Dynamic theme, pass [localMeanTime] to calculate dynamic colors
+  AppThemeColors getCurrentThemeColors({DateTime? localMeanTime}) {
+    if (_currentTheme == AppThemeType.solarDynamic && localMeanTime != null) {
+      // For Solar Dynamic, calculate colors based on time
+      final bgColor = ThemeDefinitions.getBackgroundColorForSolarDynamic(localMeanTime);
+      final accentColor = ThemeDefinitions.getAccentColorForSolarDynamic(bgColor);
+      
+      return AppThemeColors(
+        name: 'Solar Dynamic',
+        backgroundColor: bgColor,
+        textColor: const Color(0xFFFFFFFF), // Always white text
+        secondaryTextColor: const Color(0xFF808080), // Always muted gray
+        accentColor: accentColor,
+      );
+    }
+    
     return ThemeDefinitions.getTheme(_currentTheme);
   }
 }
