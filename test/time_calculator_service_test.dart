@@ -41,19 +41,22 @@ void main() {
       expect(result.utcDelta, const Duration(minutes: -4));
     });
 
-    test('tzDelta differs from utcDelta when using non-UTC timezone', () {
-      // Simulate a device in IST (+5:30) at longitude 78°E (Chennai area)
-      // Create a local time that has +5:30 offset
-      final localTime = DateTime(2026, 1, 1, 17, 30, 0); // 17:30 local = 12:00 UTC
+    test('tzDelta calculation uses timezone offset correctly', () {
+      // Use a local time reference to test that tzDelta accounts for timezone offset.
+      // DateTime(...) creates time in system's local timezone.
+      final localTime = DateTime(2026, 1, 1, 12, 0, 0);
       final result = service.calculateLocalMeanTime(78.0, referenceTime: localTime);
 
       // 78° × 4 min/deg = 312 minutes = 5:12
-      // utcDelta: should be full offset from original time
-      // tzDelta: 5:12 (longitude offset) - 5:30 (timezone offset) = -18 minutes
-      expect(result.tzDelta, const Duration(minutes: -18));
+      final longitudeOffset = const Duration(minutes: 312);
+      final timezoneOffset = localTime.timeZoneOffset;
       
-      // localMeanTime should be at UTC + 5:12, which is different from the local time
-      // The utcDelta will show the time difference between these DateTime objects
+      // tzDelta should equal: longitude offset - timezone offset
+      final expectedTzDelta = longitudeOffset - timezoneOffset;
+      expect(result.tzDelta, expectedTzDelta);
+      
+      // Verify the calculation is correct
+      expect(result.tzDelta.inMinutes, 312 - timezoneOffset.inMinutes);
     });
   });
 }
