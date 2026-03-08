@@ -111,48 +111,58 @@ class _HomeScreenState extends State<HomeScreen>
 
   /// Builds the main time display with Local Mean Time and Delta.
   Widget _buildTimeDisplay(dynamic result) {
-    final localTime = result.localMeanTime;
-    final delta = result.delta;
+  final localTime = result.localMeanTime;
+  final Duration delta = result.delta;
 
-    // Format as HH:mm:ss
-    final timeString =
-        '${localTime.hour.toString().padLeft(2, '0')}:${localTime.minute.toString().padLeft(2, '0')}:${localTime.second.toString().padLeft(2, '0')}';
+  // Format as HH:mm:ss
+  final timeString =
+      '${localTime.hour.toString().padLeft(2, '0')}:${localTime.minute.toString().padLeft(2, '0')}:${localTime.second.toString().padLeft(2, '0')}';
 
-    // Format delta as HH DD MM SS
-    final deltaString = _formatDelta(delta);
+  // Calculate delta components
+  final deltaString = _formatDelta(delta);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Massive white clock display with tabular figures
-        Text(
-          timeString,
-          style: const TextStyle(
-            fontSize: 120,
-            fontWeight: FontWeight.w300,
-            color: Colors.white,
-            fontFamily: 'Courier', // Monospace for consistency
-            letterSpacing: 2.0,
-            fontFeatures: [FontFeature.tabularFigures()],
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      // Wrapping in Padding and FittedBox prevents screen overflow
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            timeString,
+            style: const TextStyle(
+              fontSize: 120, // Now safe to be massive!
+              fontWeight: FontWeight.w300,
+              color: Colors.white,
+              // 'Courier' works, but 'Roboto Mono' or omitting it and relying on 
+              // the system's geometric sans-serif looks slightly more modern.
+              fontFamily: 'Courier', 
+              letterSpacing: 2.0,
+              fontFeatures: [FontFeature.tabularFigures()],
+            ),
           ),
         ),
+      ),
 
-        const SizedBox(height: 32),
+      const SizedBox(height: 32),
 
-        // Delta offset in muted gray
-        Text(
-          deltaString,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
-            color: Color(0xFF808080), // Muted gray
-            letterSpacing: 1.5,
-          ),
+      // Delta offset in muted gray
+      Text(
+        deltaString,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w300,
+          color: Color(0xFF808080), // Muted gray
+          letterSpacing: 1.5,
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
+
+// Helper function to format the Duration into the clean UI string
 
   /// Builds a minimalist loading indicator.
   Widget _buildLoadingIndicator() {
