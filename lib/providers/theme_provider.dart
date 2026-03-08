@@ -44,10 +44,10 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   /// Get the colors for the current theme
-  /// For Solar Dynamic theme, pass [localMeanTime] to calculate dynamic colors
+  /// For Solar Dynamic and Solar Drift themes, pass [localMeanTime] to calculate dynamic colors
   AppThemeColors getCurrentThemeColors({DateTime? localMeanTime}) {
     if (_currentTheme == AppThemeType.solarDynamic && localMeanTime != null) {
-      // For Solar Dynamic, calculate colors based on time
+      // For Solar Dynamic, calculate colors based on time of day
       final bgColor = ThemeDefinitions.getBackgroundColorForSolarDynamic(localMeanTime);
       final accentColor = ThemeDefinitions.getAccentColorForSolarDynamic(bgColor);
       
@@ -57,6 +57,19 @@ class ThemeProvider extends ChangeNotifier {
         textColor: const Color(0xFFFFFFFF), // Always white text
         secondaryTextColor: const Color(0xFF808080), // Always muted gray
         accentColor: accentColor,
+      );
+    }
+    
+    if (_currentTheme == AppThemeType.solarDrift && localMeanTime != null) {
+      // For Solar Drift, calculate colors based on solar hour angle
+      final bgColor = ThemeDefinitions.getBackgroundColorForSolarDrift(localMeanTime);
+      
+      return AppThemeColors(
+        name: 'Solar Drift',
+        backgroundColor: bgColor,
+        textColor: const Color(0xFFFFFFFF), // Always white text
+        secondaryTextColor: const Color(0xFFAAAAAA), // Light gray
+        accentColor: const Color(0xFF00DDFF), // Cyan accent
       );
     }
     

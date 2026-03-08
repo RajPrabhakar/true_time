@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 
 /// Enum representing the available app themes.
 enum AppThemeType {
-  void_,        // Void (default): OLED black
-  blueprint,    // Blueprint (technical): deep blue with cyan
-  solarFlare,   // Solar Flare (high visibility): white with black text
-  solarDynamic  // Solar Dynamic: time-based color transitions
+  void_,              // Void (default): OLED black
+  blueprint,          // Blueprint (technical): deep blue with cyan
+  solarFlare,         // Solar Flare (high visibility): white with black text
+  solarDynamic,       // Solar Dynamic: time-based color transitions
+  horologicalInstrument, // Horological Instrument: vintage tech with glow
+  bauhaus1925,        // Bauhaus 1925: geometric modernism
+  solarDrift,         // Solar Drift: adaptive gradient based on solar position
+  blueprintArchitectural // Blueprint Architectural: CAD-style with grid
 }
 
 /// Data class containing colors and properties for a theme.
@@ -55,6 +59,34 @@ class ThemeDefinitions {
       textColor: Color(0xFFFFFFFF),             // White
       secondaryTextColor: Color(0xFF808080),    // Muted gray
       accentColor: Color(0xFF00CCFF),           // Cyan (night accent)
+    ),
+    AppThemeType.horologicalInstrument: AppThemeColors(
+      name: 'Horological Instrument',
+      backgroundColor: Color(0xFF000000),       // Pure black
+      textColor: Color(0xFFFFBF00),             // Amber
+      secondaryTextColor: Color(0xFF664400),    // Dark amber
+      accentColor: Color(0xFFFFBF00),           // Amber glow
+    ),
+    AppThemeType.bauhaus1925: AppThemeColors(
+      name: 'Bauhaus 1925',
+      backgroundColor: Color(0xFFF5F5DC),       // Off-white
+      textColor: Color(0xFF333333),             // Charcoal
+      secondaryTextColor: Color(0xFF666666),    // Dark gray
+      accentColor: Color(0xFFE10600),           // Primary red
+    ),
+    AppThemeType.solarDrift: AppThemeColors(
+      name: 'Solar Drift',
+      backgroundColor: Color(0xFF001122),       // Deep zenith blue (default)
+      textColor: Color(0xFFFFFFFF),             // White
+      secondaryTextColor: Color(0xFFAAAAAA),    // Light gray
+      accentColor: Color(0xFF00DDFF),           // Cyan accent
+    ),
+    AppThemeType.blueprintArchitectural: AppThemeColors(
+      name: 'Blueprint Arch',
+      backgroundColor: Color(0xFF002B36),       // Deep drafting blue
+      textColor: Color(0xFF2AA198),             // Cyan
+      secondaryTextColor: Color(0xFF00B8B8),    // Light cyan
+      accentColor: Color(0xFF2AA198),           // Cyan accent
     ),
   };
 
@@ -167,6 +199,88 @@ class ThemeDefinitions {
       return const Color(0xFF00CCFF); // Cyan for night
     } else {
       return const Color(0xFFFF8800); // Warm orange for day
+    }
+  }
+
+  /// Returns shadow/glow effect for Horological Instrument theme
+  static List<Shadow> getHorologicalGlow() {
+    return [
+      const Shadow(
+        color: Color(0xFFFFBF00),
+        blurRadius: 10,
+        offset: Offset(0, 0),
+      ),
+      const Shadow(
+        color: Color(0xFFFFBF00),
+        blurRadius: 20,
+        offset: Offset(0, 0),
+      ),
+    ];
+  }
+
+  /// Calculates the background color for Solar Drift theme based on solar hour angle
+  /// Shifts from zenith blue at noon to dusk violet at sunset
+  static Color getBackgroundColorForSolarDrift(DateTime localMeanTime) {
+    final hour = localMeanTime.hour;
+    final minute = localMeanTime.minute;
+    final timeInMinutes = hour * 60 + minute;
+
+    // Zenith Blue at Solar Noon (12:00 = 720 min)
+    // Gradually shift to Dusk Violet towards evening
+    // Simple approximation: peak blue at noon, fade to violet by sunset
+    
+    const int noonStart = 11 * 60;   // 11 AM
+    const int noonEnd = 13 * 60;     // 1 PM
+    const int sunsetStart = 17 * 60; // 5 PM
+    const int sunsetEnd = 19 * 60;   // 7 PM
+
+    // 5 AM to 11 AM: fade in to blue
+    if (timeInMinutes >= 5 * 60 && timeInMinutes < noonStart) {
+      final progress = (timeInMinutes - 5 * 60) / (noonStart - 5 * 60);
+      return Color.lerp(
+          const Color(0xFF000033), const Color(0xFF001122), progress)!;
+    }
+
+    // 11 AM to 1 PM: peak zenith blue
+    if (timeInMinutes >= noonStart && timeInMinutes < noonEnd) {
+      return const Color(0xFF001122); // Zenith Blue
+    }
+
+    // 1 PM to 5 PM: gradual fade from zenith blue
+    if (timeInMinutes >= noonEnd && timeInMinutes < sunsetStart) {
+      final progress = (timeInMinutes - noonEnd) / (sunsetStart - noonEnd);
+      return Color.lerp(
+          const Color(0xFF001122), const Color(0xFF0A0015), progress)!;
+    }
+
+    // 5 PM to 7 PM: sunset to dusk violet
+    if (timeInMinutes >= sunsetStart && timeInMinutes < sunsetEnd) {
+      final progress = (timeInMinutes - sunsetStart) / (sunsetEnd - sunsetStart);
+      return Color.lerp(
+          const Color(0xFF0A0015), const Color(0xFF1A0033), progress)!;
+    }
+
+    // 7 PM to 5 AM: dusk violet to dark night
+    return const Color(0xFF000000);
+  }
+
+  /// Returns a grid pattern overlay for Blueprint Architectural theme
+  /// Used in a CustomPaint widget
+  static void paintBlueprintGrid(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF00B8B8).withValues(alpha: 0.08)
+      ..strokeWidth = 0.5;
+
+    const double gridSize = 10;
+
+    // Vertical lines
+    for (double x = 0; x < size.width; x += gridSize) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+
+    // Horizontal lines
+    for (double y = 0; y < size.height; y += gridSize) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
   }
 }

@@ -108,12 +108,24 @@ class _HomeScreenState extends State<HomeScreen>
             
             // For Solar Dynamic theme, animate background color
             final isSolarDynamic = themeProvider.currentTheme == AppThemeType.solarDynamic;
+            final isBlueprintArch =
+              themeProvider.currentTheme == AppThemeType.blueprintArchitectural;
             
             final scaffold = Scaffold(
               backgroundColor: isSolarDynamic ? Colors.transparent : themeColors.backgroundColor,
               body: SafeArea(
                 child: Stack(
                   children: [
+                    // Full-screen grid overlay for Blueprint Architectural theme
+                    if (isBlueprintArch)
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: CustomPaint(
+                            painter: _BlueprintGridPainter(),
+                          ),
+                        ),
+                      ),
+
                     // Main time display with Squeeze animation
                     AnimatedAlign(
                       alignment: _menuOpen ? const Alignment(0, -0.5) : Alignment.center,
@@ -307,6 +319,14 @@ class _HomeScreenState extends State<HomeScreen>
                                   color: themeColors.secondaryTextColor,
                                 ),
                               )
+                            else if (colors.name == 'Solar Flare')
+                              Text(
+                                'High Visibility: White Background',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: themeColors.secondaryTextColor,
+                                ),
+                              )
                             else if (colors.name == 'Solar Dynamic')
                               Text(
                                 'Time-Based: Sunrise to Sunset Colors',
@@ -315,9 +335,41 @@ class _HomeScreenState extends State<HomeScreen>
                                   color: themeColors.secondaryTextColor,
                                 ),
                               )
+                            else if (colors.name == 'Horological Instrument')
+                              Text(
+                                'Vintage Tech: Amber Glow Display',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: themeColors.secondaryTextColor,
+                                ),
+                              )
+                            else if (colors.name == 'Bauhaus 1925')
+                              Text(
+                                'Geometric: Modern Art Aesthetic',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: themeColors.secondaryTextColor,
+                                ),
+                              )
+                            else if (colors.name == 'Solar Drift')
+                              Text(
+                                'Ambient: Breathing with the Planet',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: themeColors.secondaryTextColor,
+                                ),
+                              )
+                            else if (colors.name == 'Blueprint Arch')
+                              Text(
+                                'CAD Design: Drafting Grid Layer',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: themeColors.secondaryTextColor,
+                                ),
+                              )
                             else
                               Text(
-                                'High Visibility: White Background',
+                                'Theme',
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: themeColors.secondaryTextColor,
@@ -357,6 +409,8 @@ class _HomeScreenState extends State<HomeScreen>
   final utcDeltaString = formatDelta(utcDelta, timeZoneLabel: 'UTC');
   final tzDeltaString = formatDelta(tzDelta);
 
+  // Check if using Horological Instrument theme for glow effect
+  final isHorological = _getCurrentThemeName(themeColors) == 'Horological Instrument';
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     mainAxisSize: MainAxisSize.min,
@@ -372,9 +426,10 @@ class _HomeScreenState extends State<HomeScreen>
               fontSize: 120,
               fontWeight: FontWeight.w300,
               color: themeColors.textColor,
-              fontFamily: 'Courier', 
+              fontFamily: 'Courier',
               letterSpacing: 2.0,
               fontFeatures: const [FontFeature.tabularFigures()],
+              shadows: isHorological ? ThemeDefinitions.getHorologicalGlow() : null,
             ),
           ),
         ),
@@ -475,6 +530,22 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  /// Helper to get the current theme name from theme colors
+  String _getCurrentThemeName(AppThemeColors themeColors) {
+    return themeColors.name;
+  }
+
+}
+
+/// Custom painter for Blueprint Architectural theme - renders a grid overlay
+class _BlueprintGridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    ThemeDefinitions.paintBlueprintGrid(canvas, size);
+  }
+
+  @override
+  bool shouldRepaint(_BlueprintGridPainter oldDelegate) => false;
 }
 
 /// Formats a Duration as a human-readable delta string used throughout the UI.
