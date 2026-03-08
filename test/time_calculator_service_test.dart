@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:true_time/services/time_calculator_service.dart';
-import 'package:true_time/models/local_time_result.dart';
 
 void main() {
   group('TimeCalculatorService', () {
