@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:true_time/models/local_time_result.dart';
 import 'package:true_time/services/time_calculator_service.dart';
@@ -21,7 +20,6 @@ class TrueTimeProvider extends ChangeNotifier {
   double? _longitude;
   LocalTimeResult? _currentTimeResult;
   Timer? _timer;
-  bool _appInForeground = true;
 
   // Getters
   bool get isLoading => _isLoading;
@@ -89,12 +87,10 @@ class TrueTimeProvider extends ChangeNotifier {
   /// Pauses the timer when the app goes to background.
   void pauseTimer() {
     _timer?.cancel();
-    _appInForeground = false;
   }
 
   /// Resumes the timer when the app comes to foreground.
   void resumeTimer() {
-    _appInForeground = true;
     if (_longitude != null) {
       _startTimerUpdates();
     }
