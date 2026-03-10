@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late AppLifecycleListener _lifecycleListener;
   bool _initialized = false;
   bool _menuOpen = false;
+  bool _isSolarMode = true;
 
   @override
   void initState() {
@@ -152,6 +153,36 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
                           return _buildTimeDisplay(result, themeColors);
                         },
+                      ),
+                    ),
+                  ),
+
+                  // Mode label at page bottom (moves with theme menu toggle)
+                  AnimatedPositioned(
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeInOutCubic,
+                    left: 0,
+                    right: 0,
+                    bottom: _menuOpen
+                        ? (MediaQuery.of(context).size.height * 0.4) + 16
+                        : 24,
+                    child: IgnorePointer(
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.easeInOut,
+                        opacity: _menuOpen ? 0.85 : 1.0,
+                        child: Text(
+                          _isSolarMode ? 'TRUE SOLAR' : 'OFFICIAL',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
+                            color: _isSolarMode
+                                ? Colors.white
+                                : const Color(0xFFA0A0A0),
+                            letterSpacing: 1.2,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -343,12 +374,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   /// Builds the main time display with Local Mean Time and Delta.
   Widget _buildTimeDisplay(dynamic result, AppThemeColors themeColors) {
     final localTime = result.localMeanTime;
+    final politicalTime = DateTime.now();
+    final displayedTime = _isSolarMode ? localTime : politicalTime;
     final Duration utcDelta = result.utcDelta;
     final Duration tzDelta = result.tzDelta;
 
     // Format as HH:mm:ss
     final timeString =
-        '${localTime.hour.toString().padLeft(2, '0')}:${localTime.minute.toString().padLeft(2, '0')}:${localTime.second.toString().padLeft(2, '0')}';
+      '${displayedTime.hour.toString().padLeft(2, '0')}:${displayedTime.minute.toString().padLeft(2, '0')}:${displayedTime.second.toString().padLeft(2, '0')}';
 
     // Calculate delta components
     final utcDeltaString = formatDelta(utcDelta, timeZoneLabel: 'UTC');
@@ -357,6 +390,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // Check if using Horological Instrument theme for glow effect
     final isHorological =
         _getCurrentThemeName(themeColors) == 'Horological Instrument';
+    final displayedTimeColor =
+        _isSolarMode ? Colors.white : const Color(0xFFA0A0A0);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
@@ -366,18 +402,39 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            child: Text(
-              timeString,
-              style: TextStyle(
-                fontSize: 120,
-                fontWeight: FontWeight.w300,
-                color: themeColors.textColor,
-                fontFamily: 'Courier',
-                letterSpacing: 2.0,
-                fontFeatures: const [FontFeature.tabularFigures()],
-                shadows: isHorological
-                    ? ThemeDefinitions.getHorologicalGlow()
-                    : null,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isSolarMode = !_isSolarMode;
+                });
+              },
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                switchInCurve: Curves.easeInOut,
+                switchOutCurve: Curves.easeInOut,
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+                child: Column(
+                  key: ValueKey(_isSolarMode ? 'solar-mode' : 'political-mode'),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      timeString,
+                      style: TextStyle(
+                        fontSize: 120,
+                        fontWeight: FontWeight.w300,
+                        color: displayedTimeColor,
+                        fontFamily: 'Courier',
+                        letterSpacing: 2.0,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                        shadows: isHorological
+                            ? ThemeDefinitions.getHorologicalGlow()
+                            : null,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
