@@ -13,6 +13,7 @@ enum AppThemeType {
   observer, // Observer: segmented red-on-black instrumentation
   cartographer, // Cartographer: parchment and warm brown tones
   zenith, // Zenith: dynamic indigo gradient field
+  retroFlip, // Retro Flip: split-flap clock panels
   monolith, // Monolith: ultra-minimal monochrome
 }
 
@@ -125,6 +126,14 @@ class ThemeDefinitions {
       textColor: Color(0xFFE9ECFF), // Cool white
       secondaryTextColor: Color(0xFFB9BEDF), // Misty indigo gray
       accentColor: Color(0xFF7FA7FF), // Electric blue accent
+    ),
+    AppThemeType.retroFlip: AppThemeColors(
+      name: 'Retro Flip',
+      description: 'Mechanical: Split-Flap Clock Aesthetic',
+      backgroundColor: Color(0xFF0E0E0E), // Deep matte black
+      textColor: Color(0xFFE0E0E0), // Off-white digit tone
+      secondaryTextColor: Color(0xFFAFAFAF), // Muted off-white
+      accentColor: Color(0xFF8B8B8B), // Neutral metal accent
     ),
     AppThemeType.monolith: AppThemeColors(
       name: 'Monolith',

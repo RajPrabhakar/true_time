@@ -1,8 +1,7 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:true_time/models/app_theme.dart';
 import 'package:true_time/screens/utils/delta_formatter.dart';
+import 'package:true_time/screens/widgets/retro_flip_clock.dart';
 
 class HomeTimeDisplay extends StatelessWidget {
   final dynamic result;
@@ -38,6 +37,7 @@ class HomeTimeDisplay extends StatelessWidget {
 
     final isHorological = currentTheme == AppThemeType.horologicalInstrument;
     final isObserver = currentTheme == AppThemeType.observer;
+    final isRetroFlip = currentTheme == AppThemeType.retroFlip;
     final displayedTimeColor =
         isSolarMode ? themeColors.textColor : themeColors.secondaryTextColor;
 
@@ -58,21 +58,32 @@ class HomeTimeDisplay extends StatelessWidget {
                 transitionBuilder: (child, animation) {
                   return FadeTransition(opacity: animation, child: child);
                 },
-                child: Text(
-                  key: ValueKey(isSolarMode ? 'solar-mode' : 'political-mode'),
-                  timeString,
-                  style: TextStyle(
-                    fontSize: 120,
-                    fontWeight: isObserver ? FontWeight.w500 : FontWeight.w300,
-                    color: displayedTimeColor,
-                    fontFamily: isObserver ? 'monospace' : 'Courier',
-                    letterSpacing: isObserver ? 4.0 : 2.0,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                    shadows: isHorological
-                        ? ThemeDefinitions.getHorologicalGlow()
-                        : null,
-                  ),
-                ),
+                child: isRetroFlip
+                    ? RetroFlipClock(
+                        key: ValueKey(
+                          'retro-flip-${isSolarMode ? 'solar' : 'political'}',
+                        ),
+                        displayedTime: displayedTime,
+                        isSolarMode: isSolarMode,
+                      )
+                    : Text(
+                        key: ValueKey(
+                          isSolarMode ? 'solar-mode' : 'political-mode',
+                        ),
+                        timeString,
+                        style: TextStyle(
+                          fontSize: 120,
+                          fontWeight:
+                              isObserver ? FontWeight.w500 : FontWeight.w300,
+                          color: displayedTimeColor,
+                          fontFamily: isObserver ? 'monospace' : 'Courier',
+                          letterSpacing: isObserver ? 4.0 : 2.0,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                          shadows: isHorological
+                              ? ThemeDefinitions.getHorologicalGlow()
+                              : null,
+                        ),
+                      ),
               ),
             ),
           ),
