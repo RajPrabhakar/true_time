@@ -15,8 +15,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late TrueTimeProvider _provider;
   late AppLifecycleListener _lifecycleListener;
   bool _initialized = false;
@@ -26,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    
+
     // Enable screen wake lock
     WakelockPlus.enable();
 
@@ -64,18 +63,18 @@ class _HomeScreenState extends State<HomeScreen>
   /// Uses the background color's luminance to determine icon brightness.
   void _updateSystemChromeStyle(Color backgroundColor) {
     final luminance = backgroundColor.computeLuminance();
-    
+
     // For dark backgrounds (luminance < 0.5), use light icons
     // For light backgrounds (luminance >= 0.5), use dark icons
     final brightness = luminance < 0.5 ? Brightness.light : Brightness.dark;
-    
+
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         // Status bar (top)
         statusBarColor: backgroundColor,
         statusBarBrightness: brightness,
         statusBarIconBrightness: brightness,
-        
+
         // Navigation bar (bottom)
         systemNavigationBarColor: backgroundColor,
         systemNavigationBarDividerColor: backgroundColor,
@@ -96,150 +95,157 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {
-        return Consumer<TrueTimeProvider>(
-          builder: (context, timeProvider, _) {
-            // Get theme colors (pass localMeanTime for Solar Dynamic)
-            final themeColors = themeProvider.getCurrentThemeColors(
-              localMeanTime: timeProvider.currentTimeResult?.localMeanTime,
-            );
-            
-            // Update system chrome (status bar and navigation bar) to match background
-            _updateSystemChromeStyle(themeColors.backgroundColor);
-            
-            // For Solar Dynamic theme, animate background color
-            final isSolarDynamic = themeProvider.currentTheme == AppThemeType.solarDynamic;
-            final isBlueprintArch =
+        return Consumer<TrueTimeProvider>(builder: (context, timeProvider, _) {
+          // Get theme colors (pass localMeanTime for Solar Dynamic)
+          final themeColors = themeProvider.getCurrentThemeColors(
+            localMeanTime: timeProvider.currentTimeResult?.localMeanTime,
+          );
+
+          // Update system chrome (status bar and navigation bar) to match background
+          _updateSystemChromeStyle(themeColors.backgroundColor);
+
+          // For Solar Dynamic theme, animate background color
+          final isSolarDynamic =
+              themeProvider.currentTheme == AppThemeType.solarDynamic;
+          final isBlueprintArch =
               themeProvider.currentTheme == AppThemeType.blueprintArchitectural;
-            
-            final scaffold = Scaffold(
-              backgroundColor: isSolarDynamic ? Colors.transparent : themeColors.backgroundColor,
-              body: SafeArea(
-                child: Stack(
-                  children: [
-                    // Full-screen grid overlay for Blueprint Architectural theme
-                    if (isBlueprintArch)
-                      Positioned.fill(
-                        child: IgnorePointer(
-                          child: CustomPaint(
-                            painter: _BlueprintGridPainter(),
+
+          final scaffold = Scaffold(
+            backgroundColor: isSolarDynamic
+                ? Colors.transparent
+                : themeColors.backgroundColor,
+            body: SafeArea(
+              child: Stack(
+                children: [
+                  // Full-screen grid overlay for Blueprint Architectural theme
+                  if (isBlueprintArch)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: CustomPaint(
+                          painter: _BlueprintGridPainter(),
+                        ),
+                      ),
+                    ),
+
+                  // Main time display with Squeeze animation
+                  AnimatedAlign(
+                    alignment:
+                        _menuOpen ? const Alignment(0, -0.5) : Alignment.center,
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeInOutCubic,
+                    child: RepaintBoundary(
+                      child: Builder(
+                        builder: (context) {
+                          if (timeProvider.isLoading) {
+                            return _buildLoadingIndicator(themeColors);
+                          }
+
+                          if (timeProvider.error != null) {
+                            return _buildErrorState(
+                                timeProvider.error!, themeColors);
+                          }
+
+                          final result = timeProvider.currentTimeResult;
+                          if (result == null) {
+                            return _buildLoadingIndicator(themeColors);
+                          }
+
+                          return _buildTimeDisplay(result, themeColors);
+                        },
+                      ),
+                    ),
+                  ),
+
+                  // Theme selector button (top left)
+                  Positioned(
+                    top: 16,
+                    left: 16,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _menuOpen = !_menuOpen;
+                        });
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: themeColors.accentColor.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: themeColors.accentColor, width: 1),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.palette,
+                            color: themeColors.accentColor,
+                            size: 20,
                           ),
                         ),
                       ),
+                    ),
+                  ),
 
-                    // Main time display with Squeeze animation
-                    AnimatedAlign(
-                      alignment: _menuOpen ? const Alignment(0, -0.5) : Alignment.center,
+                  // GPS lock indicator (top right)
+                  Positioned(
+                    top: 16,
+                    right: 16,
+                    child:
+                        _buildGpsIndicator(timeProvider.isLoading, themeColors),
+                  ),
+
+                  // Custom animated theme menu at the bottom
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: AnimatedContainer(
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.easeInOutCubic,
-                      child: RepaintBoundary(
-                        child: Builder(
-                          builder: (context) {
-                            if (timeProvider.isLoading) {
-                              return _buildLoadingIndicator(themeColors);
-                            }
-
-                            if (timeProvider.error != null) {
-                              return _buildErrorState(timeProvider.error!, themeColors);
-                            }
-
-                            final result = timeProvider.currentTimeResult;
-                            if (result == null) {
-                              return _buildLoadingIndicator(themeColors);
-                            }
-
-                            return _buildTimeDisplay(result, themeColors);
-                          },
-                        ),
+                      height: _menuOpen
+                          ? MediaQuery.of(context).size.height * 0.4
+                          : 0,
+                      decoration: BoxDecoration(
+                        color: themeColors.backgroundColor,
+                        border: _menuOpen
+                            ? Border(
+                                top: BorderSide(
+                                  color: themeColors.accentColor
+                                      .withValues(alpha: 0.3),
+                                  width: 1,
+                                ),
+                              )
+                            : null,
                       ),
+                      child: _menuOpen
+                          ? _buildThemeMenu(context, themeProvider, themeColors)
+                          : const SizedBox.shrink(),
                     ),
-
-                    // Theme selector button (top left)
-                    Positioned(
-                      top: 16,
-                      left: 16,
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _menuOpen = !_menuOpen;
-                          });
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: themeColors.accentColor.withValues(alpha: 0.2),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: themeColors.accentColor, width: 1),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.palette,
-                              color: themeColors.accentColor,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // GPS lock indicator (top right)
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: _buildGpsIndicator(timeProvider.isLoading, themeColors),
-                    ),
-
-                    // Custom animated theme menu at the bottom
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.easeInOutCubic,
-                        height: _menuOpen
-                            ? MediaQuery.of(context).size.height * 0.4
-                            : 0,
-                        decoration: BoxDecoration(
-                          color: themeColors.backgroundColor,
-                          border: _menuOpen
-                              ? Border(
-                                  top: BorderSide(
-                                    color: themeColors.accentColor.withValues(alpha: 0.3),
-                                    width: 1,
-                                  ),
-                                )
-                              : null,
-                        ),
-                        child: _menuOpen
-                            ? _buildThemeMenu(context, themeProvider, themeColors)
-                            : const SizedBox.shrink(),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ),
+          );
+
+          // If Solar Dynamic, wrap with AnimatedContainer for background color animation
+          if (isSolarDynamic) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 2000),
+              color: themeColors.backgroundColor,
+              child: scaffold,
             );
-            
-            // If Solar Dynamic, wrap with AnimatedContainer for background color animation
-            if (isSolarDynamic) {
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 2000),
-                color: themeColors.backgroundColor,
-                child: scaffold,
-              );
-            }
-            
-            return scaffold;
           }
-        );
+
+          return scaffold;
+        });
       },
     );
   }
 
   /// Show the theme selection bottom sheet
   /// Builds the inline theme selection menu for the bottom slider
-  Widget _buildThemeMenu(BuildContext context, ThemeProvider themeProvider, AppThemeColors themeColors) {
+  Widget _buildThemeMenu(BuildContext context, ThemeProvider themeProvider,
+      AppThemeColors themeColors) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -259,7 +265,7 @@ class _HomeScreenState extends State<HomeScreen>
             ...ThemeDefinitions.getAllThemes().map((theme) {
               final colors = ThemeDefinitions.getTheme(theme);
               final isActive = themeProvider.currentTheme == theme;
-              
+
               return GestureDetector(
                 onTap: () {
                   themeProvider.setTheme(theme);
@@ -273,7 +279,9 @@ class _HomeScreenState extends State<HomeScreen>
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: isActive ? colors.textColor : themeColors.secondaryTextColor,
+                      color: isActive
+                          ? colors.textColor
+                          : themeColors.secondaryTextColor,
                       width: isActive ? 2 : 1,
                     ),
                     borderRadius: BorderRadius.circular(8),
@@ -298,83 +306,20 @@ class _HomeScreenState extends State<HomeScreen>
                               colors.name,
                               style: TextStyle(
                                 fontSize: 14,
-                                fontWeight: isActive ? FontWeight.w500 : FontWeight.w300,
+                                fontWeight: isActive
+                                    ? FontWeight.w500
+                                    : FontWeight.w300,
                                 color: themeColors.textColor,
                                 letterSpacing: 0.5,
                               ),
                             ),
-                            if (colors.name == 'Void')
-                              Text(
-                                'Default: Pure OLED Black',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: themeColors.secondaryTextColor,
-                                ),
-                              )
-                            else if (colors.name == 'Blueprint')
-                              Text(
-                                'Technical: Deep Blue with Cyan',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: themeColors.secondaryTextColor,
-                                ),
-                              )
-                            else if (colors.name == 'Solar Flare')
-                              Text(
-                                'High Visibility: White Background',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: themeColors.secondaryTextColor,
-                                ),
-                              )
-                            else if (colors.name == 'Solar Dynamic')
-                              Text(
-                                'Time-Based: Sunrise to Sunset Colors',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: themeColors.secondaryTextColor,
-                                ),
-                              )
-                            else if (colors.name == 'Horological Instrument')
-                              Text(
-                                'Vintage Tech: Amber Glow Display',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: themeColors.secondaryTextColor,
-                                ),
-                              )
-                            else if (colors.name == 'Bauhaus 1925')
-                              Text(
-                                'Geometric: Modern Art Aesthetic',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: themeColors.secondaryTextColor,
-                                ),
-                              )
-                            else if (colors.name == 'Solar Drift')
-                              Text(
-                                'Ambient: Breathing with the Planet',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: themeColors.secondaryTextColor,
-                                ),
-                              )
-                            else if (colors.name == 'Blueprint Arch')
-                              Text(
-                                'CAD Design: Drafting Grid Layer',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: themeColors.secondaryTextColor,
-                                ),
-                              )
-                            else
-                              Text(
-                                'Theme',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: themeColors.secondaryTextColor,
-                                ),
+                            Text(
+                              colors.description,
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: themeColors.secondaryTextColor,
                               ),
+                            ),
                           ],
                         ),
                       ),
@@ -397,72 +342,75 @@ class _HomeScreenState extends State<HomeScreen>
 
   /// Builds the main time display with Local Mean Time and Delta.
   Widget _buildTimeDisplay(dynamic result, AppThemeColors themeColors) {
-  final localTime = result.localMeanTime;
-  final Duration utcDelta = result.utcDelta;
-  final Duration tzDelta = result.tzDelta;
+    final localTime = result.localMeanTime;
+    final Duration utcDelta = result.utcDelta;
+    final Duration tzDelta = result.tzDelta;
 
-  // Format as HH:mm:ss
-  final timeString =
-      '${localTime.hour.toString().padLeft(2, '0')}:${localTime.minute.toString().padLeft(2, '0')}:${localTime.second.toString().padLeft(2, '0')}';
+    // Format as HH:mm:ss
+    final timeString =
+        '${localTime.hour.toString().padLeft(2, '0')}:${localTime.minute.toString().padLeft(2, '0')}:${localTime.second.toString().padLeft(2, '0')}';
 
-  // Calculate delta components
-  final utcDeltaString = formatDelta(utcDelta, timeZoneLabel: 'UTC');
-  final tzDeltaString = formatDelta(tzDelta);
+    // Calculate delta components
+    final utcDeltaString = formatDelta(utcDelta, timeZoneLabel: 'UTC');
+    final tzDeltaString = formatDelta(tzDelta);
 
-  // Check if using Horological Instrument theme for glow effect
-  final isHorological = _getCurrentThemeName(themeColors) == 'Horological Instrument';
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      // Wrapping in Padding and FittedBox prevents screen overflow
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            timeString,
-            style: TextStyle(
-              fontSize: 120,
-              fontWeight: FontWeight.w300,
-              color: themeColors.textColor,
-              fontFamily: 'Courier',
-              letterSpacing: 2.0,
-              fontFeatures: const [FontFeature.tabularFigures()],
-              shadows: isHorological ? ThemeDefinitions.getHorologicalGlow() : null,
+    // Check if using Horological Instrument theme for glow effect
+    final isHorological =
+        _getCurrentThemeName(themeColors) == 'Horological Instrument';
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Wrapping in Padding and FittedBox prevents screen overflow
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              timeString,
+              style: TextStyle(
+                fontSize: 120,
+                fontWeight: FontWeight.w300,
+                color: themeColors.textColor,
+                fontFamily: 'Courier',
+                letterSpacing: 2.0,
+                fontFeatures: const [FontFeature.tabularFigures()],
+                shadows: isHorological
+                    ? ThemeDefinitions.getHorologicalGlow()
+                    : null,
+              ),
             ),
           ),
         ),
-      ),
 
-      const SizedBox(height: 32),
+        const SizedBox(height: 32),
 
-      // UTC Delta (longitude offset from UTC)
-      Text(
-        'UTC Delta: $utcDeltaString',
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w300,
-          color: themeColors.secondaryTextColor,
-          letterSpacing: 1.2,
+        // UTC Delta (longitude offset from UTC)
+        Text(
+          'UTC Delta: $utcDeltaString',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w300,
+            color: themeColors.secondaryTextColor,
+            letterSpacing: 1.2,
+          ),
         ),
-      ),
 
-      const SizedBox(height: 8),
+        const SizedBox(height: 8),
 
-      // TZ Delta (offset from device timezone)
-      Text(
-        'TZ Delta: $tzDeltaString',
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w300,
-          color: themeColors.secondaryTextColor,
-          letterSpacing: 1.2,
+        // TZ Delta (offset from device timezone)
+        Text(
+          'TZ Delta: $tzDeltaString',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w300,
+            color: themeColors.secondaryTextColor,
+            letterSpacing: 1.2,
+          ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
 // Helper function to format the Duration into the clean UI string
 
@@ -534,7 +482,6 @@ class _HomeScreenState extends State<HomeScreen>
   String _getCurrentThemeName(AppThemeColors themeColors) {
     return themeColors.name;
   }
-
 }
 
 /// Custom painter for Blueprint Architectural theme - renders a grid overlay

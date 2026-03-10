@@ -16,7 +16,7 @@ class ThemeProvider extends ChangeNotifier {
   /// Initialize the theme provider by loading saved preference
   Future<void> initialize() async {
     _prefs = await SharedPreferences.getInstance();
-    
+
     final savedThemeName = _prefs.getString(_themeStorageKey);
     if (savedThemeName != null) {
       try {
@@ -48,31 +48,36 @@ class ThemeProvider extends ChangeNotifier {
   AppThemeColors getCurrentThemeColors({DateTime? localMeanTime}) {
     if (_currentTheme == AppThemeType.solarDynamic && localMeanTime != null) {
       // For Solar Dynamic, calculate colors based on time of day
-      final bgColor = ThemeDefinitions.getBackgroundColorForSolarDynamic(localMeanTime);
-      final accentColor = ThemeDefinitions.getAccentColorForSolarDynamic(bgColor);
-      
+      final bgColor =
+          ThemeDefinitions.getBackgroundColorForSolarDynamic(localMeanTime);
+      final accentColor =
+          ThemeDefinitions.getAccentColorForSolarDynamic(bgColor);
+
       return AppThemeColors(
         name: 'Solar Dynamic',
+        description: 'Time-Based: Sunrise to Sunset Colors',
         backgroundColor: bgColor,
         textColor: const Color(0xFFFFFFFF), // Always white text
         secondaryTextColor: const Color(0xFF808080), // Always muted gray
         accentColor: accentColor,
       );
     }
-    
+
     if (_currentTheme == AppThemeType.solarDrift && localMeanTime != null) {
       // For Solar Drift, calculate colors based on solar hour angle
-      final bgColor = ThemeDefinitions.getBackgroundColorForSolarDrift(localMeanTime);
-      
+      final bgColor =
+          ThemeDefinitions.getBackgroundColorForSolarDrift(localMeanTime);
+
       return AppThemeColors(
         name: 'Solar Drift',
+        description: 'Ambient: Breathing with the Planet',
         backgroundColor: bgColor,
         textColor: const Color(0xFFFFFFFF), // Always white text
         secondaryTextColor: const Color(0xFFAAAAAA), // Light gray
         accentColor: const Color(0xFF00DDFF), // Cyan accent
       );
     }
-    
+
     return ThemeDefinitions.getTheme(_currentTheme);
   }
 }
