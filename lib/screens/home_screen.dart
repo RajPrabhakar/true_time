@@ -190,8 +190,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
                             color: _isSolarMode
-                                ? Colors.white
-                                : const Color(0xFFA0A0A0),
+                              ? themeColors.textColor
+                              : themeColors.secondaryTextColor,
                             letterSpacing: 1.2,
                           ),
                         ),

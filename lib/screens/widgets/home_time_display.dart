@@ -34,7 +34,7 @@ class HomeTimeDisplay extends StatelessWidget {
 
     final isHorological = themeColors.name == 'Horological Instrument';
     final displayedTimeColor =
-        isSolarMode ? Colors.white : const Color(0xFFA0A0A0);
+      isSolarMode ? themeColors.textColor : themeColors.secondaryTextColor;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
