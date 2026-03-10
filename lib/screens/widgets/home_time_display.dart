@@ -7,14 +7,18 @@ import 'package:true_time/screens/utils/delta_formatter.dart';
 class HomeTimeDisplay extends StatelessWidget {
   final dynamic result;
   final AppThemeColors themeColors;
+  final AppThemeType currentTheme;
   final bool isSolarMode;
+  final bool showSecondaryUi;
   final VoidCallback onToggleMode;
 
   const HomeTimeDisplay({
     super.key,
     required this.result,
     required this.themeColors,
+    required this.currentTheme,
     required this.isSolarMode,
+    required this.showSecondaryUi,
     required this.onToggleMode,
   });
 
@@ -32,9 +36,10 @@ class HomeTimeDisplay extends StatelessWidget {
     final utcDeltaString = formatDelta(utcDelta, timeZoneLabel: 'UTC');
     final tzDeltaString = formatDelta(tzDelta);
 
-    final isHorological = themeColors.name == 'Horological Instrument';
+    final isHorological = currentTheme == AppThemeType.horologicalInstrument;
+    final isObserver = currentTheme == AppThemeType.observer;
     final displayedTimeColor =
-      isSolarMode ? themeColors.textColor : themeColors.secondaryTextColor;
+        isSolarMode ? themeColors.textColor : themeColors.secondaryTextColor;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -58,10 +63,10 @@ class HomeTimeDisplay extends StatelessWidget {
                   timeString,
                   style: TextStyle(
                     fontSize: 120,
-                    fontWeight: FontWeight.w300,
+                    fontWeight: isObserver ? FontWeight.w500 : FontWeight.w300,
                     color: displayedTimeColor,
-                    fontFamily: 'Courier',
-                    letterSpacing: 2.0,
+                    fontFamily: isObserver ? 'monospace' : 'Courier',
+                    letterSpacing: isObserver ? 4.0 : 2.0,
                     fontFeatures: const [FontFeature.tabularFigures()],
                     shadows: isHorological
                         ? ThemeDefinitions.getHorologicalGlow()
@@ -72,26 +77,28 @@ class HomeTimeDisplay extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 32),
-        Text(
-          'UTC Delta: $utcDeltaString',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w300,
-            color: themeColors.secondaryTextColor,
-            letterSpacing: 1.2,
+        if (showSecondaryUi) ...[
+          const SizedBox(height: 32),
+          Text(
+            'UTC Delta: $utcDeltaString',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w300,
+              color: themeColors.secondaryTextColor,
+              letterSpacing: 1.2,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'TZ Delta: $tzDeltaString',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w300,
-            color: themeColors.secondaryTextColor,
-            letterSpacing: 1.2,
+          const SizedBox(height: 8),
+          Text(
+            'TZ Delta: $tzDeltaString',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w300,
+              color: themeColors.secondaryTextColor,
+              letterSpacing: 1.2,
+            ),
           ),
-        ),
+        ],
       ],
     );
   }

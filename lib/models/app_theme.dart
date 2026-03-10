@@ -9,7 +9,11 @@ enum AppThemeType {
   horologicalInstrument, // Horological Instrument: vintage tech with glow
   bauhaus1925, // Bauhaus 1925: geometric modernism
   solarDrift, // Solar Drift: adaptive gradient based on solar position
-  blueprintArchitectural // Blueprint Architectural: CAD-style with grid
+  blueprintArchitectural, // Blueprint Architectural: CAD-style with grid
+  observer, // Observer: segmented red-on-black instrumentation
+  cartographer, // Cartographer: parchment and warm brown tones
+  zenith, // Zenith: dynamic indigo gradient field
+  monolith, // Monolith: ultra-minimal monochrome
 }
 
 /// Data class containing colors and properties for a theme.
@@ -98,6 +102,38 @@ class ThemeDefinitions {
       secondaryTextColor: Color(0xFF00B8B8), // Light cyan
       accentColor: Color(0xFF2AA198), // Cyan accent
     ),
+    AppThemeType.observer: AppThemeColors(
+      name: 'Observer',
+      description: 'Instrument: Red Segmented Display',
+      backgroundColor: Color(0xFF060606), // Near-black
+      textColor: Color(0xFFFF3B30), // Signal red
+      secondaryTextColor: Color(0xFF9A2A23), // Dimmed red
+      accentColor: Color(0xFFFF6B63), // Lifted red accent
+    ),
+    AppThemeType.cartographer: AppThemeColors(
+      name: 'Cartographer',
+      description: 'Atlas: Parchment with Brown Ink',
+      backgroundColor: Color(0xFFF2E7D0), // Parchment
+      textColor: Color(0xFF4E342E), // Ink brown
+      secondaryTextColor: Color(0xFF8D6E63), // Soft brown
+      accentColor: Color(0xFFA66A2C), // Brass-ochre accent
+    ),
+    AppThemeType.zenith: AppThemeColors(
+      name: 'Zenith',
+      description: 'Atmospheric: Indigo Gradient Field',
+      backgroundColor: Color(0xFF15143D), // Indigo base
+      textColor: Color(0xFFE9ECFF), // Cool white
+      secondaryTextColor: Color(0xFFB9BEDF), // Misty indigo gray
+      accentColor: Color(0xFF7FA7FF), // Electric blue accent
+    ),
+    AppThemeType.monolith: AppThemeColors(
+      name: 'Monolith',
+      description: 'Ultra-Minimal: Essential Information Only',
+      backgroundColor: Color(0xFF050505), // Matte black
+      textColor: Color(0xFFF2F2F2), // Soft white
+      secondaryTextColor: Color(0xFF606060), // Suppressed gray
+      accentColor: Color(0xFFBFBFBF), // Neutral accent
+    ),
   };
 
   /// Get theme colors by type
@@ -107,6 +143,23 @@ class ThemeDefinitions {
 
   /// Get all available themes as a list for UI selection
   static List<AppThemeType> getAllThemes() => AppThemeType.values;
+
+  /// Returns the Zenith gradient.
+  ///
+  /// In solar mode the gradient rises diagonally to feel "sunward".
+  /// In official mode it shifts vertically to feel more archival.
+  static LinearGradient getZenithGradient({required bool isSolarMode}) {
+    return LinearGradient(
+      begin: isSolarMode ? Alignment.topLeft : Alignment.bottomCenter,
+      end: isSolarMode ? Alignment.bottomRight : Alignment.topCenter,
+      colors: const [
+        Color(0xFF0B102B),
+        Color(0xFF1C1A52),
+        Color(0xFF2A2478),
+      ],
+      stops: const [0.0, 0.45, 1.0],
+    );
+  }
 
   /// Calculates the background color for Solar Dynamic theme based on local mean time.
   ///

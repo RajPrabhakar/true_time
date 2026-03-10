@@ -24,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool _initialized = false;
   bool _menuOpen = false;
   bool _isSolarMode = true;
+  bool _showMonolithSecondaryUi = false;
 
   @override
   void initState() {
@@ -113,167 +114,206 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               themeProvider.currentTheme == AppThemeType.solarDynamic;
           final isBlueprintArch =
               themeProvider.currentTheme == AppThemeType.blueprintArchitectural;
+          final isZenith = themeProvider.currentTheme == AppThemeType.zenith;
+          final isMonolith =
+              themeProvider.currentTheme == AppThemeType.monolith;
+          final showSecondaryUi = !isMonolith || _showMonolithSecondaryUi;
 
           final scaffold = Scaffold(
-            backgroundColor: isSolarDynamic
+            backgroundColor: (isSolarDynamic || isZenith)
                 ? Colors.transparent
                 : themeColors.backgroundColor,
             body: SafeArea(
-              child: Stack(
-                children: [
-                  // Full-screen grid overlay for Blueprint Architectural theme
-                  if (isBlueprintArch)
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        child: CustomPaint(
-                          painter: BlueprintGridPainter(),
-                        ),
-                      ),
-                    ),
-
-                  // Main time display with Squeeze animation
-                  AnimatedAlign(
-                    alignment:
-                        _menuOpen ? const Alignment(0, -0.5) : Alignment.center,
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOutCubic,
-                    child: RepaintBoundary(
-                      child: Builder(
-                        builder: (context) {
-                          if (timeProvider.isLoading) {
-                            return _buildLoadingIndicator(themeColors);
-                          }
-
-                          if (timeProvider.error != null) {
-                            return _buildErrorState(
-                                timeProvider.error!, themeColors);
-                          }
-
-                          final result = timeProvider.currentTimeResult;
-                          if (result == null) {
-                            return _buildLoadingIndicator(themeColors);
-                          }
-
-                          return HomeTimeDisplay(
-                            result: result,
-                            themeColors: themeColors,
-                            isSolarMode: _isSolarMode,
-                            onToggleMode: () {
-                              setState(() {
-                                _isSolarMode = !_isSolarMode;
-                              });
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-
-                  // Mode label at page bottom (moves with theme menu toggle)
-                  AnimatedPositioned(
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOutCubic,
-                    left: 0,
-                    right: 0,
-                    bottom: _menuOpen
-                        ? (MediaQuery.of(context).size.height * 0.4) + 16
-                        : 24,
-                    child: IgnorePointer(
-                      child: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 250),
-                        curve: Curves.easeInOut,
-                        opacity: _menuOpen ? 0.85 : 1.0,
-                        child: Text(
-                          _isSolarMode ? 'TRUE SOLAR' : 'OFFICIAL',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w400,
-                            color: _isSolarMode
-                              ? themeColors.textColor
-                              : themeColors.secondaryTextColor,
-                            letterSpacing: 1.2,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onLongPressStart: (_) {
+                  if (!isMonolith || _showMonolithSecondaryUi) {
+                    return;
+                  }
+                  setState(() {
+                    _showMonolithSecondaryUi = true;
+                  });
+                },
+                onLongPressEnd: (_) {
+                  if (!isMonolith || !_showMonolithSecondaryUi) {
+                    return;
+                  }
+                  setState(() {
+                    _showMonolithSecondaryUi = false;
+                  });
+                },
+                onLongPressCancel: () {
+                  if (!isMonolith || !_showMonolithSecondaryUi) {
+                    return;
+                  }
+                  setState(() {
+                    _showMonolithSecondaryUi = false;
+                  });
+                },
+                child: Stack(
+                  children: [
+                    // Full-screen grid overlay for Blueprint Architectural theme
+                    if (isBlueprintArch)
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: CustomPaint(
+                            painter: BlueprintGridPainter(),
                           ),
                         ),
                       ),
-                    ),
-                  ),
 
-                  // Theme selector button (top left)
-                  Positioned(
-                    top: 16,
-                    left: 16,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _menuOpen = !_menuOpen;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: themeColors.accentColor.withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: themeColors.accentColor, width: 1),
-                        ),
-                        child: Center(
-                          child: Icon(
-                            Icons.palette,
-                            color: themeColors.accentColor,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // GPS lock indicator (top right)
-                  Positioned(
-                    top: 16,
-                    right: 16,
-                    child:
-                        _buildGpsIndicator(timeProvider.isLoading, themeColors),
-                  ),
-
-                  // Custom animated theme menu at the bottom
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: AnimatedContainer(
+                    // Main time display with Squeeze animation
+                    AnimatedAlign(
+                      alignment: _menuOpen
+                          ? const Alignment(0, -0.5)
+                          : Alignment.center,
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.easeInOutCubic,
-                      height: _menuOpen
-                          ? MediaQuery.of(context).size.height * 0.4
-                          : 0,
-                      decoration: BoxDecoration(
-                        color: themeColors.backgroundColor,
-                        border: _menuOpen
-                            ? Border(
-                                top: BorderSide(
-                                  color: themeColors.accentColor
-                                      .withValues(alpha: 0.3),
-                                  width: 1,
-                                ),
-                              )
-                            : null,
-                      ),
-                      child: _menuOpen
-                          ? HomeThemeMenu(
-                              themeProvider: themeProvider,
+                      child: RepaintBoundary(
+                        child: Builder(
+                          builder: (context) {
+                            if (timeProvider.isLoading) {
+                              return _buildLoadingIndicator(themeColors);
+                            }
+
+                            if (timeProvider.error != null) {
+                              return _buildErrorState(
+                                  timeProvider.error!, themeColors);
+                            }
+
+                            final result = timeProvider.currentTimeResult;
+                            if (result == null) {
+                              return _buildLoadingIndicator(themeColors);
+                            }
+
+                            return HomeTimeDisplay(
+                              result: result,
                               themeColors: themeColors,
-                              onThemeSelected: () {
+                              currentTheme: themeProvider.currentTheme,
+                              isSolarMode: _isSolarMode,
+                              showSecondaryUi: showSecondaryUi,
+                              onToggleMode: () {
                                 setState(() {
-                                  _menuOpen = false;
+                                  _isSolarMode = !_isSolarMode;
                                 });
                               },
-                            )
-                          : const SizedBox.shrink(),
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+
+                    // Mode label at page bottom (moves with theme menu toggle)
+                    if (showSecondaryUi)
+                      AnimatedPositioned(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOutCubic,
+                        left: 0,
+                        right: 0,
+                        bottom: _menuOpen
+                            ? (MediaQuery.of(context).size.height * 0.4) + 16
+                            : 24,
+                        child: IgnorePointer(
+                          child: AnimatedOpacity(
+                            duration: const Duration(milliseconds: 250),
+                            curve: Curves.easeInOut,
+                            opacity: _menuOpen ? 0.85 : 1.0,
+                            child: Text(
+                              _isSolarMode ? 'TRUE SOLAR' : 'OFFICIAL',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w400,
+                                color: _isSolarMode
+                                    ? themeColors.textColor
+                                    : themeColors.secondaryTextColor,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    // Theme selector button (top left)
+                    Positioned(
+                      top: 16,
+                      left: 16,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _menuOpen = !_menuOpen;
+                          });
+                        },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color:
+                                themeColors.accentColor.withValues(alpha: 0.2),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                                color: themeColors.accentColor, width: 1),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.palette,
+                              color: themeColors.accentColor,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // GPS lock indicator (top right)
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: _buildGpsIndicator(
+                          timeProvider.isLoading, themeColors),
+                    ),
+
+                    // Custom animated theme menu at the bottom
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOutCubic,
+                        height: _menuOpen
+                            ? MediaQuery.of(context).size.height * 0.4
+                            : 0,
+                        decoration: BoxDecoration(
+                          color: isZenith
+                              ? themeColors.backgroundColor
+                                  .withValues(alpha: 0.72)
+                              : themeColors.backgroundColor,
+                          border: _menuOpen
+                              ? Border(
+                                  top: BorderSide(
+                                    color: themeColors.accentColor
+                                        .withValues(alpha: 0.3),
+                                    width: 1,
+                                  ),
+                                )
+                              : null,
+                        ),
+                        child: _menuOpen
+                            ? HomeThemeMenu(
+                                themeProvider: themeProvider,
+                                themeColors: themeColors,
+                                onThemeSelected: () {
+                                  setState(() {
+                                    _menuOpen = false;
+                                  });
+                                },
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -283,6 +323,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             return AnimatedContainer(
               duration: const Duration(milliseconds: 2000),
               color: themeColors.backgroundColor,
+              child: scaffold,
+            );
+          }
+
+          if (isZenith) {
+            return DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: ThemeDefinitions.getZenithGradient(
+                  isSolarMode: _isSolarMode,
+                ),
+              ),
               child: scaffold,
             );
           }

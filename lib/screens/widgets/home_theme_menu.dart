@@ -36,71 +36,95 @@ class HomeThemeMenu extends StatelessWidget {
               final colors = ThemeDefinitions.getTheme(theme);
               final isActive = themeProvider.currentTheme == theme;
 
-              return GestureDetector(
+              return ThemeMenuRow(
+                colors: colors,
+                isActive: isActive,
+                textColor: themeColors.textColor,
+                secondaryTextColor: themeColors.secondaryTextColor,
                 onTap: () {
                   themeProvider.setTheme(theme);
                   onThemeSelected();
                 },
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: isActive
-                          ? colors.textColor
-                          : themeColors.secondaryTextColor,
-                      width: isActive ? 2 : 1,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: colors.backgroundColor,
-                          border: Border.all(color: colors.textColor, width: 1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              colors.name,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: isActive
-                                    ? FontWeight.w500
-                                    : FontWeight.w300,
-                                color: themeColors.textColor,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            Text(
-                              colors.description,
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: themeColors.secondaryTextColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (isActive)
-                        Icon(
-                          Icons.check_circle,
-                          color: colors.textColor,
-                          size: 24,
-                        ),
-                    ],
-                  ),
-                ),
               );
             }),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ThemeMenuRow extends StatelessWidget {
+  final AppThemeColors colors;
+  final bool isActive;
+  final Color textColor;
+  final Color secondaryTextColor;
+  final VoidCallback onTap;
+
+  const ThemeMenuRow({
+    super.key,
+    required this.colors,
+    required this.isActive,
+    required this.textColor,
+    required this.secondaryTextColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isActive ? colors.textColor : secondaryTextColor,
+            width: isActive ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: colors.backgroundColor,
+                shape: BoxShape.circle,
+                border: Border.all(color: colors.textColor, width: 1),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    colors.name,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: isActive ? FontWeight.w500 : FontWeight.w300,
+                      color: textColor,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  Text(
+                    colors.description,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: secondaryTextColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isActive)
+              Icon(
+                Icons.check_circle,
+                color: colors.textColor,
+                size: 24,
+              ),
           ],
         ),
       ),
