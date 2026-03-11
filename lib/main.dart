@@ -1,21 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:true_time/models/app_theme.dart';
+import 'package:true_time/services/theme_service.dart';
 import 'screens/home_screen.dart';
 import 'providers/true_time_provider.dart';
 import 'providers/theme_provider.dart';
 
-void main() {
-  runApp(const MainApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final themeService = ThemeService();
+  await themeService.initialize();
+  final savedThemeId = themeService.getSavedThemeId();
+  final initialTheme =
+      ThemeProvider.themeFromId(savedThemeId) ?? AppThemeType.void_;
+  final hasPro = themeService.isProUnlocked();
+
+  runApp(
+    MainApp(
+      themeService: themeService,
+      initialTheme: initialTheme,
+      hasPro: hasPro,
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  final ThemeService themeService;
+  final AppThemeType initialTheme;
+  final bool hasPro;
+
+  const MainApp({
+    super.key,
+    required this.themeService,
+    required this.initialTheme,
+    required this.hasPro,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider(
+            themeService: themeService,
+            initialTheme: initialTheme,
+            initialHasPro: hasPro,
+          ),
+        ),
         ChangeNotifierProvider(create: (_) => TrueTimeProvider()),
       ],
       child: const MaterialApp(

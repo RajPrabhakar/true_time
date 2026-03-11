@@ -144,6 +144,7 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                 final colors = ThemeDefinitions.getTheme(theme);
                 final isHovered = index == _activeIndex;
                 final isPremium = _premiumThemes.contains(theme);
+                final isLocked = isPremium && !widget.themeProvider.hasPro;
                 final isSelected = widget.themeProvider.currentTheme == theme;
                 final titleColor = _highContrast(colors.backgroundColor);
 
@@ -153,7 +154,7 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                   curve: Curves.easeOut,
                   child: GestureDetector(
                     onTap: () {
-                      if (isPremium) {
+                      if (isLocked) {
                         widget.onLockedThemeTap(theme);
                         return;
                       }
@@ -197,7 +198,7 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                                   ),
                                 ),
                               ),
-                              if (isPremium)
+                              if (isLocked)
                                 Icon(
                                   Icons.lock,
                                   size: 18,

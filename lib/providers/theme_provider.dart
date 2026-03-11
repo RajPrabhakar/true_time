@@ -1,38 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:true_time/models/app_theme.dart';
+import 'package:true_time/services/theme_service.dart';
 
 /// Provider that manages the app's theme selection and persists it.
 class ThemeProvider extends ChangeNotifier {
-  static const String _themeStorageKey = 'app_theme';
+  final ThemeService _themeService;
 
-  late AppThemeType _currentTheme;
+  AppThemeType _currentTheme;
   AppThemeType? _previewTheme;
-  late SharedPreferences _prefs;
+  bool _hasPro;
   bool _isInitialized = false;
+
+  ThemeProvider({
+    required ThemeService themeService,
+    AppThemeType initialTheme = AppThemeType.void_,
+    bool initialHasPro = false,
+  })  : _themeService = themeService,
+        _currentTheme = initialTheme,
+        _hasPro = initialHasPro;
+
+  static AppThemeType? themeFromId(String? id) {
+    if (id == null) {
+      return null;
+    }
+    try {
+      return AppThemeType.values.firstWhere(
+        (theme) => theme.toString().split('.').last == id,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
 
   AppThemeType get currentTheme => _currentTheme;
   AppThemeType get activeTheme => _previewTheme ?? _currentTheme;
   bool get isPreviewingTheme => _previewTheme != null;
+  bool get hasPro => _hasPro;
   bool get isInitialized => _isInitialized;
 
   /// Initialize the theme provider by loading saved preference
   Future<void> initialize() async {
-    _prefs = await SharedPreferences.getInstance();
+    await _themeService.initialize();
 
-    final savedThemeName = _prefs.getString(_themeStorageKey);
-    if (savedThemeName != null) {
-      try {
-        _currentTheme = AppThemeType.values.firstWhere(
-          (theme) => theme.toString() == 'AppThemeType.$savedThemeName',
-        );
-      } catch (_) {
-        // Fallback to default if saved theme is invalid
-        _currentTheme = AppThemeType.void_;
-      }
-    } else {
-      _currentTheme = AppThemeType.void_;
-    }
+    final savedTheme = themeFromId(_themeService.getSavedThemeId());
+    _currentTheme = savedTheme ?? _currentTheme;
+    _hasPro = _themeService.isProUnlocked();
 
     _isInitialized = true;
     notifyListeners();
@@ -42,8 +54,14 @@ class ThemeProvider extends ChangeNotifier {
   Future<void> setTheme(AppThemeType theme) async {
     _currentTheme = theme;
     _previewTheme = null;
-    final themeName = theme.toString().split('.').last;
-    await _prefs.setString(_themeStorageKey, themeName);
+    final themeId = theme.toString().split('.').last;
+    await _themeService.saveThemeId(themeId);
+    notifyListeners();
+  }
+
+  Future<void> setProUnlocked(bool value) async {
+    _hasPro = value;
+    await _themeService.setProUnlocked(value);
     notifyListeners();
   }
 
