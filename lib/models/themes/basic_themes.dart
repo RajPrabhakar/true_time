@@ -38,13 +38,4 @@ const Map<AppThemeType, AppThemeColors> basicThemes = {
     secondaryTextColor: Color(0xFF9A2A23),
     accentColor: Color(0xFFFF6B63),
   ),
-  AppThemeType.monolith: AppThemeColors(
-    name: 'Monolith',
-    description: 'Ultra-Minimal: Essential Information Only',
-    category: ThemeCategory.basic,
-    backgroundColor: Color(0xFF050505),
-    textColor: Color(0xFFF2F2F2),
-    secondaryTextColor: Color(0xFF606060),
-    accentColor: Color(0xFFBFBFBF),
-  ),
 };

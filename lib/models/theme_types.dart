@@ -14,7 +14,6 @@ enum AppThemeType {
   cartographer, // Cartographer: parchment and warm brown tones
   zenith, // Zenith: dynamic indigo gradient field
   retroFlip, // Retro Flip: split-flap clock panels
-  monolith, // Monolith: ultra-minimal monochrome
 }
 
 enum ThemeCategory {

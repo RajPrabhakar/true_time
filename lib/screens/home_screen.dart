@@ -24,7 +24,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool _initialized = false;
   bool _menuOpen = false;
   bool _isSolarMode = true;
-  bool _showMonolithSecondaryUi = false;
 
   @override
   void initState() {
@@ -105,8 +104,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             final isBlueprintArch =
                 activeTheme == AppThemeType.blueprintArchitectural;
             final isZenith = activeTheme == AppThemeType.zenith;
-            final isMonolith = activeTheme == AppThemeType.monolith;
-            final showSecondaryUi = !isMonolith || _showMonolithSecondaryUi;
+            const showSecondaryUi = true;
             final storeHeight = _menuOpen
               ? MediaQuery.of(context).size.height * 0.35
               : 0.0;
@@ -117,30 +115,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   : themeColors.backgroundColor,
               body: GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onLongPressStart: (_) {
-                  if (!isMonolith || _showMonolithSecondaryUi) {
-                    return;
-                  }
-                  setState(() {
-                    _showMonolithSecondaryUi = true;
-                  });
-                },
-                onLongPressEnd: (_) {
-                  if (!isMonolith || !_showMonolithSecondaryUi) {
-                    return;
-                  }
-                  setState(() {
-                    _showMonolithSecondaryUi = false;
-                  });
-                },
-                onLongPressCancel: () {
-                  if (!isMonolith || !_showMonolithSecondaryUi) {
-                    return;
-                  }
-                  setState(() {
-                    _showMonolithSecondaryUi = false;
-                  });
-                },
                 child: Stack(
                   children: [
                     Column(
