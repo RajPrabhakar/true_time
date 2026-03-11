@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +25,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool _menuOpen = false;
   bool _isSolarMode = true;
   bool _showMonolithSecondaryUi = false;
-  AppThemeType? _lockedThemePrompt;
 
   @override
   void initState() {
@@ -279,18 +276,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                     });
                                   },
                                   onLockedThemeTap: (theme) {
-                                    HapticFeedback.vibrate();
-                                    setState(() {
-                                      _lockedThemePrompt = theme;
-                                    });
+                                    _showUpgradeToProSheet(
+                                      context,
+                                      lockedTheme: theme,
+                                      themeColors: themeColors,
+                                    );
                                   },
                                 )
                               : const SizedBox.shrink(),
                         ),
                       ],
                     ),
-                    if (_lockedThemePrompt != null)
-                      _buildPremiumUnlockOverlay(themeColors),
                   ],
                 ),
               ),
@@ -322,121 +318,108 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildPremiumUnlockOverlay(AppThemeColors themeColors) {
-    return Positioned.fill(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          setState(() {
-            _lockedThemePrompt = null;
-          });
-        },
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+  Future<void> _showUpgradeToProSheet(
+    BuildContext context, {
+    required AppThemeType lockedTheme,
+    required AppThemeColors themeColors,
+  }) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return SafeArea(
+          top: false,
           child: Container(
-            color: Colors.black.withValues(alpha: 0.42),
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: GestureDetector(
-              onTap: () {},
-              child: Container(
-                width: 360,
-                constraints: const BoxConstraints(maxWidth: 420),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: themeColors.backgroundColor.withValues(alpha: 0.94),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: themeColors.accentColor.withValues(alpha: 0.55),
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+            decoration: BoxDecoration(
+              color: themeColors.backgroundColor.withValues(alpha: 0.96),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              border: Border.all(
+                color: themeColors.accentColor.withValues(alpha: 0.55),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Unlock the ${ThemeDefinitions.getTheme(_lockedThemePrompt!).name} collection',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: themeColors.textColor,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _lockedThemePrompt = null;
-                            });
-                          },
-                          icon: Icon(
-                            Icons.close,
-                            color: themeColors.secondaryTextColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    SizedBox(
-                      height: 50,
-                      child: FilledButton(
-                        onPressed: () {},
-                        style: FilledButton.styleFrom(
-                          backgroundColor: themeColors.textColor,
-                          foregroundColor: themeColors.backgroundColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Upgrade to Pro - ₹99',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                            letterSpacing: 0.3,
-                          ),
+                    Expanded(
+                      child: Text(
+                        'Unlock ${ThemeDefinitions.getTheme(lockedTheme).name}',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: themeColors.textColor,
+                          letterSpacing: 0.3,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 14),
-                    Text(
-                      '• Unlock all 6 professional themes',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: themeColors.textColor,
-                        height: 1.3,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '• Remove the 30-second preview limit',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: themeColors.textColor,
-                        height: 1.3,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '• Support independent solar engineering.',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: themeColors.textColor,
-                        height: 1.3,
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: Icon(
+                        Icons.close,
+                        color: themeColors.secondaryTextColor,
                       ),
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 48,
+                  child: FilledButton(
+                    onPressed: () {},
+                    style: FilledButton.styleFrom(
+                      backgroundColor: themeColors.textColor,
+                      foregroundColor: themeColors.backgroundColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Upgrade to Pro - ₹99',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  '• Unlock Premium, Dynamic, and Skin themes',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: themeColors.textColor,
+                    height: 1.3,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '• Remove the 30-second preview limit',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: themeColors.textColor,
+                    height: 1.3,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '• Support independent solar engineering.',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: themeColors.textColor,
+                    height: 1.3,
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
