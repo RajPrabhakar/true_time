@@ -44,6 +44,9 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
     ..._orderedCategories,
   ];
 
+  static int _persistedPageIndex = 0;
+  static ThemeCategory? _persistedSelectedFilter;
+
   late final PageController _pageController;
   ThemeCategory? _selectedFilter;
   int _lastPreviewIndex = -1;
@@ -51,11 +54,22 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.72);
+    _selectedFilter = _persistedSelectedFilter;
+    _pageController = PageController(
+      viewportFraction: 0.72,
+      initialPage: _persistedPageIndex,
+    );
   }
 
   @override
   void dispose() {
+    if (_pageController.hasClients) {
+      _persistedPageIndex =
+          (_pageController.page ?? _pageController.initialPage.toDouble())
+              .round();
+    } else {
+      _persistedPageIndex = _pageController.initialPage;
+    }
     _pageController.dispose();
     super.dispose();
   }
@@ -104,10 +118,9 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
     }
 
     _lastPreviewIndex = index;
+    _persistedPageIndex = index;
     final theme = themes[index];
-    if (!_isLockedTheme(theme)) {
-      widget.onThemePreview(theme);
-    }
+    widget.onThemePreview(theme);
   }
 
   @override
@@ -139,7 +152,9 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                 onSelectFilter: (filter) {
                   setState(() {
                     _selectedFilter = filter;
+                    _persistedSelectedFilter = filter;
                     _lastPreviewIndex = -1;
+                    _persistedPageIndex = 0;
                   });
 
                   if (_pageController.hasClients) {
@@ -147,7 +162,7 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                   }
 
                   final first = _filteredThemes();
-                  if (first.isNotEmpty && !_isLockedTheme(first.first)) {
+                  if (first.isNotEmpty) {
                     widget.onThemePreview(first.first);
                   }
                 },
