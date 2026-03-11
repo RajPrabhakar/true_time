@@ -38,6 +38,7 @@ class HomeTimeDisplay extends StatelessWidget {
     final isHorological = currentTheme == AppThemeType.horologicalInstrument;
     final isObserver = currentTheme == AppThemeType.observer;
     final isRetroFlip = currentTheme == AppThemeType.retroFlip;
+    final letterSpacingValue = isObserver ? 4.0 : 2.0;
     final displayedTimeColor =
         isSolarMode ? themeColors.textColor : themeColors.secondaryTextColor;
 
@@ -66,22 +67,28 @@ class HomeTimeDisplay extends StatelessWidget {
                         displayedTime: displayedTime,
                         isSolarMode: isSolarMode,
                       )
-                    : Text(
-                        key: ValueKey(
-                          isSolarMode ? 'solar-mode' : 'political-mode',
-                        ),
-                        timeString,
-                        style: TextStyle(
-                          fontSize: 120,
-                          fontWeight:
-                              isObserver ? FontWeight.w500 : FontWeight.w300,
-                          color: displayedTimeColor,
-                          fontFamily: isObserver ? 'monospace' : 'Courier',
-                          letterSpacing: isObserver ? 4.0 : 2.0,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                          shadows: isHorological
-                              ? ThemeDefinitions.getHorologicalGlow()
-                              : null,
+                    : Padding(
+                        padding: EdgeInsets.only(left: letterSpacingValue),
+                        child: Text(
+                          key: ValueKey(
+                            isSolarMode ? 'solar-mode' : 'political-mode',
+                          ),
+                          timeString,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 120,
+                            fontWeight:
+                                isObserver ? FontWeight.w500 : FontWeight.w300,
+                            color: displayedTimeColor,
+                            fontFamily: isObserver ? 'monospace' : 'Courier',
+                            letterSpacing: letterSpacingValue,
+                            height: 1.0,
+                            leadingDistribution: TextLeadingDistribution.even,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                            shadows: isHorological
+                                ? ThemeDefinitions.getHorologicalGlow()
+                                : null,
+                          ),
                         ),
                       ),
               ),

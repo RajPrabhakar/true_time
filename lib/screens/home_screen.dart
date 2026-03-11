@@ -151,54 +151,60 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           ),
                         ),
 
-                      AnimatedPositioned(
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.easeInOutCubic,
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: _menuOpen
-                            ? MediaQuery.of(context).size.height * 0.4
-                            : MediaQuery.of(context).size.height,
-                        child: AnimatedAlign(
-                          alignment:
-                              _menuOpen ? const Alignment(0, 0.12) : Alignment.center,
-                          duration: const Duration(milliseconds: 400),
-                          curve: Curves.easeInOutCubic,
-                          child: RepaintBoundary(
-                            child: Builder(
-                              builder: (context) {
-                                if (timeProvider.isLoading) {
-                                  return _buildLoadingIndicator(themeColors);
-                                }
+                      Positioned.fill(
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final targetHeight = _menuOpen
+                                ? constraints.maxHeight * 0.4
+                                : constraints.maxHeight;
 
-                                if (timeProvider.error != null) {
-                                  return _buildErrorState(
-                                    timeProvider.error!,
-                                    themeColors,
-                                  );
-                                }
+                            return AnimatedAlign(
+                              alignment: _menuOpen
+                                  ? const Alignment(0, 0.12)
+                                  : Alignment.center,
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.easeInOutCubic,
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: targetHeight,
+                                child: RepaintBoundary(
+                                  child: Builder(
+                                    builder: (context) {
+                                      if (timeProvider.isLoading) {
+                                        return _buildLoadingIndicator(themeColors);
+                                      }
 
-                                final result = timeProvider.currentTimeResult;
-                                if (result == null) {
-                                  return _buildLoadingIndicator(themeColors);
-                                }
+                                      if (timeProvider.error != null) {
+                                        return _buildErrorState(
+                                          timeProvider.error!,
+                                          themeColors,
+                                        );
+                                      }
 
-                                return HomeTimeDisplay(
-                                  result: result,
-                                  themeColors: themeColors,
-                                  currentTheme: activeTheme,
-                                  isSolarMode: _isSolarMode,
-                                  showSecondaryUi: showSecondaryUi,
-                                  onToggleMode: () {
-                                    setState(() {
-                                      _isSolarMode = !_isSolarMode;
-                                    });
-                                  },
-                                );
-                              },
-                            ),
-                          ),
+                                      final result =
+                                          timeProvider.currentTimeResult;
+                                      if (result == null) {
+                                        return _buildLoadingIndicator(themeColors);
+                                      }
+
+                                      return HomeTimeDisplay(
+                                        result: result,
+                                        themeColors: themeColors,
+                                        currentTheme: activeTheme,
+                                        isSolarMode: _isSolarMode,
+                                        showSecondaryUi: showSecondaryUi,
+                                        onToggleMode: () {
+                                          setState(() {
+                                            _isSolarMode = !_isSolarMode;
+                                          });
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
 
