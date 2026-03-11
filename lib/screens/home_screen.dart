@@ -110,13 +110,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           _updateSystemChromeStyle(themeColors.backgroundColor);
 
           // For Solar Dynamic theme, animate background color
-          final isSolarDynamic =
-              themeProvider.currentTheme == AppThemeType.solarDynamic;
-          final isBlueprintArch =
-              themeProvider.currentTheme == AppThemeType.blueprintArchitectural;
-          final isZenith = themeProvider.currentTheme == AppThemeType.zenith;
-          final isMonolith =
-              themeProvider.currentTheme == AppThemeType.monolith;
+            final activeTheme = themeProvider.activeTheme;
+            final isSolarDynamic = activeTheme == AppThemeType.solarDynamic;
+            final isBlueprintArch =
+              activeTheme == AppThemeType.blueprintArchitectural;
+            final isZenith = activeTheme == AppThemeType.zenith;
+            final isMonolith = activeTheme == AppThemeType.monolith;
           final showSecondaryUi = !isMonolith || _showMonolithSecondaryUi;
 
           final scaffold = Scaffold(
@@ -162,11 +161,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                       ),
 
-                    // Main time display with Squeeze animation
-                    AnimatedAlign(
-                      alignment: _menuOpen
-                          ? const Alignment(0, -0.5)
-                          : Alignment.center,
+                    // Main time display squeezed into top 40% when carousel is active.
+                    AnimatedPositioned(
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOutCubic,
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: _menuOpen
+                          ? MediaQuery.of(context).size.height * 0.4
+                          : MediaQuery.of(context).size.height,
+                      child: AnimatedAlign(
+                        alignment: _menuOpen
+                            ? const Alignment(0, 0.12)
+                            : Alignment.center,
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.easeInOutCubic,
                       child: RepaintBoundary(
@@ -189,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             return HomeTimeDisplay(
                               result: result,
                               themeColors: themeColors,
-                              currentTheme: themeProvider.currentTheme,
+                              currentTheme: activeTheme,
                               isSolarMode: _isSolarMode,
                               showSecondaryUi: showSecondaryUi,
                               onToggleMode: () {
@@ -201,6 +209,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           },
                         ),
                       ),
+                    ),
                     ),
 
                     // Mode label at page bottom (moves with theme menu toggle)
@@ -241,6 +250,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       child: GestureDetector(
                         onTap: () {
                           setState(() {
+                            if (_menuOpen) {
+                              themeProvider.clearThemePreview();
+                            }
                             _menuOpen = !_menuOpen;
                           });
                         },
@@ -303,7 +315,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             ? HomeThemeMenu(
                                 themeProvider: themeProvider,
                                 themeColors: themeColors,
-                                onThemeSelected: () {
+                                onThemePreview: (theme) {
+                                  themeProvider.previewTheme(theme);
+                                },
+                                onThemeSelected: (theme) async {
+                                  await themeProvider.setTheme(theme);
                                   setState(() {
                                     _menuOpen = false;
                                   });
