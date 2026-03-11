@@ -208,9 +208,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           curve: Curves.easeInOutCubic,
                           left: 0,
                           right: 0,
-                          bottom: _menuOpen
-                              ? (MediaQuery.of(context).size.height * 0.4) + 16
-                              : 24,
+                          top: _menuOpen ? 16 : 24,
                           child: IgnorePointer(
                             child: AnimatedOpacity(
                               duration: const Duration(milliseconds: 250),
@@ -232,44 +230,42 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           ),
                         ),
 
-                      Positioned(
-                        top: 16,
-                        left: 16,
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (_menuOpen) {
-                                themeProvider.clearThemePreview();
-                              }
-                              _menuOpen = !_menuOpen;
-                            });
-                          },
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: themeColors.accentColor.withValues(alpha: 0.2),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: themeColors.accentColor,
-                                width: 1,
-                              ),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                Icons.palette,
-                                color: themeColors.accentColor,
-                                size: 20,
+                      AnimatedPositioned(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOutCubic,
+                        left: 0,
+                        right: 0,
+                        bottom: _menuOpen
+                            ? (MediaQuery.of(context).size.height * 0.4) + 12
+                            : 12,
+                        child: Center(
+                          child: AnimatedScale(
+                            duration: const Duration(milliseconds: 220),
+                            curve: Curves.easeOut,
+                            scale: _menuOpen ? 1.05 : 1.0,
+                            child: AnimatedRotation(
+                              duration: const Duration(milliseconds: 260),
+                              curve: Curves.easeOutCubic,
+                              turns: _menuOpen ? 0.03 : 0.0,
+                              child: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    if (_menuOpen) {
+                                      themeProvider.clearThemePreview();
+                                    }
+                                    _menuOpen = !_menuOpen;
+                                  });
+                                },
+                                icon: Icon(
+                                  Icons.palette_outlined,
+                                  color: themeColors.accentColor,
+                                  size: 22,
+                                ),
+                                tooltip: 'Theme Gallery',
                               ),
                             ),
                           ),
                         ),
-                      ),
-
-                      Positioned(
-                        top: 16,
-                        right: 16,
-                        child: _buildGpsIndicator(timeProvider.isLoading, themeColors),
                       ),
 
                       Positioned(
@@ -522,10 +518,4 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildGpsIndicator(bool isLoading, AppThemeColors themeColors) {
-    if (isLoading) {
-      return PulsingCircle(accentColor: themeColors.accentColor);
-    }
-    return GpsLockCircle(accentColor: themeColors.accentColor);
-  }
 }
