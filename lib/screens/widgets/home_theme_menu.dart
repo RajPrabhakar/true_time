@@ -133,20 +133,12 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxHeight < 300;
-        final horizontalPadding = compact ? 12.0 : 16.0;
-        final topInset = compact ? 8.0 : 12.0;
-
-        return Padding(
-          padding: EdgeInsets.fromLTRB(
-            horizontalPadding,
-            topInset,
-            horizontalPadding,
-            compact ? 8.0 : 12.0,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 12.0),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -189,8 +181,10 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                   ),
                 ],
               ),
-              SizedBox(height: compact ? 10 : 12),
-              SizedBox(
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
+              child: SizedBox(
                 height: 34,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
@@ -249,23 +243,27 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                   },
                 ),
               ),
-              SizedBox(height: compact ? 10 : 14),
-              Expanded(
-                child: galleryThemes.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No themes in this filter.',
-                          style: TextStyle(
-                            color: widget.themeColors.secondaryTextColor,
-                            letterSpacing: 1.0,
-                          ),
+            ),
+            Expanded(
+              child: galleryThemes.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No themes in this filter.',
+                        style: TextStyle(
+                          color: widget.themeColors.secondaryTextColor,
+                          letterSpacing: 1.0,
                         ),
-                      )
-                    : NotificationListener<ScrollNotification>(
-                        onNotification: (_) {
-                          _syncPreviewFromPage(galleryThemes);
-                          return false;
-                        },
+                      ),
+                    )
+                  : NotificationListener<ScrollNotification>(
+                      onNotification: (_) {
+                        _syncPreviewFromPage(galleryThemes);
+                        return false;
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.paddingOf(context).bottom,
+                        ),
                         child: PageView.builder(
                           controller: _pageController,
                           itemCount: galleryThemes.length,
@@ -424,9 +422,9 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                           },
                         ),
                       ),
-              ),
-            ],
-          ),
+                    ),
+            ),
+          ],
         );
       },
     );
