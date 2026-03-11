@@ -108,185 +108,146 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             final isZenith = activeTheme == AppThemeType.zenith;
             final isMonolith = activeTheme == AppThemeType.monolith;
             final showSecondaryUi = !isMonolith || _showMonolithSecondaryUi;
+            final storeHeight = _menuOpen
+              ? MediaQuery.of(context).size.height * 0.35
+              : 0.0;
 
             final scaffold = Scaffold(
               backgroundColor: (isSolarDynamic || isZenith)
                   ? Colors.transparent
                   : themeColors.backgroundColor,
-              body: SafeArea(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onLongPressStart: (_) {
-                    if (!isMonolith || _showMonolithSecondaryUi) {
-                      return;
-                    }
-                    setState(() {
-                      _showMonolithSecondaryUi = true;
-                    });
-                  },
-                  onLongPressEnd: (_) {
-                    if (!isMonolith || !_showMonolithSecondaryUi) {
-                      return;
-                    }
-                    setState(() {
-                      _showMonolithSecondaryUi = false;
-                    });
-                  },
-                  onLongPressCancel: () {
-                    if (!isMonolith || !_showMonolithSecondaryUi) {
-                      return;
-                    }
-                    setState(() {
-                      _showMonolithSecondaryUi = false;
-                    });
-                  },
-                  child: Stack(
-                    children: [
-                      if (isBlueprintArch)
-                        Positioned.fill(
-                          child: IgnorePointer(
-                            child: CustomPaint(
-                              painter: BlueprintGridPainter(),
-                            ),
-                          ),
-                        ),
-
-                      Positioned.fill(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final targetHeight = _menuOpen
-                                ? constraints.maxHeight * 0.4
-                                : constraints.maxHeight;
-
-                            return AnimatedAlign(
-                              alignment: _menuOpen
-                                  ? const Alignment(0, 0.12)
-                                  : Alignment.center,
-                              duration: const Duration(milliseconds: 400),
-                              curve: Curves.easeInOutCubic,
-                              child: SizedBox(
-                                width: double.infinity,
-                                height: targetHeight,
-                                child: RepaintBoundary(
-                                  child: Builder(
-                                    builder: (context) {
-                                      if (timeProvider.isLoading) {
-                                        return _buildLoadingIndicator(themeColors);
-                                      }
-
-                                      if (timeProvider.error != null) {
-                                        return _buildErrorState(
-                                          timeProvider.error!,
-                                          themeColors,
-                                        );
-                                      }
-
-                                      final result =
-                                          timeProvider.currentTimeResult;
-                                      if (result == null) {
-                                        return _buildLoadingIndicator(themeColors);
-                                      }
-
-                                      return HomeTimeDisplay(
-                                        result: result,
-                                        themeColors: themeColors,
-                                        currentTheme: activeTheme,
-                                        isSolarMode: _isSolarMode,
-                                        showSecondaryUi: showSecondaryUi,
-                                        onToggleMode: () {
-                                          setState(() {
-                                            _isSolarMode = !_isSolarMode;
-                                          });
-                                        },
-                                      );
-                                    },
+              body: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onLongPressStart: (_) {
+                  if (!isMonolith || _showMonolithSecondaryUi) {
+                    return;
+                  }
+                  setState(() {
+                    _showMonolithSecondaryUi = true;
+                  });
+                },
+                onLongPressEnd: (_) {
+                  if (!isMonolith || !_showMonolithSecondaryUi) {
+                    return;
+                  }
+                  setState(() {
+                    _showMonolithSecondaryUi = false;
+                  });
+                },
+                onLongPressCancel: () {
+                  if (!isMonolith || !_showMonolithSecondaryUi) {
+                    return;
+                  }
+                  setState(() {
+                    _showMonolithSecondaryUi = false;
+                  });
+                },
+                child: Stack(
+                  children: [
+                    Column(
+                      children: [
+                        Expanded(
+                          child: SafeArea(
+                            child: Stack(
+                              children: [
+                                if (isBlueprintArch)
+                                  Positioned.fill(
+                                    child: IgnorePointer(
+                                      child: CustomPaint(
+                                        painter: BlueprintGridPainter(),
+                                      ),
+                                    ),
+                                  ),
+                                Center(
+                                  child: RepaintBoundary(
+                                    child: _buildTimeDisplay(
+                                      timeProvider: timeProvider,
+                                      themeColors: themeColors,
+                                      activeTheme: activeTheme,
+                                      showSecondaryUi: showSecondaryUi,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-
-                      if (showSecondaryUi)
-                        AnimatedPositioned(
-                          duration: const Duration(milliseconds: 400),
-                          curve: Curves.easeInOutCubic,
-                          left: 0,
-                          right: 0,
-                          top: _menuOpen ? 16 : 24,
-                          child: IgnorePointer(
-                            child: AnimatedOpacity(
-                              duration: const Duration(milliseconds: 250),
-                              curve: Curves.easeInOut,
-                              opacity: _menuOpen ? 0.85 : 1.0,
-                              child: Text(
-                                _isSolarMode ? 'TRUE SOLAR' : 'OFFICIAL',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w400,
-                                  color: _isSolarMode
-                                      ? themeColors.textColor
-                                      : themeColors.secondaryTextColor,
-                                  letterSpacing: 1.2,
+                                if (showSecondaryUi)
+                                  AnimatedPositioned(
+                                    duration: const Duration(milliseconds: 280),
+                                    curve: Curves.easeInOut,
+                                    left: 0,
+                                    right: 0,
+                                    top: _menuOpen ? 16 : 24,
+                                    child: IgnorePointer(
+                                      child: AnimatedOpacity(
+                                        duration:
+                                            const Duration(milliseconds: 250),
+                                        curve: Curves.easeInOut,
+                                        opacity: _menuOpen ? 0.85 : 1.0,
+                                        child: Text(
+                                          _isSolarMode
+                                              ? 'TRUE SOLAR'
+                                              : 'OFFICIAL',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w400,
+                                            color: _isSolarMode
+                                                ? themeColors.textColor
+                                                : themeColors
+                                                    .secondaryTextColor,
+                                            letterSpacing: 1.2,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                Positioned(
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 12,
+                                  child: Center(
+                                    child: AnimatedScale(
+                                      duration:
+                                          const Duration(milliseconds: 220),
+                                      curve: Curves.easeOut,
+                                      scale: _menuOpen ? 1.05 : 1.0,
+                                      child: AnimatedRotation(
+                                        duration:
+                                            const Duration(milliseconds: 260),
+                                        curve: Curves.easeOutCubic,
+                                        turns: _menuOpen ? 0.03 : 0.0,
+                                        child: IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              if (_menuOpen) {
+                                                themeProvider
+                                                    .clearThemePreview();
+                                              }
+                                              _menuOpen = !_menuOpen;
+                                            });
+                                          },
+                                          icon: Icon(
+                                            Icons.palette_outlined,
+                                            color: themeColors.accentColor,
+                                            size: 22,
+                                          ),
+                                          tooltip: 'Theme Gallery',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                         ),
-
-                      AnimatedPositioned(
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.easeInOutCubic,
-                        left: 0,
-                        right: 0,
-                        bottom: _menuOpen
-                            ? (MediaQuery.of(context).size.height * 0.4) + 12
-                            : 12,
-                        child: Center(
-                          child: AnimatedScale(
-                            duration: const Duration(milliseconds: 220),
-                            curve: Curves.easeOut,
-                            scale: _menuOpen ? 1.05 : 1.0,
-                            child: AnimatedRotation(
-                              duration: const Duration(milliseconds: 260),
-                              curve: Curves.easeOutCubic,
-                              turns: _menuOpen ? 0.03 : 0.0,
-                              child: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    if (_menuOpen) {
-                                      themeProvider.clearThemePreview();
-                                    }
-                                    _menuOpen = !_menuOpen;
-                                  });
-                                },
-                                icon: Icon(
-                                  Icons.palette_outlined,
-                                  color: themeColors.accentColor,
-                                  size: 22,
-                                ),
-                                tooltip: 'Theme Gallery',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 400),
-                          curve: Curves.easeInOutCubic,
-                          height: _menuOpen
-                              ? MediaQuery.of(context).size.height * 0.4
-                              : 0,
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 420),
+                          curve: Curves.fastOutSlowIn,
+                          height: storeHeight,
+                          clipBehavior: Clip.hardEdge,
                           decoration: BoxDecoration(
                             color: isZenith
-                                ? themeColors.backgroundColor.withValues(alpha: 0.72)
+                                ? themeColors.backgroundColor
+                                    .withValues(alpha: 0.72)
                                 : themeColors.backgroundColor,
                             border: _menuOpen
                                 ? Border(
@@ -320,12 +281,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 )
                               : const SizedBox.shrink(),
                         ),
-                      ),
-
-                      if (_lockedThemePrompt != null)
-                        _buildPremiumUnlockOverlay(themeColors),
-                    ],
-                  ),
+                      ],
+                    ),
+                    if (_lockedThemePrompt != null)
+                      _buildPremiumUnlockOverlay(themeColors),
+                  ],
                 ),
               ),
             );
@@ -471,6 +431,39 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTimeDisplay({
+    required TrueTimeProvider timeProvider,
+    required AppThemeColors themeColors,
+    required AppThemeType activeTheme,
+    required bool showSecondaryUi,
+  }) {
+    if (timeProvider.isLoading) {
+      return _buildLoadingIndicator(themeColors);
+    }
+
+    if (timeProvider.error != null) {
+      return _buildErrorState(timeProvider.error!, themeColors);
+    }
+
+    final result = timeProvider.currentTimeResult;
+    if (result == null) {
+      return _buildLoadingIndicator(themeColors);
+    }
+
+    return HomeTimeDisplay(
+      result: result,
+      themeColors: themeColors,
+      currentTheme: activeTheme,
+      isSolarMode: _isSolarMode,
+      showSecondaryUi: showSecondaryUi,
+      onToggleMode: () {
+        setState(() {
+          _isSolarMode = !_isSolarMode;
+        });
+      },
     );
   }
 
