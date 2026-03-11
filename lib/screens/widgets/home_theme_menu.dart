@@ -7,6 +7,7 @@ class HomeThemeMenu extends StatefulWidget {
   final AppThemeColors themeColors;
   final ValueChanged<AppThemeType> onThemePreview;
   final ValueChanged<AppThemeType> onThemeSelected;
+  final ValueChanged<AppThemeType> onLockedThemeTap;
 
   const HomeThemeMenu({
     super.key,
@@ -14,6 +15,7 @@ class HomeThemeMenu extends StatefulWidget {
     required this.themeColors,
     required this.onThemePreview,
     required this.onThemeSelected,
+    required this.onLockedThemeTap,
   });
 
   @override
@@ -152,12 +154,7 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                   child: GestureDetector(
                     onTap: () {
                       if (isPremium) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Premium theme. Unlock coming soon.'),
-                            duration: Duration(milliseconds: 1200),
-                          ),
-                        );
+                        widget.onLockedThemeTap(theme);
                         return;
                       }
                       widget.onThemeSelected(theme);
