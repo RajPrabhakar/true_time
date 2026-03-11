@@ -1,4 +1,4 @@
-package com.example.true_time
+package com.stellorah.truetime
 
 import io.flutter.embedding.android.FlutterActivity
 
