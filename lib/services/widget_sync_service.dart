@@ -7,12 +7,17 @@ class WidgetSyncService {
   static const String _appGroupId = 'group.com.stellorah.truetime';
   static const String _bgHexKey = 'bgHex';
   static const String _textHexKey = 'textHex';
+  static const String _androidWidgetName = 'TrueTimeWidgetProvider';
+  static const String _iosWidgetKind = 'TrueTimeWidget';
 
   Future<void> updateWidgetTheme(String bgHex, String textHex) async {
     await HomeWidget.setAppGroupId(_appGroupId);
     await HomeWidget.saveWidgetData<String>(_bgHexKey, bgHex);
     await HomeWidget.saveWidgetData<String>(_textHexKey, textHex);
-    await HomeWidget.updateWidget(name: 'TrueTimeWidget');
+    await HomeWidget.updateWidget(
+      name: _androidWidgetName,
+      iOSName: _iosWidgetKind,
+    );
   }
 
   String colorToHex(Color color) {
