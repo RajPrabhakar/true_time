@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:true_time/models/app_theme.dart';
-import 'package:true_time/screens/utils/delta_formatter.dart';
+// import 'package:true_time/screens/utils/delta_formatter.dart';
 import 'package:true_time/screens/widgets/retro_flip_clock.dart';
 
 class HomeTimeDisplay extends StatelessWidget {
@@ -26,14 +26,14 @@ class HomeTimeDisplay extends StatelessWidget {
     final localTime = result.localMeanTime as DateTime;
     final politicalTime = DateTime.now();
     final displayedTime = isSolarMode ? localTime : politicalTime;
-    final Duration utcDelta = result.utcDelta;
-    final Duration tzDelta = result.tzDelta;
+    // final Duration utcDelta = result.utcDelta;
+    // final Duration tzDelta = result.tzDelta;
 
     final timeString =
         '${displayedTime.hour.toString().padLeft(2, '0')}:${displayedTime.minute.toString().padLeft(2, '0')}:${displayedTime.second.toString().padLeft(2, '0')}';
 
-    final utcDeltaString = formatDelta(utcDelta, timeZoneLabel: 'UTC');
-    final tzDeltaString = formatDelta(tzDelta);
+    // final utcDeltaString = formatDelta(utcDelta, timeZoneLabel: 'UTC');
+    // final tzDeltaString = formatDelta(tzDelta);
 
     final isHorological = currentTheme == AppThemeType.horologicalInstrument;
     final isObserver = currentTheme == AppThemeType.observer;
@@ -88,28 +88,28 @@ class HomeTimeDisplay extends StatelessWidget {
             ),
           ),
         ),
-        if (showSecondaryUi) ...[
-          const SizedBox(height: 32),
-          Text(
-            'UTC Delta: $utcDeltaString',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w300,
-              color: themeColors.secondaryTextColor,
-              letterSpacing: 1.2,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'TZ Delta: $tzDeltaString',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w300,
-              color: themeColors.secondaryTextColor,
-              letterSpacing: 1.2,
-            ),
-          ),
-        ],
+        // if (showSecondaryUi) ...[
+        //   const SizedBox(height: 32),
+        //   Text(
+        //     'UTC Delta: $utcDeltaString',
+        //     style: TextStyle(
+        //       fontSize: 14,
+        //       fontWeight: FontWeight.w300,
+        //       color: themeColors.secondaryTextColor,
+        //       letterSpacing: 1.2,
+        //     ),
+        //   ),
+        //   const SizedBox(height: 8),
+        //   Text(
+        //     'TZ Delta: $tzDeltaString',
+        //     style: TextStyle(
+        //       fontSize: 14,
+        //       fontWeight: FontWeight.w300,
+        //       color: themeColors.secondaryTextColor,
+        //       letterSpacing: 1.2,
+        //     ),
+        //   ),
+        // ],
       ],
     );
   }
