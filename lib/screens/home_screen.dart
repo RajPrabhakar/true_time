@@ -5,6 +5,8 @@ import 'package:true_time/models/app_theme.dart';
 import 'package:true_time/providers/theme_provider.dart';
 import 'package:true_time/providers/true_time_provider.dart';
 import 'package:true_time/screens/widgets/home_support_widgets.dart';
+import 'package:true_time/screens/widgets/home_screen_parts/home_status_panels.dart';
+import 'package:true_time/screens/widgets/home_screen_parts/home_theme_upgrade_sheet.dart';
 import 'package:true_time/screens/widgets/home_theme_menu.dart';
 import 'package:true_time/screens/widgets/home_time_display.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -250,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                     });
                                   },
                                   onLockedThemeTap: (theme) {
-                                    _showUpgradeToProSheet(
+                                    showUpgradeToProSheet(
                                       context,
                                       lockedTheme: theme,
                                       themeColors: themeColors,
@@ -292,111 +294,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  Future<void> _showUpgradeToProSheet(
-    BuildContext context, {
-    required AppThemeType lockedTheme,
-    required AppThemeColors themeColors,
-  }) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return SafeArea(
-          top: false,
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-            decoration: BoxDecoration(
-              color: themeColors.backgroundColor.withValues(alpha: 0.96),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-              border: Border.all(
-                color: themeColors.accentColor.withValues(alpha: 0.55),
-                width: 1,
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Unlock ${ThemeDefinitions.getTheme(lockedTheme).name}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: themeColors.textColor,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: Icon(
-                        Icons.close,
-                        color: themeColors.secondaryTextColor,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 48,
-                  child: FilledButton(
-                    onPressed: () {},
-                    style: FilledButton.styleFrom(
-                      backgroundColor: themeColors.textColor,
-                      foregroundColor: themeColors.backgroundColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Upgrade to Pro - ₹99',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  '• Unlock Premium, Dynamic, and Skin themes',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: themeColors.textColor,
-                    height: 1.3,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '• Remove the 30-second preview limit',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: themeColors.textColor,
-                    height: 1.3,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '• Support independent solar engineering.',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: themeColors.textColor,
-                    height: 1.3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildTimeDisplay({
     required TrueTimeProvider timeProvider,
     required AppThemeColors themeColors,
@@ -404,16 +301,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     required bool showSecondaryUi,
   }) {
     if (timeProvider.isLoading) {
-      return _buildLoadingIndicator(themeColors);
+      return HomeLoadingIndicator(themeColors: themeColors);
     }
 
     if (timeProvider.error != null) {
-      return _buildErrorState(timeProvider.error!, themeColors);
+      return HomeErrorState(
+        error: timeProvider.error!,
+        themeColors: themeColors,
+      );
     }
 
     final result = timeProvider.currentTimeResult;
     if (result == null) {
-      return _buildLoadingIndicator(themeColors);
+      return HomeLoadingIndicator(themeColors: themeColors);
     }
 
     return HomeTimeDisplay(
@@ -430,55 +330,4 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       },
     );
   }
-
-  Widget _buildLoadingIndicator(AppThemeColors themeColors) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AnimatedDots(accentColor: themeColors.accentColor),
-        const SizedBox(height: 24),
-        Text(
-          'Acquiring GPS Lock...',
-          style: TextStyle(
-            fontSize: 14,
-            color: themeColors.secondaryTextColor,
-            letterSpacing: 1.0,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildErrorState(String error, AppThemeColors themeColors) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'ERROR',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w300,
-            color: themeColors.accentColor,
-            letterSpacing: 2.0,
-          ),
-        ),
-        const SizedBox(height: 16),
-        SizedBox(
-          width: 300,
-          child: Text(
-            error,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              color: themeColors.secondaryTextColor,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
 }
