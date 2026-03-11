@@ -44,7 +44,7 @@ class ThemeMenuCarousel extends StatelessWidget {
       },
       child: Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.paddingOf(context).bottom + 20.0,
+          bottom: MediaQuery.paddingOf(context).bottom + (compact ? 8.0 : 20.0),
         ),
         child: PageView.builder(
           controller: pageController,
@@ -116,55 +116,85 @@ class ThemeMenuCarousel extends StatelessWidget {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(
-                            compact ? 16 : 18,
-                            compact ? 14 : 18,
-                            compact ? 16 : 18,
-                            compact ? 14 : 18,
-                          ),
-                          child: Column(
-                            children: [
-                              const Spacer(flex: 1),
-                              Expanded(
-                                child: Center(
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Text(
-                                      dummyTime,
-                                      style: TextStyle(
-                                        color: colors.textColor,
-                                        fontSize: compact ? 54 : 62,
-                                        fontWeight: FontWeight.w400,
-                                        letterSpacing:
-                                            theme == AppThemeType.observer ? 4.0 : 2.0,
-                                        fontFamily: fontFamilyForTheme(theme),
-                                        fontFeatures: const [
-                                          FontFeature.tabularFigures(),
-                                        ],
-                                        shadows: theme ==
-                                                AppThemeType.horologicalInstrument
-                                            ? ThemeDefinitions.getHorologicalGlow()
-                                            : null,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const Spacer(flex: 1),
-                              Text(
-                                colors.name.toUpperCase(),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                        LayoutBuilder(
+                          builder: (context, cardConstraints) {
+                            final h = cardConstraints.maxHeight;
+                            final tiny = h < 170;
+                            final padH = tiny ? 12.0 : (compact ? 16.0 : 18.0);
+                            final padV = tiny ? 8.0 : (compact ? 14.0 : 18.0);
+                            final showTitle = h > 120;
+
+                            final timeText = FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                dummyTime,
                                 style: TextStyle(
-                                  color: titleColor,
-                                  fontSize: 10,
-                                  letterSpacing: 2.5,
-                                  fontWeight: FontWeight.w600,
+                                  color: colors.textColor,
+                                  fontSize: compact ? 54 : 62,
+                                  fontWeight: FontWeight.w400,
+                                  letterSpacing:
+                                      theme == AppThemeType.observer ? 4.0 : 2.0,
+                                  fontFamily: fontFamilyForTheme(theme),
+                                  fontFeatures: const [
+                                    FontFeature.tabularFigures(),
+                                  ],
+                                  shadows:
+                                      theme == AppThemeType.horologicalInstrument
+                                          ? ThemeDefinitions.getHorologicalGlow()
+                                          : null,
                                 ),
                               ),
-                            ],
-                          ),
+                            );
+
+                            return Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                padH,
+                                padV,
+                                padH,
+                                padV,
+                              ),
+                              child: tiny
+                                  ? Column(
+                                      children: [
+                                        Expanded(
+                                          child: Center(child: timeText),
+                                        ),
+                                        if (showTitle)
+                                          Text(
+                                            colors.name.toUpperCase(),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              color: titleColor,
+                                              fontSize: 10,
+                                              letterSpacing: 2.5,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                      ],
+                                    )
+                                  : Column(
+                                      children: [
+                                        const Spacer(flex: 1),
+                                        Expanded(
+                                          child: Center(child: timeText),
+                                        ),
+                                        const Spacer(flex: 1),
+                                        Text(
+                                          colors.name.toUpperCase(),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            color: titleColor,
+                                            fontSize: 10,
+                                            letterSpacing: 2.5,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                            );
+                          },
                         ),
                         if (isLocked)
                           ClipRRect(

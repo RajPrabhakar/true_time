@@ -116,36 +116,42 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxHeight < 300;
+        final panelHeight = constraints.maxHeight;
+        final compact = panelHeight < 320;
+        final showHeader = panelHeight >= 150;
+        final showFilters = panelHeight >= 205;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ThemeMenuHeader(
-              compact: compact,
-              themeColors: widget.themeColors,
-              is24HourMode: widget.is24HourMode,
-              on24HourModeChanged: widget.on24HourModeChanged,
-            ),
-            ThemeMenuFilterStrip(
-              filters: _filters,
-              selectedFilter: _selectedFilter,
-              themeColors: widget.themeColors,
-              onSelectFilter: (filter) {
-                setState(() {
-                  _selectedFilter = filter;
-                  _lastPreviewIndex = -1;
-                });
+            if (showHeader)
+              ThemeMenuHeader(
+                compact: compact,
+                themeColors: widget.themeColors,
+                is24HourMode: widget.is24HourMode,
+                on24HourModeChanged: widget.on24HourModeChanged,
+              ),
+            if (showFilters)
+              ThemeMenuFilterStrip(
+                filters: _filters,
+                selectedFilter: _selectedFilter,
+                themeColors: widget.themeColors,
+                onSelectFilter: (filter) {
+                  setState(() {
+                    _selectedFilter = filter;
+                    _lastPreviewIndex = -1;
+                  });
 
-                if (_pageController.hasClients) {
-                  _pageController.jumpToPage(0);
-                }
+                  if (_pageController.hasClients) {
+                    _pageController.jumpToPage(0);
+                  }
 
-                final first = _filteredThemes();
-                if (first.isNotEmpty && !_isLockedTheme(first.first)) {
-                  widget.onThemePreview(first.first);
-                }
-              },
-            ),
+                  final first = _filteredThemes();
+                  if (first.isNotEmpty && !_isLockedTheme(first.first)) {
+                    widget.onThemePreview(first.first);
+                  }
+                },
+              ),
             Expanded(
               child: galleryThemes.isEmpty
                   ? Center(
