@@ -21,6 +21,7 @@ enum AppThemeType {
 class AppThemeColors {
   final String name;
   final String description;
+  final String category;
   final Color backgroundColor;
   final Color textColor;
   final Color secondaryTextColor;
@@ -29,6 +30,7 @@ class AppThemeColors {
   const AppThemeColors({
     required this.name,
     required this.description,
+    required this.category,
     required this.backgroundColor,
     required this.textColor,
     required this.secondaryTextColor,
@@ -42,6 +44,7 @@ class ThemeDefinitions {
     AppThemeType.void_: AppThemeColors(
       name: 'Void',
       description: 'Default: Pure OLED Black',
+      category: 'Essentials',
       backgroundColor: Color(0xFF000000), // Pure OLED black
       textColor: Color(0xFFFFFFFF), // White
       secondaryTextColor: Color(0xFF808080), // Muted gray
@@ -50,6 +53,7 @@ class ThemeDefinitions {
     AppThemeType.blueprint: AppThemeColors(
       name: 'Blueprint',
       description: 'Technical: Deep Blue with Cyan',
+      category: 'Essentials',
       backgroundColor: Color(0xFF001F3F), // Deep blueprint blue
       textColor: Color(0xFF00FFFF), // Cyan
       secondaryTextColor: Color(0xFF0088CC), // Blue-cyan
@@ -58,6 +62,7 @@ class ThemeDefinitions {
     AppThemeType.solarFlare: AppThemeColors(
       name: 'Solar Flare',
       description: 'High Visibility: White Background',
+      category: 'Essentials',
       backgroundColor: Color(0xFFFFFFFF), // Pure white
       textColor: Color(0xFF000000), // Pure black
       secondaryTextColor: Color(0xFF666666), // Dark gray
@@ -66,6 +71,7 @@ class ThemeDefinitions {
     AppThemeType.solarDynamic: AppThemeColors(
       name: 'Solar Dynamic',
       description: 'Time-Based: Sunrise to Sunset Colors',
+      category: 'Dynamic',
       backgroundColor: Color(0xFF000000), // Midnight default
       textColor: Color(0xFFFFFFFF), // White
       secondaryTextColor: Color(0xFF808080), // Muted gray
@@ -74,6 +80,7 @@ class ThemeDefinitions {
     AppThemeType.horologicalInstrument: AppThemeColors(
       name: 'Horological Instrument',
       description: 'Vintage Tech: Amber Glow Display',
+      category: 'Vintage',
       backgroundColor: Color(0xFF000000), // Pure black
       textColor: Color(0xFFFFBF00), // Amber
       secondaryTextColor: Color(0xFF664400), // Dark amber
@@ -82,6 +89,7 @@ class ThemeDefinitions {
     AppThemeType.bauhaus1925: AppThemeColors(
       name: 'Bauhaus 1925',
       description: 'Geometric: Modern Art Aesthetic',
+      category: 'Vintage',
       backgroundColor: Color(0xFFF5F5DC), // Off-white
       textColor: Color(0xFF333333), // Charcoal
       secondaryTextColor: Color(0xFF666666), // Dark gray
@@ -90,6 +98,7 @@ class ThemeDefinitions {
     AppThemeType.solarDrift: AppThemeColors(
       name: 'Solar Drift',
       description: 'Ambient: Breathing with the Planet',
+      category: 'Dynamic',
       backgroundColor: Color(0xFF001122), // Deep zenith blue (default)
       textColor: Color(0xFFFFFFFF), // White
       secondaryTextColor: Color(0xFFAAAAAA), // Light gray
@@ -98,6 +107,7 @@ class ThemeDefinitions {
     AppThemeType.blueprintArchitectural: AppThemeColors(
       name: 'Blueprint Arch',
       description: 'CAD Design: Drafting Grid Layer',
+      category: 'Dynamic',
       backgroundColor: Color(0xFF002B36), // Deep drafting blue
       textColor: Color(0xFF2AA198), // Cyan
       secondaryTextColor: Color(0xFF00B8B8), // Light cyan
@@ -106,6 +116,7 @@ class ThemeDefinitions {
     AppThemeType.observer: AppThemeColors(
       name: 'Observer',
       description: 'Instrument: Red Segmented Display',
+      category: 'Essentials',
       backgroundColor: Color(0xFF060606), // Near-black
       textColor: Color(0xFFFF3B30), // Signal red
       secondaryTextColor: Color(0xFF9A2A23), // Dimmed red
@@ -114,6 +125,7 @@ class ThemeDefinitions {
     AppThemeType.cartographer: AppThemeColors(
       name: 'Cartographer',
       description: 'Atlas: Parchment with Brown Ink',
+      category: 'Vintage',
       backgroundColor: Color(0xFFF2E7D0), // Parchment
       textColor: Color(0xFF4E342E), // Ink brown
       secondaryTextColor: Color(0xFF8D6E63), // Soft brown
@@ -122,6 +134,7 @@ class ThemeDefinitions {
     AppThemeType.zenith: AppThemeColors(
       name: 'Zenith',
       description: 'Atmospheric: Indigo Gradient Field',
+      category: 'Dynamic',
       backgroundColor: Color(0xFF15143D), // Indigo base
       textColor: Color(0xFFE9ECFF), // Cool white
       secondaryTextColor: Color(0xFFB9BEDF), // Misty indigo gray
@@ -130,6 +143,7 @@ class ThemeDefinitions {
     AppThemeType.retroFlip: AppThemeColors(
       name: 'Retro Flip',
       description: 'Mechanical: Split-Flap Clock Aesthetic',
+      category: 'Vintage',
       backgroundColor: Color(0xFF0E0E0E), // Deep matte black
       textColor: Color(0xFFE0E0E0), // Off-white digit tone
       secondaryTextColor: Color(0xFFAFAFAF), // Muted off-white
@@ -138,6 +152,7 @@ class ThemeDefinitions {
     AppThemeType.monolith: AppThemeColors(
       name: 'Monolith',
       description: 'Ultra-Minimal: Essential Information Only',
+      category: 'Essentials',
       backgroundColor: Color(0xFF050505), // Matte black
       textColor: Color(0xFFF2F2F2), // Soft white
       secondaryTextColor: Color(0xFF606060), // Suppressed gray

@@ -98,6 +98,7 @@ class ThemeProvider extends ChangeNotifier {
       return AppThemeColors(
         name: 'Solar Dynamic',
         description: 'Time-Based: Sunrise to Sunset Colors',
+        category: 'Dynamic',
         backgroundColor: bgColor,
         textColor: const Color(0xFFFFFFFF), // Always white text
         secondaryTextColor: const Color(0xFF808080), // Always muted gray
@@ -113,6 +114,7 @@ class ThemeProvider extends ChangeNotifier {
       return AppThemeColors(
         name: 'Solar Drift',
         description: 'Ambient: Breathing with the Planet',
+        category: 'Dynamic',
         backgroundColor: bgColor,
         textColor: const Color(0xFFFFFFFF), // Always white text
         secondaryTextColor: const Color(0xFFAAAAAA), // Light gray
