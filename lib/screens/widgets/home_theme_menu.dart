@@ -183,13 +183,15 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
+              padding: EdgeInsets.only( 
+                          bottom: MediaQuery.paddingOf(context).bottom,
+                        ),
               child: SizedBox(
                 height: 34,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: _filters.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
                   itemBuilder: (context, index) {
