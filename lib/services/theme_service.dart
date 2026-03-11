@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Persists and retrieves theme-related preferences.
 class ThemeService {
   static const String themeIdKey = 'app_theme_id';
-  static const String proUnlockedKey = 'pro_unlocked';
+  static const String proUnlockedKey = 'isPro_user';
 
   SharedPreferences? _prefs;
 
@@ -20,7 +20,12 @@ class ThemeService {
   }
 
   bool isProUnlocked() {
-    return _prefs?.getBool(proUnlockedKey) ?? false;
+    final prefs = _prefs;
+    if (prefs == null) {
+      return false;
+    }
+    final bool isPro = prefs.getBool(proUnlockedKey) ?? false;
+    return isPro;
   }
 
   Future<void> setProUnlocked(bool value) async {
