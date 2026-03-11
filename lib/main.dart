@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:true_time/models/app_theme.dart';
 import 'package:true_time/services/theme_service.dart';
+import 'package:true_time/services/widget_sync_service.dart';
 import 'screens/home_screen.dart';
 import 'providers/true_time_provider.dart';
 import 'providers/theme_provider.dart';
@@ -10,6 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final themeService = ThemeService();
+  final widgetSyncService = WidgetSyncService();
   await themeService.initialize();
   final savedThemeId = themeService.getSavedThemeId();
   final initialTheme =
@@ -19,6 +21,7 @@ void main() async {
   runApp(
     MainApp(
       themeService: themeService,
+      widgetSyncService: widgetSyncService,
       initialTheme: initialTheme,
       hasPro: hasPro,
     ),
@@ -27,12 +30,14 @@ void main() async {
 
 class MainApp extends StatelessWidget {
   final ThemeService themeService;
+  final WidgetSyncService widgetSyncService;
   final AppThemeType initialTheme;
   final bool hasPro;
 
   const MainApp({
     super.key,
     required this.themeService,
+    required this.widgetSyncService,
     required this.initialTheme,
     required this.hasPro,
   });
@@ -44,6 +49,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(
             themeService: themeService,
+            widgetSyncService: widgetSyncService,
             initialTheme: initialTheme,
             initialHasPro: hasPro,
           ),
