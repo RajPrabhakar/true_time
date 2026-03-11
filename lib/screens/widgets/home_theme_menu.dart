@@ -68,7 +68,8 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
 
     return allThemes
         .where(
-          (theme) => ThemeDefinitions.getTheme(theme).category == _selectedFilter,
+          (theme) =>
+              ThemeDefinitions.getTheme(theme).category == _selectedFilter,
         )
         .toList();
   }
@@ -168,12 +169,15 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                         child: Switch.adaptive(
                           value: widget.is24HourMode,
                           onChanged: widget.on24HourModeChanged,
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
                           activeThumbColor: widget.themeColors.accentColor,
-                          activeTrackColor:
-                              widget.themeColors.accentColor.withValues(alpha: 0.4),
-                          inactiveThumbColor: widget.themeColors.secondaryTextColor,
-                          inactiveTrackColor: widget.themeColors.secondaryTextColor
+                          activeTrackColor: widget.themeColors.accentColor
+                              .withValues(alpha: 0.4),
+                          inactiveThumbColor:
+                              widget.themeColors.secondaryTextColor,
+                          inactiveTrackColor: widget
+                              .themeColors.secondaryTextColor
                               .withValues(alpha: 0.2),
                         ),
                       ),
@@ -183,9 +187,9 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only( 
-                          bottom: MediaQuery.paddingOf(context).bottom,
-                        ),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.paddingOf(context).bottom,
+              ),
               child: SizedBox(
                 height: 34,
                 child: ListView.separated(
@@ -221,12 +225,15 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(18),
                           color: selected
-                              ? widget.themeColors.accentColor.withValues(alpha: 0.92)
-                              : widget.themeColors.secondaryTextColor.withValues(alpha: 0.18),
+                              ? widget.themeColors.accentColor
+                                  .withValues(alpha: 0.92)
+                              : widget.themeColors.secondaryTextColor
+                                  .withValues(alpha: 0.18),
                           border: Border.all(
                             color: selected
                                 ? widget.themeColors.accentColor
-                                : widget.themeColors.secondaryTextColor.withValues(alpha: 0.35),
+                                : widget.themeColors.secondaryTextColor
+                                    .withValues(alpha: 0.35),
                           ),
                         ),
                         child: Text(
@@ -270,13 +277,16 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                           controller: _pageController,
                           itemCount: galleryThemes.length,
                           physics: const BouncingScrollPhysics(),
-                          onPageChanged: (_) => _syncPreviewFromPage(galleryThemes),
+                          onPageChanged: (_) =>
+                              _syncPreviewFromPage(galleryThemes),
                           itemBuilder: (context, index) {
                             final theme = galleryThemes[index];
                             final colors = ThemeDefinitions.getTheme(theme);
                             final isLocked = _isLockedTheme(theme);
-                            final isSelected = widget.themeProvider.currentTheme == theme;
-                            final titleColor = _highContrast(colors.backgroundColor);
+                            final isSelected =
+                                widget.themeProvider.currentTheme == theme;
+                            final titleColor =
+                                _highContrast(colors.backgroundColor);
 
                             return AnimatedBuilder(
                               animation: _pageController,
@@ -286,8 +296,10 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                                         _pageController.initialPage.toDouble())
                                     : _pageController.initialPage.toDouble();
                                 final delta = (index - page).abs();
-                                final scale = (1 - (delta * 0.15)).clamp(0.85, 1.0);
-                                final opacity = (1 - (delta * 0.4)).clamp(0.6, 1.0);
+                                final scale =
+                                    (1 - (delta * 0.15)).clamp(0.85, 1.0);
+                                final opacity =
+                                    (1 - (delta * 0.4)).clamp(0.6, 1.0);
 
                                 return Center(
                                   child: Opacity(
@@ -321,12 +333,14 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                                     border: Border.all(
                                       color: isSelected
                                           ? colors.accentColor
-                                          : colors.secondaryTextColor.withValues(alpha: 0.4),
+                                          : colors.secondaryTextColor
+                                              .withValues(alpha: 0.4),
                                       width: isSelected ? 2 : 1,
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: colors.accentColor.withValues(alpha: 0.2),
+                                        color: colors.accentColor
+                                            .withValues(alpha: 0.2),
                                         blurRadius: 18,
                                         offset: const Offset(0, 10),
                                       ),
@@ -355,19 +369,25 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                                                       _dummyTime,
                                                       style: TextStyle(
                                                         color: colors.textColor,
-                                                        fontSize: compact ? 54 : 62,
-                                                        fontWeight: FontWeight.w400,
+                                                        fontSize:
+                                                            compact ? 54 : 62,
+                                                        fontWeight:
+                                                            FontWeight.w400,
                                                         letterSpacing: theme ==
-                                                                AppThemeType.observer
+                                                                AppThemeType
+                                                                    .observer
                                                             ? 4.0
                                                             : 2.0,
                                                         fontFamily:
-                                                            _fontFamilyForTheme(theme),
+                                                            _fontFamilyForTheme(
+                                                                theme),
                                                         fontFeatures: const [
-                                                          FontFeature.tabularFigures(),
+                                                          FontFeature
+                                                              .tabularFigures(),
                                                         ],
                                                         shadows: theme ==
-                                                                AppThemeType.horologicalInstrument
+                                                                AppThemeType
+                                                                    .horologicalInstrument
                                                             ? ThemeDefinitions
                                                                 .getHorologicalGlow()
                                                             : null,
@@ -393,7 +413,8 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                                         ),
                                         if (isLocked)
                                           ClipRRect(
-                                            borderRadius: BorderRadius.circular(22),
+                                            borderRadius:
+                                                BorderRadius.circular(22),
                                             child: Stack(
                                               alignment: Alignment.center,
                                               children: [
@@ -404,7 +425,8 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                                                   ),
                                                   child: Container(
                                                     color: Colors.white
-                                                        .withValues(alpha: 0.08),
+                                                        .withValues(
+                                                            alpha: 0.08),
                                                   ),
                                                 ),
                                                 const Icon(
