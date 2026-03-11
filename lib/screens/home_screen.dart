@@ -48,7 +48,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.didChangeDependencies();
     _provider = Provider.of<TrueTimeProvider>(context, listen: false);
     if (!_initialized) {
-      _provider.initialize();
+      _provider.initialize(
+        default24HourMode: MediaQuery.of(context).alwaysUse24HourFormat,
+      );
       _initialized = true;
     }
   }
@@ -263,6 +265,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               ? HomeThemeMenu(
                                   themeProvider: themeProvider,
                                   themeColors: themeColors,
+                                  is24HourMode: timeProvider.is24HourMode,
+                                  on24HourModeChanged: (value) {
+                                    timeProvider.set24HourMode(value);
+                                  },
                                   onThemePreview: (theme) {
                                     themeProvider.previewTheme(theme);
                                   },
@@ -458,6 +464,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       themeColors: themeColors,
       currentTheme: activeTheme,
       isSolarMode: _isSolarMode,
+      is24HourMode: timeProvider.is24HourMode,
       showSecondaryUi: showSecondaryUi,
       onToggleMode: () {
         setState(() {

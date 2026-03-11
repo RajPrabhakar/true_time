@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:true_time/models/local_time_result.dart';
 import 'package:true_time/services/time_calculator_service.dart';
 
@@ -13,12 +14,14 @@ import 'package:true_time/services/time_calculator_service.dart';
 /// - Provide loading and error states to the UI
 class TrueTimeProvider extends ChangeNotifier {
   final TimeCalculatorService _timeCalculator = TimeCalculatorService();
+  static const String _is24HourModeKey = 'is_24_hour_mode';
 
   // State properties
   bool _isLoading = true;
   String? _error;
   double? _longitude;
   LocalTimeResult? _currentTimeResult;
+  bool _is24HourMode = false;
   Timer? _timer;
 
   // Getters
@@ -26,14 +29,18 @@ class TrueTimeProvider extends ChangeNotifier {
   String? get error => _error;
   double? get longitude => _longitude;
   LocalTimeResult? get currentTimeResult => _currentTimeResult;
+  bool get is24HourMode => _is24HourMode;
 
   /// Initializes the provider by requesting permissions and fetching location.
-  Future<void> initialize() async {
+  Future<void> initialize({required bool default24HourMode}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
+      // Load persisted time format, defaulting to the system preference.
+      await _load24HourModePreference(default24HourMode);
+
       // Step 1: Request location permissions
       await _requestLocationPermission();
 
@@ -47,6 +54,30 @@ class TrueTimeProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> _load24HourModePreference(bool default24HourMode) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (prefs.containsKey(_is24HourModeKey)) {
+      _is24HourMode = prefs.getBool(_is24HourModeKey) ?? default24HourMode;
+      return;
+    }
+
+    _is24HourMode = default24HourMode;
+    await prefs.setBool(_is24HourModeKey, _is24HourMode);
+  }
+
+  Future<void> set24HourMode(bool value) async {
+    if (_is24HourMode == value) {
+      return;
+    }
+
+    _is24HourMode = value;
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_is24HourModeKey, value);
   }
 
   /// Requests location permission (When In Use).

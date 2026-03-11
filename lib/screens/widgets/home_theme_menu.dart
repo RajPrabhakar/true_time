@@ -6,6 +6,8 @@ import 'package:true_time/providers/theme_provider.dart';
 class HomeThemeMenu extends StatefulWidget {
   final ThemeProvider themeProvider;
   final AppThemeColors themeColors;
+  final bool is24HourMode;
+  final ValueChanged<bool> on24HourModeChanged;
   final ValueChanged<AppThemeType> onThemePreview;
   final ValueChanged<AppThemeType> onThemeSelected;
   final ValueChanged<AppThemeType> onLockedThemeTap;
@@ -14,6 +16,8 @@ class HomeThemeMenu extends StatefulWidget {
     super.key,
     required this.themeProvider,
     required this.themeColors,
+    required this.is24HourMode,
+    required this.on24HourModeChanged,
     required this.onThemePreview,
     required this.onThemeSelected,
     required this.onLockedThemeTap,
@@ -353,6 +357,37 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                     },
                     separatorBuilder: (_, __) => const SizedBox(width: 8),
                   ),
+                ),
+              if (!ultraTight) SizedBox(height: compact ? 6 : 10),
+              if (!ultraTight)
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Use 24-Hour Format',
+                        style: TextStyle(
+                          fontSize: compact ? 10.5 : 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: widget.themeColors.secondaryTextColor,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ),
+                    Transform.scale(
+                      scale: compact ? 0.82 : 0.9,
+                      child: Switch.adaptive(
+                        value: widget.is24HourMode,
+                        onChanged: widget.on24HourModeChanged,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        activeThumbColor: widget.themeColors.accentColor,
+                        activeTrackColor:
+                            widget.themeColors.accentColor.withValues(alpha: 0.4),
+                        inactiveThumbColor: widget.themeColors.secondaryTextColor,
+                        inactiveTrackColor: widget.themeColors.secondaryTextColor
+                            .withValues(alpha: 0.2),
+                      ),
+                    ),
+                  ],
                 ),
               if (!ultraTight) SizedBox(height: sectionGap),
               Expanded(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:true_time/models/app_theme.dart';
 // import 'package:true_time/screens/utils/delta_formatter.dart';
 import 'package:true_time/screens/widgets/retro_flip_clock.dart';
@@ -8,6 +9,7 @@ class HomeTimeDisplay extends StatelessWidget {
   final AppThemeColors themeColors;
   final AppThemeType currentTheme;
   final bool isSolarMode;
+  final bool is24HourMode;
   final bool showSecondaryUi;
   final VoidCallback onToggleMode;
 
@@ -17,6 +19,7 @@ class HomeTimeDisplay extends StatelessWidget {
     required this.themeColors,
     required this.currentTheme,
     required this.isSolarMode,
+    required this.is24HourMode,
     required this.showSecondaryUi,
     required this.onToggleMode,
   });
@@ -29,8 +32,10 @@ class HomeTimeDisplay extends StatelessWidget {
     // final Duration utcDelta = result.utcDelta;
     // final Duration tzDelta = result.tzDelta;
 
-    final timeString =
-        '${displayedTime.hour.toString().padLeft(2, '0')}:${displayedTime.minute.toString().padLeft(2, '0')}:${displayedTime.second.toString().padLeft(2, '0')}';
+    final formatter = DateFormat(
+      is24HourMode ? 'HH:mm:ss' : 'hh:mm:ss a',
+    );
+    final timeString = formatter.format(displayedTime);
 
     // final utcDeltaString = formatDelta(utcDelta, timeZoneLabel: 'UTC');
     // final tzDeltaString = formatDelta(tzDelta);
