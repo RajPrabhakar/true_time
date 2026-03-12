@@ -22,7 +22,7 @@ class RetroFlipClock extends StatelessWidget {
         children: [
           for (var i = 0; i < timeString.length; i++) ...[
             if (timeString[i] == ':')
-              _FlipSeparator(isSolarMode: isSolarMode)
+              const _FlipSeparator(isSolarMode: isSolarMode)
             else
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 3),
