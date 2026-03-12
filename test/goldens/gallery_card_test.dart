@@ -25,8 +25,8 @@ void main() {
             ThemeDefinitions.getAppTheme(AppThemeType.solarFlare);
 
         // Set device size for consistent rendering
-        addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
-        tester.binding.window.physicalSizeTestValue = cardSize;
+        addTearDown(tester.view.resetPhysicalSize);
+        tester.view.physicalSize = cardSize;
 
         await tester.pumpWidget(
           _buildTestWidget(
@@ -58,8 +58,8 @@ void main() {
         final zenithTheme =
             ThemeDefinitions.getAppTheme(AppThemeType.blueprintArchitectural);
 
-        addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
-        tester.binding.window.physicalSizeTestValue = cardSize;
+        addTearDown(tester.view.resetPhysicalSize);
+        tester.view.physicalSize = cardSize;
 
         await tester.pumpWidget(
           _buildTestWidget(
@@ -87,8 +87,8 @@ void main() {
         final solarTheme =
             ThemeDefinitions.getAppTheme(AppThemeType.solarFlare);
 
-        addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
-        tester.binding.window.physicalSizeTestValue = cardSize;
+        addTearDown(tester.view.resetPhysicalSize);
+        tester.view.physicalSize = cardSize;
 
         await tester.pumpWidget(
           _buildTestWidget(
@@ -116,8 +116,8 @@ void main() {
         final zenithTheme =
             ThemeDefinitions.getAppTheme(AppThemeType.blueprintArchitectural);
 
-        addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
-        tester.binding.window.physicalSizeTestValue = cardSize;
+        addTearDown(tester.view.resetPhysicalSize);
+        tester.view.physicalSize = cardSize;
 
         await tester.pumpWidget(
           _buildTestWidget(
