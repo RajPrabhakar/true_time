@@ -63,7 +63,8 @@ class AppTheme {
       fontFamily: fontFamily,
       customClockBuilder: customClockBuilder,
       customBackgroundBuilder: customBackgroundBuilder,
-      customPreviewBackgroundBuilder: customPreviewBackgroundBuilder,
+      customPreviewBackgroundBuilder: customPreviewBackgroundBuilder ??
+          (context) => ColoredBox(color: colors.backgroundColor),
       clockShadows: clockShadows,
     );
   }
@@ -146,6 +147,20 @@ class ThemeDefinitions {
       isPremium: true,
       colors: skin_themes.skinThemes[AppThemeType.horologicalInstrument]!,
       fontFamily: 'Courier',
+      customClockBuilder: (context, timeString) => Text(
+        timeString,
+        key: const ValueKey('horological-instrument-clock'),
+        style: TextStyle(
+          fontSize: 96,
+          fontWeight: FontWeight.w300,
+          letterSpacing: 6,
+          color: skin_themes
+              .skinThemes[AppThemeType.horologicalInstrument]!
+              .textColor,
+          fontFamily: 'Courier',
+          shadows: skin_themes.horologicalGlow(),
+        ),
+      ),
       clockShadows: skin_themes.horologicalGlow(),
     ),
     AppThemeType.retroFlip: AppTheme.blueprint(
