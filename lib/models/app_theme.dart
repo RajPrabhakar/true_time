@@ -26,6 +26,7 @@ class AppTheme {
   final BackgroundBuilder? customBackgroundBuilder;
   final PreviewBackgroundBuilder? customPreviewBackgroundBuilder;
   final String fontFamily;
+  final List<Shadow>? clockShadows;
 
   const AppTheme._({
     required this.id,
@@ -37,6 +38,7 @@ class AppTheme {
     this.customClockBuilder,
     this.customBackgroundBuilder,
     this.customPreviewBackgroundBuilder,
+    this.clockShadows,
   });
 
   factory AppTheme.blueprint({
@@ -49,6 +51,7 @@ class AppTheme {
     ClockBuilder? customClockBuilder,
     BackgroundBuilder? customBackgroundBuilder,
     PreviewBackgroundBuilder? customPreviewBackgroundBuilder,
+    List<Shadow>? clockShadows,
   }) {
     return AppTheme._(
       id: id,
@@ -60,6 +63,7 @@ class AppTheme {
       customClockBuilder: customClockBuilder,
       customBackgroundBuilder: customBackgroundBuilder,
       customPreviewBackgroundBuilder: customPreviewBackgroundBuilder,
+      clockShadows: clockShadows,
     );
   }
 
@@ -141,6 +145,7 @@ class ThemeDefinitions {
       isPremium: true,
       colors: skin_themes.skinThemes[AppThemeType.horologicalInstrument]!,
       fontFamily: 'Courier',
+      clockShadows: skin_themes.horologicalGlow(),
     ),
     AppThemeType.retroFlip: AppTheme.blueprint(
       id: AppThemeType.retroFlip,

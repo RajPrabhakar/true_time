@@ -175,7 +175,6 @@ class DefaultTextClock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMonospace = activeTheme.fontFamily == 'monospace';
-    final isHorological = activeTheme.id == AppThemeType.horologicalInstrument;
     final letterSpacingValue = isMonospace ? 4.0 : 2.0;
 
     return Padding(
@@ -192,7 +191,7 @@ class DefaultTextClock extends StatelessWidget {
           height: 1.0,
           leadingDistribution: TextLeadingDistribution.even,
           fontFeatures: const [FontFeature.tabularFigures()],
-          shadows: isHorological ? ThemeDefinitions.getHorologicalGlow() : null,
+          shadows: activeTheme.clockShadows,
         ),
       ),
     );

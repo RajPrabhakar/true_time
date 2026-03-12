@@ -32,7 +32,6 @@ class ThemeGalleryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = appTheme.id;
     final colors = appTheme.colors;
     final titleColor = _highContrast(colors.backgroundColor);
     final checkIconColor =
@@ -101,9 +100,7 @@ class ThemeGalleryCard extends StatelessWidget {
                           fontFeatures: const [
                             FontFeature.tabularFigures(),
                           ],
-                          shadows: theme == AppThemeType.horologicalInstrument
-                              ? ThemeDefinitions.getHorologicalGlow()
-                              : null,
+                          shadows: appTheme.clockShadows,
                         ),
                       ),
                     ),
