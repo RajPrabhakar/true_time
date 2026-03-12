@@ -24,6 +24,21 @@ No backend. No API calls. No timezone database lookups.
 
 ---
 
+## Wiki
+
+Project wiki pages are available in the `wiki/` directory:
+
+- [Home](wiki/Home.md)
+- [App Overview](wiki/App-Overview.md)
+- [Architecture](wiki/Architecture.md)
+- [Development Setup](wiki/Development-Setup.md)
+- [Testing and Quality](wiki/Testing-and-Quality.md)
+- [Roadmap](wiki/Roadmap.md)
+- [Release Checklist](wiki/Release-Checklist.md)
+- [Contributing](wiki/Contributing.md)
+
+---
+
 ## Features
 
 - Real-time Local Mean Time clock updated every second
