@@ -5,7 +5,6 @@ import 'package:true_time/models/app_theme.dart';
 import 'package:true_time/models/local_time_result.dart';
 import 'package:true_time/providers/true_time_provider.dart';
 import 'package:true_time/screens/widgets/home_screen_parts/home_status_panels.dart';
-import 'package:true_time/themes/skins/retro_flip_clock.dart';
 // import 'package:true_time/screens/utils/delta_formatter.dart';
 
 /// Captures only the time-related state that [HomeTimeDisplay] needs.
@@ -93,12 +92,10 @@ class HomeTimeDisplay extends StatelessWidget {
         // final utcDeltaString = formatDelta(utcDelta, timeZoneLabel: 'UTC');
         // final tzDeltaString = formatDelta(tzDelta);
 
-        final isHorological = currentTheme == AppThemeType.horologicalInstrument;
-        final isObserver = currentTheme == AppThemeType.observer;
-        final isRetroFlip = currentTheme == AppThemeType.retroFlip;
-        final letterSpacingValue = isObserver ? 4.0 : 2.0;
-        final displayedTimeColor =
-            isSolarMode ? themeColors.textColor : themeColors.secondaryTextColor;
+        final activeTheme = ThemeDefinitions.getAppTheme(currentTheme);
+        final displayedTimeColor = isSolarMode
+            ? themeColors.textColor
+            : themeColors.secondaryTextColor;
 
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -117,37 +114,16 @@ class HomeTimeDisplay extends StatelessWidget {
                     transitionBuilder: (child, animation) {
                       return FadeTransition(opacity: animation, child: child);
                     },
-                    child: isRetroFlip
-                        ? RetroFlipClock(
+                    child: activeTheme.customClockBuilder != null
+                        ? activeTheme.customClockBuilder!(context, timeString)
+                        : DefaultTextClock(
                             key: ValueKey(
-                              'retro-flip-${isSolarMode ? 'solar' : 'political'}',
+                              '${currentTheme.name}-${isSolarMode ? 'solar' : 'political'}',
                             ),
-                            displayedTime: displayedTime,
-                            isSolarMode: isSolarMode,
-                          )
-                        : Padding(
-                            padding: EdgeInsets.only(left: letterSpacingValue),
-                            child: Text(
-                              key: ValueKey(
-                                isSolarMode ? 'solar-mode' : 'political-mode',
-                              ),
-                              timeString,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 120,
-                                fontWeight:
-                                    isObserver ? FontWeight.w500 : FontWeight.w300,
-                                color: displayedTimeColor,
-                                fontFamily: isObserver ? 'monospace' : 'Courier',
-                                letterSpacing: letterSpacingValue,
-                                height: 1.0,
-                                leadingDistribution: TextLeadingDistribution.even,
-                                fontFeatures: const [FontFeature.tabularFigures()],
-                                shadows: isHorological
-                                    ? ThemeDefinitions.getHorologicalGlow()
-                                    : null,
-                              ),
-                            ),
+                            timeString: timeString,
+                            themeColors: themeColors,
+                            displayedTimeColor: displayedTimeColor,
+                            activeTheme: activeTheme,
                           ),
                   ),
                 ),
@@ -178,6 +154,47 @@ class HomeTimeDisplay extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class DefaultTextClock extends StatelessWidget {
+  final String timeString;
+  final AppThemeColors themeColors;
+  final Color displayedTimeColor;
+  final AppTheme activeTheme;
+
+  const DefaultTextClock({
+    super.key,
+    required this.timeString,
+    required this.themeColors,
+    required this.displayedTimeColor,
+    required this.activeTheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isMonospace = activeTheme.fontFamily == 'monospace';
+    final isHorological = activeTheme.id == AppThemeType.horologicalInstrument;
+    final letterSpacingValue = isMonospace ? 4.0 : 2.0;
+
+    return Padding(
+      padding: EdgeInsets.only(left: letterSpacingValue),
+      child: Text(
+        timeString,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 120,
+          fontWeight: isMonospace ? FontWeight.w500 : FontWeight.w300,
+          color: displayedTimeColor,
+          fontFamily: activeTheme.fontFamily,
+          letterSpacing: letterSpacingValue,
+          height: 1.0,
+          leadingDistribution: TextLeadingDistribution.even,
+          fontFeatures: const [FontFeature.tabularFigures()],
+          shadows: isHorological ? ThemeDefinitions.getHorologicalGlow() : null,
+        ),
+      ),
     );
   }
 }

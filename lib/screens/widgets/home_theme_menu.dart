@@ -80,27 +80,14 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
     return allThemes
         .where(
           (theme) =>
-              ThemeDefinitions.getTheme(theme).category == _selectedFilter,
+              ThemeDefinitions.getAppTheme(theme).category == _selectedFilter,
         )
         .toList();
   }
 
   bool _isLockedTheme(AppThemeType theme) {
-    final category = ThemeDefinitions.getTheme(theme).category;
-    return category != ThemeCategory.basic && !widget.themeProvider.hasPro;
-  }
-
-  String _fontFamilyForTheme(AppThemeType theme) {
-    if (theme == AppThemeType.observer) {
-      return 'monospace';
-    }
-    return 'Courier';
-  }
-
-  Color _highContrast(Color bg) {
-    return bg.computeLuminance() > 0.45
-        ? const Color(0xFF111111)
-        : Colors.white;
+    return ThemeDefinitions.getAppTheme(theme).isPremium &&
+        !widget.themeProvider.hasPro;
   }
 
   void _syncPreviewFromPage(List<AppThemeType> themes) {
@@ -181,8 +168,6 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                       galleryThemes: galleryThemes,
                       themeProvider: widget.themeProvider,
                       isLockedTheme: _isLockedTheme,
-                      fontFamilyForTheme: _fontFamilyForTheme,
-                      highContrast: _highContrast,
                       onThemePreview: widget.onThemePreview,
                       onThemeSelected: widget.onThemeSelected,
                       onLockedThemeTap: widget.onLockedThemeTap,

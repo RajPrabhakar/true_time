@@ -12,8 +12,6 @@ class ThemeMenuCarousel extends StatefulWidget {
   final List<AppThemeType> galleryThemes;
   final ThemeProvider themeProvider;
   final bool Function(AppThemeType) isLockedTheme;
-  final String Function(AppThemeType) fontFamilyForTheme;
-  final Color Function(Color) highContrast;
   final ValueChanged<AppThemeType> onThemePreview;
   final ValueChanged<AppThemeType> onThemeSelected;
   final ValueChanged<AppThemeType> onLockedThemeTap;
@@ -26,8 +24,6 @@ class ThemeMenuCarousel extends StatefulWidget {
     required this.galleryThemes,
     required this.themeProvider,
     required this.isLockedTheme,
-    required this.fontFamilyForTheme,
-    required this.highContrast,
     required this.onThemePreview,
     required this.onThemeSelected,
     required this.onLockedThemeTap,
@@ -66,8 +62,8 @@ class _ThemeMenuCarouselState extends State<ThemeMenuCarousel> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        bottom:
-            MediaQuery.paddingOf(context).bottom + (widget.compact ? 8.0 : 20.0),
+        bottom: MediaQuery.paddingOf(context).bottom +
+            (widget.compact ? 8.0 : 20.0),
       ),
       child: NotificationListener<ScrollEndNotification>(
         onNotification: (_) {
@@ -85,7 +81,7 @@ class _ThemeMenuCarouselState extends State<ThemeMenuCarousel> {
           },
           itemBuilder: (context, index) {
             final theme = widget.galleryThemes[index];
-            final colors = ThemeDefinitions.getTheme(theme);
+            final appTheme = ThemeDefinitions.getAppTheme(theme);
             final isLocked = widget.isLockedTheme(theme);
             final isSelected = widget.themeProvider.currentTheme == theme;
 
@@ -95,12 +91,9 @@ class _ThemeMenuCarouselState extends State<ThemeMenuCarousel> {
               child: RepaintBoundary(
                 child: ThemeGalleryCard(
                   compact: widget.compact,
-                  theme: theme,
-                  colors: colors,
+                  appTheme: appTheme,
                   isLocked: isLocked,
                   isSelected: isSelected,
-                  fontFamilyForTheme: widget.fontFamilyForTheme,
-                  highContrast: widget.highContrast,
                   onThemePreview: widget.onThemePreview,
                   onThemeSelected: widget.onThemeSelected,
                   onLockedThemeTap: widget.onLockedThemeTap,

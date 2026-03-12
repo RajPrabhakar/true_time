@@ -5,19 +5,16 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RetroFlipClock extends StatelessWidget {
-  final DateTime displayedTime;
-  final bool isSolarMode;
+  final String timeString;
 
   const RetroFlipClock({
     super.key,
-    required this.displayedTime,
-    required this.isSolarMode,
+    required this.timeString,
   });
 
   @override
   Widget build(BuildContext context) {
-    final timeString =
-        '${displayedTime.hour.toString().padLeft(2, '0')}:${displayedTime.minute.toString().padLeft(2, '0')}:${displayedTime.second.toString().padLeft(2, '0')}';
+    const isSolarMode = true;
 
     return RepaintBoundary(
       child: Row(

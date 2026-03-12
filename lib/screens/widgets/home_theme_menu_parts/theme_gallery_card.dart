@@ -6,12 +6,9 @@ class ThemeGalleryCard extends StatelessWidget {
   static const String _previewTimeSnapshot = '10:09';
 
   final bool compact;
-  final AppThemeType theme;
-  final AppThemeColors colors;
+  final AppTheme appTheme;
   final bool isLocked;
   final bool isSelected;
-  final String Function(AppThemeType) fontFamilyForTheme;
-  final Color Function(Color) highContrast;
   final ValueChanged<AppThemeType> onThemePreview;
   final ValueChanged<AppThemeType> onThemeSelected;
   final ValueChanged<AppThemeType> onLockedThemeTap;
@@ -19,40 +16,44 @@ class ThemeGalleryCard extends StatelessWidget {
   const ThemeGalleryCard({
     super.key,
     required this.compact,
-    required this.theme,
-    required this.colors,
+    required this.appTheme,
     required this.isLocked,
     required this.isSelected,
-    required this.fontFamilyForTheme,
-    required this.highContrast,
     required this.onThemePreview,
     required this.onThemeSelected,
     required this.onLockedThemeTap,
   });
 
+  Color _highContrast(Color bg) {
+    return bg.computeLuminance() > 0.45
+        ? const Color(0xFF111111)
+        : Colors.white;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final titleColor = highContrast(colors.backgroundColor);
+    final theme = appTheme.id;
+    final colors = appTheme.colors;
+    final titleColor = _highContrast(colors.backgroundColor);
     final checkIconColor =
         colors.accentColor.computeLuminance() > 0.7 ? titleColor : Colors.white;
 
     return GestureDetector(
       onTapDown: (_) {
-        onThemePreview(theme);
+        onThemePreview(appTheme.id);
       },
       onTap: () {
         if (isLocked) {
           HapticFeedback.vibrate();
-          onLockedThemeTap(theme);
+          onLockedThemeTap(appTheme.id);
           return;
         }
-        onThemeSelected(theme);
+        onThemeSelected(appTheme.id);
       },
       child: Container(
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(22),
-          color: colors.backgroundColor,
           border: Border.all(
             color: isSelected
                 ? colors.accentColor
@@ -72,6 +73,7 @@ class ThemeGalleryCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
+              appTheme.buildPreviewBackground(context),
               LayoutBuilder(
                 builder: (context, cardConstraints) {
                   final h = cardConstraints.maxHeight;
@@ -79,7 +81,8 @@ class ThemeGalleryCard extends StatelessWidget {
                   final padH = tiny ? 12.0 : (compact ? 16.0 : 18.0);
                   final padV = tiny ? 8.0 : (compact ? 14.0 : 18.0);
                   final showTitle = h > 120;
-                  final timeReferenceWidth = tiny ? 200.0 : (compact ? 220.0 : 240.0);
+                  final timeReferenceWidth =
+                      tiny ? 200.0 : (compact ? 220.0 : 240.0);
 
                   final timeText = FittedBox(
                     fit: BoxFit.scaleDown,
@@ -92,8 +95,9 @@ class ThemeGalleryCard extends StatelessWidget {
                           color: colors.textColor,
                           fontSize: compact ? 54 : 62,
                           fontWeight: FontWeight.w400,
-                          letterSpacing: theme == AppThemeType.observer ? 4.0 : 2.0,
-                          fontFamily: fontFamilyForTheme(theme),
+                          letterSpacing:
+                              appTheme.fontFamily == 'monospace' ? 4.0 : 2.0,
+                          fontFamily: appTheme.fontFamily,
                           fontFeatures: const [
                             FontFeature.tabularFigures(),
                           ],
@@ -115,7 +119,7 @@ class ThemeGalleryCard extends StatelessWidget {
                               ),
                               if (showTitle)
                                 Text(
-                                  colors.name.toUpperCase(),
+                                  appTheme.name.toUpperCase(),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   softWrap: false,
@@ -136,7 +140,7 @@ class ThemeGalleryCard extends StatelessWidget {
                               ),
                               const Spacer(flex: 1),
                               Text(
-                                colors.name.toUpperCase(),
+                                appTheme.name.toUpperCase(),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: false,
