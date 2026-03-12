@@ -12,8 +12,7 @@ class SettingsScreen extends StatelessWidget {
 
   static final Uri _privacyPolicyUrl =
       Uri.parse('https://stellorah.com/privacy');
-  static final Uri _supportEmailUri =
-      Uri.parse('mailto:support@stellorah.com');
+  static final Uri _supportEmailUri = Uri.parse('mailto:support@stellorah.com');
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +57,8 @@ class SettingsScreen extends StatelessWidget {
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 12),
                       value: trueTimeProvider.is24HourMode,
-                        activeThumbColor: themeColors.accentColor,
-                        activeTrackColor:
+                      activeThumbColor: themeColors.accentColor,
+                      activeTrackColor:
                           themeColors.accentColor.withValues(alpha: 0.45),
                       title: const Text(
                         '12/24 Hour Toggle',
@@ -177,7 +176,8 @@ class SettingsScreen extends StatelessWidget {
                     if (!themeProvider.hasPro) ...[
                       const Divider(color: Colors.white12, height: 1),
                       ListTile(
-                        tileColor: themeColors.accentColor.withValues(alpha: 0.2),
+                        tileColor:
+                            themeColors.accentColor.withValues(alpha: 0.2),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
