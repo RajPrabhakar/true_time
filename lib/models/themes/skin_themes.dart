@@ -20,6 +20,15 @@ const Map<AppThemeType, AppThemeColors> skinThemes = {
     secondaryTextColor: Color(0xFFAFAFAF),
     accentColor: Color(0xFF8B8B8B),
   ),
+  AppThemeType.neonTokyo: AppThemeColors(
+    name: 'Neon Tokyo',
+    description: 'Cyberpunk: Glitch Clock & Neon Grid',
+    category: ThemeCategory.skins,
+    backgroundColor: Color(0xFF0A0A0A),
+    textColor: Color(0xFFFF0055),
+    secondaryTextColor: Color(0xFF8A0030),
+    accentColor: Color(0xFF00FFCC),
+  ),
 };
 
 List<Shadow> horologicalGlow() {

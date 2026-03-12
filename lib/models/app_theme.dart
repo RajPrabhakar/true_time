@@ -4,6 +4,7 @@ import 'package:true_time/models/themes/basic_themes.dart';
 import 'package:true_time/models/themes/premium_themes.dart' as premium_themes;
 import 'package:true_time/models/themes/skin_themes.dart' as skin_themes;
 import 'package:true_time/themes/skins/retro_flip_clock.dart';
+import 'package:true_time/themes/skins/neon_tokyo.dart';
 
 export 'package:true_time/models/theme_types.dart';
 
@@ -156,6 +157,20 @@ class ThemeDefinitions {
       fontFamily: 'Courier',
       customClockBuilder: (context, timeString) =>
           RetroFlipClock(timeString: _normalizeRetroFlipTime(timeString)),
+    ),
+    AppThemeType.neonTokyo: AppTheme.blueprint(
+      id: AppThemeType.neonTokyo,
+      name: 'Neon Tokyo',
+      category: ThemeCategory.skins,
+      isPremium: true,
+      colors: skin_themes.skinThemes[AppThemeType.neonTokyo]!,
+      fontFamily: 'monospace',
+      customClockBuilder: (context, timeString) =>
+        GlitchEffectClock(timeString: timeString),
+      customBackgroundBuilder: (context, _) =>
+        const AnimatedNeonGridBackground(),
+      customPreviewBackgroundBuilder: (context) =>
+        const NeonTokyoPreviewBackground(),
     ),
   };
 

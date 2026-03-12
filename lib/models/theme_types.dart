@@ -11,6 +11,7 @@ enum AppThemeType {
   observer, // Observer: segmented red-on-black instrumentation
   cartographer, // Cartographer: parchment and warm brown tones
   retroFlip, // Retro Flip: split-flap clock panels
+  neonTokyo, // Neon Tokyo: cyberpunk glitch clock with neon grid
 }
 
 enum ThemeCategory {
