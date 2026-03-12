@@ -33,7 +33,6 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
   static const List<ThemeCategory> _orderedCategories = [
     ThemeCategory.basic,
     ThemeCategory.premium,
-    ThemeCategory.dynamic,
     ThemeCategory.skins,
   ];
 

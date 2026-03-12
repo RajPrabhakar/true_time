@@ -133,19 +133,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             _updateSystemChromeStyle(themeColors.backgroundColor);
 
             final activeTheme = themeProvider.activeTheme;
-            final isSolarDynamic = activeTheme == AppThemeType.solarDynamic;
             final isBlueprintArch =
                 activeTheme == AppThemeType.blueprintArchitectural;
-            final isZenith = activeTheme == AppThemeType.zenith;
             const showSecondaryUi = true;
             final storeHeight = _menuOpen
               ? MediaQuery.of(context).size.height * 0.35
               : 0.0;
 
             final scaffold = Scaffold(
-              backgroundColor: (isSolarDynamic || isZenith)
-                  ? Colors.transparent
-                  : themeColors.backgroundColor,
+              backgroundColor: themeColors.backgroundColor,
               body: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 child: Stack(
@@ -251,10 +247,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           height: storeHeight,
                           clipBehavior: Clip.hardEdge,
                           decoration: BoxDecoration(
-                            color: isZenith
-                                ? themeColors.backgroundColor
-                                    .withValues(alpha: 0.72)
-                                : themeColors.backgroundColor,
+                            color: themeColors.backgroundColor,
                             border: _menuOpen
                                 ? Border(
                                     top: BorderSide(
@@ -302,25 +295,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 ),
               ),
             );
-
-            if (isSolarDynamic) {
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 2000),
-                color: themeColors.backgroundColor,
-                child: scaffold,
-              );
-            }
-
-            if (isZenith) {
-              return DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: ThemeDefinitions.getZenithGradient(
-                    isSolarMode: _isSolarMode,
-                  ),
-                ),
-                child: scaffold,
-              );
-            }
 
             return scaffold;
           },

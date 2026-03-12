@@ -96,45 +96,8 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Get the colors for the current theme
-  /// For Solar Dynamic and Solar Drift themes, pass [localMeanTime] to calculate dynamic colors
+  /// Get the colors for the current active theme.
   AppThemeColors getCurrentThemeColors({DateTime? localMeanTime}) {
-    final theme = activeTheme;
-
-    if (theme == AppThemeType.solarDynamic && localMeanTime != null) {
-      // For Solar Dynamic, calculate colors based on time of day
-      final bgColor =
-          ThemeDefinitions.getBackgroundColorForSolarDynamic(localMeanTime);
-      final accentColor =
-          ThemeDefinitions.getAccentColorForSolarDynamic(bgColor);
-
-      return AppThemeColors(
-        name: 'Solar Dynamic',
-        description: 'Time-Based: Sunrise to Sunset Colors',
-        category: ThemeCategory.dynamic,
-        backgroundColor: bgColor,
-        textColor: const Color(0xFFFFFFFF), // Always white text
-        secondaryTextColor: const Color(0xFF808080), // Always muted gray
-        accentColor: accentColor,
-      );
-    }
-
-    if (theme == AppThemeType.solarDrift && localMeanTime != null) {
-      // For Solar Drift, calculate colors based on solar hour angle
-      final bgColor =
-          ThemeDefinitions.getBackgroundColorForSolarDrift(localMeanTime);
-
-      return AppThemeColors(
-        name: 'Solar Drift',
-        description: 'Ambient: Breathing with the Planet',
-        category: ThemeCategory.dynamic,
-        backgroundColor: bgColor,
-        textColor: const Color(0xFFFFFFFF), // Always white text
-        secondaryTextColor: const Color(0xFFAAAAAA), // Light gray
-        accentColor: const Color(0xFF00DDFF), // Cyan accent
-      );
-    }
-
-    return ThemeDefinitions.getTheme(theme);
+    return ThemeDefinitions.getTheme(activeTheme);
   }
 }

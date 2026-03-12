@@ -25,8 +25,6 @@ class ThemeMenuFilterStrip extends StatelessWidget {
         return 'BASIC';
       case ThemeCategory.premium:
         return 'PREMIUM';
-      case ThemeCategory.dynamic:
-        return 'DYNAMIC';
       case ThemeCategory.skins:
         return 'SKINS';
     }
