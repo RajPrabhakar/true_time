@@ -31,4 +31,9 @@ class ThemeService {
   Future<void> setProUnlocked(bool value) async {
     await _prefs?.setBool(proUnlockedKey, value);
   }
+
+  Future<bool> restorePurchases() async {
+    await initialize();
+    return isProUnlocked();
+  }
 }

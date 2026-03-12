@@ -8,8 +8,6 @@ import 'package:true_time/screens/widgets/home_theme_menu_parts/theme_menu_heade
 class HomeThemeMenu extends StatefulWidget {
   final ThemeProvider themeProvider;
   final AppThemeColors themeColors;
-  final bool is24HourMode;
-  final ValueChanged<bool> on24HourModeChanged;
   final ValueChanged<AppThemeType> onThemePreview;
   final ValueChanged<AppThemeType> onThemeSelected;
   final ValueChanged<AppThemeType> onLockedThemeTap;
@@ -18,8 +16,6 @@ class HomeThemeMenu extends StatefulWidget {
     super.key,
     required this.themeProvider,
     required this.themeColors,
-    required this.is24HourMode,
-    required this.on24HourModeChanged,
     required this.onThemePreview,
     required this.onThemeSelected,
     required this.onLockedThemeTap,
@@ -125,8 +121,6 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
               ThemeMenuHeader(
                 compact: compact,
                 themeColors: widget.themeColors,
-                is24HourMode: widget.is24HourMode,
-                on24HourModeChanged: widget.on24HourModeChanged,
               ),
             if (showFilters)
               ThemeMenuFilterStrip(

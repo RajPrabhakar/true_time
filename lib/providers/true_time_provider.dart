@@ -19,6 +19,7 @@ class TrueTimeProvider extends ChangeNotifier {
   // State properties
   bool _isLoading = true;
   String? _error;
+  double? _latitude;
   double? _longitude;
   LocalTimeResult? _currentTimeResult;
   bool _is24HourMode = false;
@@ -27,6 +28,7 @@ class TrueTimeProvider extends ChangeNotifier {
   // Getters
   bool get isLoading => _isLoading;
   String? get error => _error;
+  double? get latitude => _latitude;
   double? get longitude => _longitude;
   LocalTimeResult? get currentTimeResult => _currentTimeResult;
   bool get is24HourMode => _is24HourMode;
@@ -99,6 +101,7 @@ class TrueTimeProvider extends ChangeNotifier {
       desiredAccuracy: LocationAccuracy.high,
     );
 
+    _latitude = position.latitude;
     _longitude = position.longitude;
   }
 

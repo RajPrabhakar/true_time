@@ -39,7 +39,7 @@ class ThemeMenuFilterStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       child: SizedBox(
         height: 34,
         child: ListView.separated(
@@ -72,6 +72,7 @@ class ThemeMenuFilterStrip extends StatelessWidget {
                 ),
                 child: Text(
                   _filterLabel(filter),
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 10,
                     letterSpacing: 1.4,

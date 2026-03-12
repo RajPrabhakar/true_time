@@ -11,6 +11,7 @@ class ThemeProvider extends ChangeNotifier {
   AppThemeType _currentTheme;
   AppThemeType? _previewTheme;
   bool _hasPro;
+  bool _isRestoringPurchases = false;
   bool _isInitialized = false;
 
   ThemeProvider({
@@ -40,6 +41,7 @@ class ThemeProvider extends ChangeNotifier {
   AppThemeType get activeTheme => _previewTheme ?? _currentTheme;
   bool get isPreviewingTheme => _previewTheme != null;
   bool get hasPro => _hasPro;
+  bool get isRestoringPurchases => _isRestoringPurchases;
   bool get isInitialized => _isInitialized;
 
   /// Initialize the theme provider by loading saved preference
@@ -76,6 +78,24 @@ class ThemeProvider extends ChangeNotifier {
     _hasPro = value;
     await _themeService.setProUnlocked(value);
     notifyListeners();
+  }
+
+  Future<bool> restorePurchases() async {
+    if (_isRestoringPurchases) {
+      return _hasPro;
+    }
+
+    _isRestoringPurchases = true;
+    notifyListeners();
+
+    try {
+      final restored = await _themeService.restorePurchases();
+      _hasPro = restored;
+      return restored;
+    } finally {
+      _isRestoringPurchases = false;
+      notifyListeners();
+    }
   }
 
   /// Temporarily previews a theme without persisting it.

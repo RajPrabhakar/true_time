@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:true_time/models/app_theme.dart';
 import 'package:true_time/providers/theme_provider.dart';
 import 'package:true_time/providers/true_time_provider.dart';
+import 'package:true_time/screens/settings_screen.dart';
 import 'package:true_time/screens/widgets/home_screen_parts/home_theme_upgrade_sheet.dart';
 import 'package:true_time/screens/widgets/home_theme_menu.dart';
 import 'package:true_time/screens/widgets/home_time_display.dart';
@@ -235,6 +237,29 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                     ),
                                   ),
                                 ),
+                                Positioned(
+                                  right: 8,
+                                  top: 6,
+                                  child: SafeArea(
+                                    bottom: false,
+                                    child: IconButton(
+                                      tooltip: 'Settings',
+                                      icon: Icon(
+                                        Icons.settings_outlined,
+                                        size: 22,
+                                        color: themeColors.secondaryTextColor,
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                          CupertinoPageRoute<void>(
+                                            builder: (_) =>
+                                                const SettingsScreen(),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -261,12 +286,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   child: HomeThemeMenu(
                                     themeProvider: themeProvider,
                                     themeColors: themeColors,
-                                    is24HourMode: scaffoldData.is24HourMode,
-                                    on24HourModeChanged: (value) {
-                                      context
-                                          .read<TrueTimeProvider>()
-                                          .set24HourMode(value);
-                                    },
                                     onThemePreview: (theme) {
                                       themeProvider.previewTheme(theme);
                                     },
