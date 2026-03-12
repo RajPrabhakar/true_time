@@ -3,8 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:true_time/models/app_theme.dart';
 
 class ThemeGalleryCard extends StatelessWidget {
+  static const String _previewTimeSnapshot = '10:09';
+
   final bool compact;
-  final String dummyTime;
   final AppThemeType theme;
   final AppThemeColors colors;
   final bool isLocked;
@@ -18,7 +19,6 @@ class ThemeGalleryCard extends StatelessWidget {
   const ThemeGalleryCard({
     super.key,
     required this.compact,
-    required this.dummyTime,
     required this.theme,
     required this.colors,
     required this.isLocked,
@@ -86,7 +86,7 @@ class ThemeGalleryCard extends StatelessWidget {
                     child: SizedBox(
                       width: timeReferenceWidth,
                       child: Text(
-                        dummyTime,
+                        _previewTimeSnapshot,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: colors.textColor,

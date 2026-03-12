@@ -30,8 +30,6 @@ class HomeThemeMenu extends StatefulWidget {
 }
 
 class _HomeThemeMenuState extends State<HomeThemeMenu> {
-  static const String _dummyTime = '10:09';
-
   static const List<ThemeCategory> _orderedCategories = [
     ThemeCategory.basic,
     ThemeCategory.premium,
@@ -180,7 +178,6 @@ class _HomeThemeMenuState extends State<HomeThemeMenu> {
                     )
                   : ThemeMenuCarousel(
                       compact: compact,
-                      dummyTime: _dummyTime,
                       pageController: _pageController,
                       galleryThemes: galleryThemes,
                       themeProvider: widget.themeProvider,

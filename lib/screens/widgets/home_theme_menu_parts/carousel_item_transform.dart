@@ -29,6 +29,7 @@ class CarouselItemTransform extends StatelessWidget {
             opacity: opacity,
             child: Transform.scale(
               scale: scale,
+              filterQuality: FilterQuality.medium,
               child: child,
             ),
           ),

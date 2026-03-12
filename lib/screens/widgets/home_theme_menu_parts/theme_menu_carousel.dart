@@ -8,7 +8,6 @@ import 'package:true_time/screens/widgets/home_theme_menu_parts/theme_gallery_ca
 
 class ThemeMenuCarousel extends StatefulWidget {
   final bool compact;
-  final String dummyTime;
   final PageController pageController;
   final List<AppThemeType> galleryThemes;
   final ThemeProvider themeProvider;
@@ -23,7 +22,6 @@ class ThemeMenuCarousel extends StatefulWidget {
   const ThemeMenuCarousel({
     super.key,
     required this.compact,
-    required this.dummyTime,
     required this.pageController,
     required this.galleryThemes,
     required this.themeProvider,
@@ -94,18 +92,19 @@ class _ThemeMenuCarouselState extends State<ThemeMenuCarousel> {
             return CarouselItemTransform(
               pageController: widget.pageController,
               index: index,
-              child: ThemeGalleryCard(
-                compact: widget.compact,
-                dummyTime: widget.dummyTime,
-                theme: theme,
-                colors: colors,
-                isLocked: isLocked,
-                isSelected: isSelected,
-                fontFamilyForTheme: widget.fontFamilyForTheme,
-                highContrast: widget.highContrast,
-                onThemePreview: widget.onThemePreview,
-                onThemeSelected: widget.onThemeSelected,
-                onLockedThemeTap: widget.onLockedThemeTap,
+              child: RepaintBoundary(
+                child: ThemeGalleryCard(
+                  compact: widget.compact,
+                  theme: theme,
+                  colors: colors,
+                  isLocked: isLocked,
+                  isSelected: isSelected,
+                  fontFamilyForTheme: widget.fontFamilyForTheme,
+                  highContrast: widget.highContrast,
+                  onThemePreview: widget.onThemePreview,
+                  onThemeSelected: widget.onThemeSelected,
+                  onLockedThemeTap: widget.onLockedThemeTap,
+                ),
               ),
             );
           },
