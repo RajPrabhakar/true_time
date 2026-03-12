@@ -3,68 +3,49 @@
 **Solar Time at Your Fingertips. No Timezones. No Politics. Just Physics.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Flutter](https://img.shields.io/badge/Flutter-3.5.3%2B-blue.svg)](https://flutter.dev)
-[![Platforms](https://img.shields.io/badge/Platform-iOS%20%7C%20Android-lightgrey.svg)](#)
+[![Flutter](https://img.shields.io/badge/Flutter-Stable-blue.svg)](https://flutter.dev)
+[![Platforms](https://img.shields.io/badge/Platform-iOS%20%7C%20Android%20%7C%20macOS-lightgrey.svg)](#)
 
 ---
 
 ## The Concept
 
-Timezones are a political fiction. The "official" noon in your timezone—whether that's Indian Standard Time (IST), Eastern Standard Time (EST), or any other—rarely aligns with actual solar noon, when the sun is at its highest point in the sky.
+Timezone clocks are legal conventions, not solar reality. Noon on your phone usually does **not** match true local solar noon at your exact longitude.
 
-IST, for example, spans nearly 30° of longitude from northwest India to the northeast, yet the sun reaches its zenith hours apart across this span. Most of the Indian subcontinent runs an hour or more ahead of their local solar noon.
+**TruTime** shows Local Mean Time (LMT):
 
-**TruTime** strips away this convention and shows you *Local Mean Time (Solar Time)*—the time your longitude actually experiences based on the sun's position. It's a radical simplification: no timezone database, no political boundaries, no battery drain from network calls.
+$$\text{LMT} = \text{UTC} + (\text{Longitude} \times 4\text{ minutes})$$
 
-Just GPS, math, and the physics of Earth's rotation.
+Earth rotates 360 degrees in 24 hours, so each degree of longitude is 4 minutes of solar offset.
 
----
+The app runs this calculation fully on-device using your current longitude and system UTC time.
 
-## How It Works: The Math
-
-Local Mean Time is calculated using a straightforward formula:
-
-$$\text{Local Mean Time} = \text{UTC} + (\text{Longitude} \times 4 \text{ minutes})$$
-
-**Why 4 minutes?** The Earth rotates 360° in 24 hours, so each degree of longitude represents 4 minutes of solar time offset from UTC.
-
-**The Process:**
-1. Your device's GPS retrieves your current longitude (accurate to ~5 meters)
-2. The app fetches UTC time from your system clock
-3. The longitude offset is calculated instantly, client-side
-4. Local Mean Time is displayed in real-time
-
-**Delta Calculation:** The app also shows the difference between Local Mean Time and your device's official local time (e.g., IST). This delta is calculated as:
-
-$$\text{Delta} = \text{Local Mean Time} - \text{Device Local Time}$$
-
-A negative delta means the sun is behind your wall clock (common in timezones ahead of solar time).
-
-**Zero Backend. Zero APIs. 100% Offline.** All computation happens on your device. No server calls, no cloud dependency, no privacy concerns.
+No backend. No API calls. No timezone database lookups.
 
 ---
 
 ## Features
 
-- **Hyper-Minimalist OLED Black UI** — A stark, distraction-free interface designed for readability and minimal battery consumption on OLED screens
-- **Tabular-Numeral Clock** — Monospace, anti-jitter font that updates smoothly without visual noise
-- **Real-Time Timezone Delta** — Displays the offset between Local Mean Time and your device's current timezone, so you understand exactly how far off UTC±X you are
-- **Battery-Efficient GPS Polling** — Smart location updates that respect power constraints and only fetch coordinates at reasonable intervals
-- **Offline Operation** — Works entirely without internet; no permissions beyond location access
-- **Lightweight Footprint** — Minimal dependencies, fast startup, minimal RAM overhead
-- **Automated Testing & CI/CD** — Comprehensive unit tests and GitHub Actions workflow for reliable code quality
+- Real-time Local Mean Time clock updated every second
+- Live delta between solar time and device local time
+- Theme gallery with free, premium, and skin categories
+- Persisted preferences (theme and 12h/24h format)
+- Home screen widget theme sync (Android/iOS via `home_widget`)
+- Offline-first design with location-only permissions
+- Golden tests, unit tests, and CI checks for stability
 
 ---
 
 ## Tech Stack
 
-- **Flutter** — Cross-platform native mobile development
-- **Dart** — Type-safe, performant language
-- **geolocator** — Hardware GPS access with permission handling
-- **intl** — Time and date formatting utilities
-- **provider** — State management for reactive UI updates
-- **wakelock_plus** — Screen-on management for continuous time display
-- **flutter_test** — Unit and widget testing framework
+- Flutter + Dart
+- `provider` for state management
+- `geolocator` for location permissions and longitude
+- `intl` for formatting
+- `shared_preferences` for local settings persistence
+- `home_widget` for widget integration
+- `wakelock_plus` for active display mode
+- `google_fonts` for theme typography support
 
 ---
 
@@ -72,157 +53,156 @@ A negative delta means the sun is behind your wall clock (common in timezones ah
 
 ### Prerequisites
 
-- **Flutter SDK** (version 3.5.3 or higher)
-- **Dart SDK** (bundled with Flutter)
-- **iOS**: Xcode 13+ (for iOS deployment)
-- **Android**: Android Studio with Android SDK 21+
+- Flutter SDK (stable channel)
+- Dart SDK (bundled with Flutter)
+- iOS: Xcode + CocoaPods
+- Android: Android Studio + SDK
 
-### Installation
+### Install and Run
 
-1. **Clone the repository:**
+1. Clone your fork/repository:
    ```bash
-   git clone https://github.com/yourusername/true_time.git
+   git clone <your-repo-url>
    cd true_time
    ```
-
-2. **Fetch dependencies:**
+2. Get dependencies:
    ```bash
    flutter pub get
    ```
-
-3. **Run on iOS simulator:**
+3. List devices:
    ```bash
-   flutter run -d ios
+   flutter devices
    ```
-
-4. **Run on Android emulator:**
+4. Run:
    ```bash
-   flutter run -d android
+   flutter run -d <device-id>
    ```
-
-5. **Run on real device:**
-   ```bash
-   flutter run
-   ```
-
-### Permissions
-
-The app requests **location permission (When In Use)** to access your GPS coordinates:
-
-- **iOS**: Automatically prompted via `NSLocationWhenInUseUsageDescription` in `Info.plist`
-- **Android**: Runtime permission requested on first launch via `ACCESS_FINE_LOCATION` and `ACCESS_COARSE_LOCATION`
-
-No other permissions are required.
 
 ---
 
-## Testing
+## Permissions
 
-The project includes comprehensive unit tests for core logic:
+TruTime requests location access to calculate solar time from longitude.
 
-- **format_delta_test.dart** — Tests the delta formatting function with various positive, negative, and zero offset scenarios
-- **time_calculator_service_test.dart** — Validates Local Mean Time calculations and delta logic
+- iOS: `NSLocationWhenInUseUsageDescription`
+- Android: `ACCESS_FINE_LOCATION` and `ACCESS_COARSE_LOCATION`
 
-Run tests locally:
+No account, no analytics backend, and no network dependency for core functionality.
+
+---
+
+## Testing and Quality
+
+Run all tests:
+
 ```bash
 flutter test
 ```
 
-Tests are also executed automatically via GitHub Actions CI on every push and pull request to the main branch.
+Run static analysis:
+
+```bash
+flutter analyze
+```
+
+Run formatting check:
+
+```bash
+dart format --output=none --set-exit-if-changed .
+```
+
+Update golden files (when visual output intentionally changes):
+
+```bash
+flutter test test/goldens --update-goldens
+```
+
+CI (`.github/workflows/flutter_ci.yml`) runs format checks, analysis, golden generation, and tests with coverage on pushes and pull requests.
 
 ---
 
-## Building for Release
+## Build
 
-### iOS
-
-```bash
-flutter build ios --release
-```
-
-Then open `ios/Runner.xcworkspace` in Xcode and follow the standard App Store submission flow.
-
-### Android
+Android APK:
 
 ```bash
 flutter build apk --release
 ```
 
-Or for Google Play (AAB format):
+Android App Bundle:
+
 ```bash
 flutter build appbundle --release
+```
+
+iOS release build:
+
+```bash
+flutter build ios --release
 ```
 
 ---
 
 ## Project Structure
 
-```
+```text
 lib/
-├── main.dart              # App entry point with provider setup
-├── models/
-│   └── local_time_result.dart  # Data model for time calculations
-├── providers/
-│   └── true_time_provider.dart # State management for GPS and time updates
-├── screens/
-│   └── home_screen.dart        # Main UI with time display and delta
-├── services/
-│   └── time_calculator_service.dart # Core solar time calculation logic
-└── utils/                 # Formatting utilities (formatDelta function)
+  main.dart
+  models/
+    app_theme.dart
+    local_time_result.dart
+    theme_types.dart
+    themes/
+  providers/
+    theme_provider.dart
+    true_time_provider.dart
+  screens/
+    home_screen.dart
+    utils/delta_formatter.dart
+    widgets/
+  services/
+    theme_service.dart
+    time_calculator_service.dart
+    widget_sync_service.dart
+  themes/
+    skins/
+
 test/
-├── format_delta_test.dart      # Unit tests for delta formatting
-└── time_calculator_service_test.dart # Unit tests for time calculations
-.github/
-└── workflows/
-    └── flutter_ci.yml          # GitHub Actions CI pipeline
+  format_delta_test.dart
+  theme_registry_test.dart
+  time_calculator_service_test.dart
+  goldens/
+
+integration_test/
+  theme_scroll_perf_test.dart
+
+.github/workflows/
+  flutter_ci.yml
 ```
 
 ---
 
 ## Roadmap
 
-### v0.2.0 (Planned)
-- **Apparent Solar Time Toggle** — Display Apparent Solar Time using the Equation of Time (accounts for Earth's elliptical orbit and axial tilt), providing even more astronomical accuracy
-- **Sunrise/Sunset Indicators** — Show local solar sunrise and sunset times
-- **UI Theme Unlocks** — Additional color schemes and typography options
-
-### v0.3.0 (Future)
-- **Persistent Settings** — Save user preferences (refresh rate, theme, units)
-- **Widget Support** — Quick-access home screen widgets
-- **Wear OS Support** — TruTime for smartwatches
-- **Accuracy Metrics** — Display GPS accuracy indicator and last-update timestamp
-
-### v1.0.0 (Stable Release)
-- Full feature parity across platforms
-- Comprehensive testing and performance optimization
-- Production-ready privacy policy and terms
+- Apparent solar time mode (Equation of Time)
+- Sunrise/sunset indicators
+- Additional premium skins and animation polish
+- Expanded widget customization and lock-screen support
 
 ---
 
 ## Contributing
 
-Contributions are welcome! Please submit issues and pull requests to help improve TruTime.
+Issues and pull requests are welcome.
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/YourFeature`)
-3. Commit your changes (`git commit -am 'Add YourFeature'`)
-4. Push to the branch (`git push origin feature/YourFeature`)
-5. Open a Pull Request
+2. Create a branch (`git checkout -b feature/your-feature`)
+3. Commit changes (`git commit -m "Add your feature"`)
+4. Push (`git push origin feature/your-feature`)
+5. Open a pull request
 
 ---
 
 ## License
 
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
-
----
-
-## Acknowledgments
-
-- The solar time calculation is inspired by the NOAA Solar Calculation work and basic geophysics
-- Built with [Flutter](https://flutter.dev) and [Dart](https://dart.dev)
-- Icons and design philosophy influenced by minimalist science instruments
-
----
-
-**Questions?** Open an issue or reach out. Enjoy discovering your true solar time.
+MIT License. See [LICENSE](LICENSE).
