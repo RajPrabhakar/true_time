@@ -40,26 +40,26 @@ void main() {
         const Duration scrollDuration = Duration(milliseconds: 600);
         const double scrollDistance = 300.0;
 
-        print(
+        debugPrint(
           '\n=== Theme Menu Scroll Performance Test ===',
         );
-        print(
+        debugPrint(
           'Total themes: $themeCount',
         );
-        print(
+        debugPrint(
           'Number of scroll gestures: $numberOfScrolls',
         );
-        print(
+        debugPrint(
           'Scroll distance per gesture: ${scrollDistance.toStringAsFixed(1)}px',
         );
 
-        print('\n--- Starting Scroll Performance Recording ---');
+        debugPrint('\n--- Starting Scroll Performance Recording ---');
 
         final stopwatch = Stopwatch()..start();
 
         // Perform fling scrolls through the carousel
         for (int i = 0; i < numberOfScrolls; i++) {
-          print('Scroll $i + 1: ');
+          debugPrint('Scroll $i + 1: ');
 
           // Fling gesture (swipe left to go to next theme)
           await tester.fling(
@@ -72,16 +72,16 @@ void main() {
           await tester.pumpAndSettle(scrollDuration);
 
           // Log completion time
-          print(
+          debugPrint(
             '  - Completed at ${DateTime.now().millisecondsSinceEpoch}',
           );
         }
 
         stopwatch.stop();
-        print(
+        debugPrint(
           '\n--- Scroll Performance Recording Complete ---',
         );
-        print(
+        debugPrint(
           'Total time elapsed: ${stopwatch.elapsedMilliseconds}ms',
         );
 
@@ -103,9 +103,9 @@ Future<void> _analyzeFrameTimings(WidgetTester tester) async {
   // Simulated frame timing analysis based on typical gauge metrics
   // In a real scenario, you would integrate with a real frame timing profiler
 
-  print('\n╔════════════════════════════════════════════════════════╗');
-  print('║        FRAME TIMING ANALYSIS & JANK DETECTION            ║');
-  print('╚════════════════════════════════════════════════════════╝');
+  debugPrint('\n╔════════════════════════════════════════════════════════╗');
+  debugPrint('║        FRAME TIMING ANALYSIS & JANK DETECTION            ║');
+  debugPrint('╚════════════════════════════════════════════════════════╝');
 
   // Simulate realistic frame timing data from carousel scrolling
   // These represent actual frame durations (in milliseconds) during theme scrolling
@@ -121,7 +121,7 @@ Future<void> _analyzeFrameTimings(WidgetTester tester) async {
   ];
 
   if (frameDurations.isEmpty) {
-    print('\n⚠️  No frame timing data available');
+    debugPrint('\n⚠️  No frame timing data available');
     return;
   }
 
@@ -153,64 +153,64 @@ Future<void> _analyzeFrameTimings(WidgetTester tester) async {
       frameDurations.where((d) => d > veryJankyThreshold).length;
 
   // Print detailed frame timing summary
-  print(
+  debugPrint(
     '\nTotal Frames Recorded:       $totalFrames',
   );
-  print(
+  debugPrint(
     'Min Frame Duration:          ${minDuration}ms',
   );
-  print(
+  debugPrint(
     'Avg Frame Duration:          ${avgDuration.toStringAsFixed(2)}ms',
   );
-  print(
+  debugPrint(
     'Max Frame Duration:          ${maxDuration}ms',
   );
-  print('\nPercentiles:');
-  print(
+  debugPrint('\nPercentiles:');
+  debugPrint(
     '  P50 (Median):              ${p50}ms',
   );
-  print(
+  debugPrint(
     '  P90:                       ${p90}ms',
   );
-  print(
+  debugPrint(
     '  P99:                       ${p99}ms',
   );
 
-  print('\nJank Detection (FPS threshold):');
-  print(
+  debugPrint('\nJank Detection (FPS threshold):');
+  debugPrint(
     '  Target:                    60 FPS (~16.67ms per frame)',
   );
-  print(
+  debugPrint(
     '  Janky Frames (>17ms):      $jankyFrames / $totalFrames (${jankPercentage.toStringAsFixed(2)}%)',
   );
-  print(
+  debugPrint(
     '  Very Janky (>34ms):        $veryJankyFrames / $totalFrames',
   );
 
-  print(
+  debugPrint(
     '\n╔════════════════════════════════════════════════════════╗',
   );
 
   // Performance assessment
   if (jankPercentage < 5) {
-    print(
+    debugPrint(
       '║  ✅ EXCELLENT: Very smooth scrolling with minimal jank     ║',
     );
   } else if (jankPercentage < 10) {
-    print(
+    debugPrint(
       '║  ✅ GOOD: Acceptable performance with minor jank           ║',
     );
   } else if (jankPercentage < 20) {
-    print(
+    debugPrint(
       '║  ⚠️  NEEDS IMPROVEMENT: Notable jank detected               ║',
     );
   } else {
-    print(
+    debugPrint(
       '║  ❌ POOR: Significant jank - optimizations needed          ║',
     );
   }
 
-  print(
+  debugPrint(
     '╚════════════════════════════════════════════════════════╝',
   );
 
@@ -220,34 +220,34 @@ Future<void> _analyzeFrameTimings(WidgetTester tester) async {
         frameDurations.where((d) => d > jankyThreshold).toList();
     offendingFrames.sort();
 
-    print('\n⚠️  Janky Frame Details (showing up to 10):');
+    debugPrint('\n⚠️  Janky Frame Details (showing up to 10):');
     for (var i = 0; i < offendingFrames.length && i < 10; i++) {
-      print('  Frame ${i + 1}: ${offendingFrames[i]}ms');
+      debugPrint('  Frame ${i + 1}: ${offendingFrames[i]}ms');
     }
     if (offendingFrames.length > 10) {
-      print('  ... and ${offendingFrames.length - 10} more janky frames');
+      debugPrint('  ... and ${offendingFrames.length - 10} more janky frames');
     }
   }
 
   // Performance recommendations
-  print('\n📊 Performance Recommendations:');
+  debugPrint('\n📊 Performance Recommendations:');
   if (avgDuration > 20) {
-    print(
+    debugPrint(
       '  • Average frame time is high. Consider optimizing theme card rendering.',
     );
   }
   if (maxDuration > 50) {
-    print(
+    debugPrint(
       '  • Max frame time is very high. Check for expensive computations during scroll.',
     );
   }
   if (veryJankyFrames > 0) {
-    print(
+    debugPrint(
       '  • Frames taking >2x expected time detected. Profile during scrolling.',
     );
   }
   if (jankPercentage < 5) {
-    print(
+    debugPrint(
       '  • Excellent performance! No immediate optimizations needed.',
     );
   }
