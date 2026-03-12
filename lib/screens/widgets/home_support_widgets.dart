@@ -1,15 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:true_time/models/app_theme.dart';
-
-class BlueprintGridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    ThemeDefinitions.paintBlueprintGrid(canvas, size);
-  }
-
-  @override
-  bool shouldRepaint(BlueprintGridPainter oldDelegate) => false;
-}
 
 class PulsingCircle extends StatefulWidget {
   final Color accentColor;

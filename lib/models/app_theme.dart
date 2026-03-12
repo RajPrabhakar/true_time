@@ -112,6 +112,11 @@ class ThemeDefinitions {
       colors:
           premium_themes.premiumThemes[AppThemeType.blueprintArchitectural]!,
       fontFamily: 'Courier',
+      customBackgroundBuilder: (context, _) => IgnorePointer(
+        child: CustomPaint(
+          painter: premium_themes.BlueprintGridPainter(),
+        ),
+      ),
     ),
     AppThemeType.bauhaus1925: AppTheme.blueprint(
       id: AppThemeType.bauhaus1925,

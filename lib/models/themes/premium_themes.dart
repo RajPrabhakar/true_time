@@ -46,3 +46,13 @@ void paintBlueprintGrid(Canvas canvas, Size size) {
     canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
   }
 }
+
+class BlueprintGridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    paintBlueprintGrid(canvas, size);
+  }
+
+  @override
+  bool shouldRepaint(BlueprintGridPainter oldDelegate) => false;
+}

@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:true_time/models/app_theme.dart';
 import 'package:true_time/providers/theme_provider.dart';
 import 'package:true_time/providers/true_time_provider.dart';
-import 'package:true_time/screens/widgets/home_support_widgets.dart';
 import 'package:true_time/screens/widgets/home_screen_parts/home_theme_upgrade_sheet.dart';
 import 'package:true_time/screens/widgets/home_theme_menu.dart';
 import 'package:true_time/screens/widgets/home_time_display.dart';
@@ -133,8 +132,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             _updateSystemChromeStyle(themeColors.backgroundColor);
 
             final activeTheme = themeProvider.activeTheme;
-            final isBlueprintArch =
-                activeTheme == AppThemeType.blueprintArchitectural;
+            final activeThemeData = ThemeDefinitions.getAppTheme(activeTheme);
             const showSecondaryUi = true;
             final storeHeight = _menuOpen
               ? MediaQuery.of(context).size.height * 0.35
@@ -152,12 +150,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           child: SafeArea(
                             child: Stack(
                               children: [
-                                if (isBlueprintArch)
+                                if (activeThemeData.customBackgroundBuilder != null)
                                   Positioned.fill(
-                                    child: IgnorePointer(
-                                      child: CustomPaint(
-                                        painter: BlueprintGridPainter(),
-                                      ),
+                                    child: activeThemeData.customBackgroundBuilder!(
+                                      context,
+                                      scaffoldData.localMeanTime ?? DateTime.now(),
                                     ),
                                   ),
                                 Center(
