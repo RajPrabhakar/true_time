@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:true_time/models/app_theme.dart';
@@ -147,7 +145,7 @@ class ThemeGalleryCard extends StatelessWidget {
                   );
                 },
               ),
-              if (isSelected)
+              if (isSelected && !isLocked)
                 Positioned(
                   top: 12,
                   right: 12,
@@ -166,26 +164,25 @@ class ThemeGalleryCard extends StatelessWidget {
                   ),
                 ),
               if (isLocked)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(22),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      BackdropFilter(
-                        filter: ImageFilter.blur(
-                          sigmaX: 4,
-                          sigmaY: 4,
-                        ),
-                        child: Container(
-                          color: Colors.white.withValues(alpha: 0.08),
-                        ),
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: Container(
+                    width: 22,
+                    height: 22,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.6),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.45),
+                        width: 1,
                       ),
-                      const Icon(
-                        Icons.lock,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ],
+                    ),
+                    child: const Icon(
+                      Icons.lock_outline,
+                      size: 14,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
             ],
