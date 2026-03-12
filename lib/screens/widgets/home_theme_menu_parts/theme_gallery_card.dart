@@ -79,23 +79,28 @@ class ThemeGalleryCard extends StatelessWidget {
                   final padH = tiny ? 12.0 : (compact ? 16.0 : 18.0);
                   final padV = tiny ? 8.0 : (compact ? 14.0 : 18.0);
                   final showTitle = h > 120;
+                  final timeReferenceWidth = tiny ? 200.0 : (compact ? 220.0 : 240.0);
 
                   final timeText = FittedBox(
                     fit: BoxFit.scaleDown,
-                    child: Text(
-                      dummyTime,
-                      style: TextStyle(
-                        color: colors.textColor,
-                        fontSize: compact ? 54 : 62,
-                        fontWeight: FontWeight.w400,
-                        letterSpacing: theme == AppThemeType.observer ? 4.0 : 2.0,
-                        fontFamily: fontFamilyForTheme(theme),
-                        fontFeatures: const [
-                          FontFeature.tabularFigures(),
-                        ],
-                        shadows: theme == AppThemeType.horologicalInstrument
-                            ? ThemeDefinitions.getHorologicalGlow()
-                            : null,
+                    child: SizedBox(
+                      width: timeReferenceWidth,
+                      child: Text(
+                        dummyTime,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: colors.textColor,
+                          fontSize: compact ? 54 : 62,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: theme == AppThemeType.observer ? 4.0 : 2.0,
+                          fontFamily: fontFamilyForTheme(theme),
+                          fontFeatures: const [
+                            FontFeature.tabularFigures(),
+                          ],
+                          shadows: theme == AppThemeType.horologicalInstrument
+                              ? ThemeDefinitions.getHorologicalGlow()
+                              : null,
+                        ),
                       ),
                     ),
                   );
@@ -113,6 +118,7 @@ class ThemeGalleryCard extends StatelessWidget {
                                   colors.name.toUpperCase(),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
+                                  softWrap: false,
                                   style: TextStyle(
                                     color: titleColor,
                                     fontSize: 10,
@@ -133,6 +139,7 @@ class ThemeGalleryCard extends StatelessWidget {
                                 colors.name.toUpperCase(),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
+                                softWrap: false,
                                 style: TextStyle(
                                   color: titleColor,
                                   fontSize: 10,

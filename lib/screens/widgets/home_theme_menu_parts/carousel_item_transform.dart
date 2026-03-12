@@ -21,8 +21,8 @@ class CarouselItemTransform extends StatelessWidget {
             ? (pageController.page ?? pageController.initialPage.toDouble())
             : pageController.initialPage.toDouble();
         final delta = (index - page).abs();
-        final scale = (1 - (delta * 0.15)).clamp(0.85, 1.0);
-        final opacity = (1 - (delta * 0.4)).clamp(0.6, 1.0);
+        final double scale = (1 - (delta * 0.15)).clamp(0.85, 1.0);
+        final double opacity = (1 - (delta * 0.4)).clamp(0.4, 1.0);
 
         return Center(
           child: Opacity(

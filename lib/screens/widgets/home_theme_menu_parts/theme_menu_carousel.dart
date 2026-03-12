@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:true_time/models/app_theme.dart';
 import 'package:true_time/providers/theme_provider.dart';
 import 'package:true_time/screens/widgets/home_theme_menu_parts/carousel_item_transform.dart';
 import 'package:true_time/screens/widgets/home_theme_menu_parts/theme_gallery_card.dart';
 
-class ThemeMenuCarousel extends StatelessWidget {
+class ThemeMenuCarousel extends StatefulWidget {
   final bool compact;
   final String dummyTime;
   final PageController pageController;
@@ -35,41 +37,79 @@ class ThemeMenuCarousel extends StatelessWidget {
   });
 
   @override
+  State<ThemeMenuCarousel> createState() => _ThemeMenuCarouselState();
+}
+
+class _ThemeMenuCarouselState extends State<ThemeMenuCarousel> {
+  Timer? _settleDebounce;
+  bool _pendingScrollUpdate = false;
+
+  void _flushScrollUpdate() {
+    if (!_pendingScrollUpdate) return;
+    _pendingScrollUpdate = false;
+    widget.onScrollEvent();
+  }
+
+  void _scheduleScrollUpdate() {
+    _settleDebounce?.cancel();
+    _settleDebounce = Timer(const Duration(milliseconds: 90), () {
+      if (!mounted) return;
+      _flushScrollUpdate();
+    });
+  }
+
+  @override
+  void dispose() {
+    _settleDebounce?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        bottom: MediaQuery.paddingOf(context).bottom + (compact ? 8.0 : 20.0),
+        bottom:
+            MediaQuery.paddingOf(context).bottom + (widget.compact ? 8.0 : 20.0),
       ),
-      child: PageView.builder(
-        controller: pageController,
-        itemCount: galleryThemes.length,
-        physics: const BouncingScrollPhysics(),
-        // Preview only when snap settles to avoid expensive per-frame rebuilds.
-        onPageChanged: (_) => onScrollEvent(),
-        itemBuilder: (context, index) {
-          final theme = galleryThemes[index];
-          final colors = ThemeDefinitions.getTheme(theme);
-          final isLocked = isLockedTheme(theme);
-          final isSelected = themeProvider.currentTheme == theme;
-
-          return CarouselItemTransform(
-            pageController: pageController,
-            index: index,
-            child: ThemeGalleryCard(
-              compact: compact,
-              dummyTime: dummyTime,
-              theme: theme,
-              colors: colors,
-              isLocked: isLocked,
-              isSelected: isSelected,
-              fontFamilyForTheme: fontFamilyForTheme,
-              highContrast: highContrast,
-              onThemePreview: onThemePreview,
-              onThemeSelected: onThemeSelected,
-              onLockedThemeTap: onLockedThemeTap,
-            ),
-          );
+      child: NotificationListener<ScrollEndNotification>(
+        onNotification: (_) {
+          _scheduleScrollUpdate();
+          return false;
         },
+        child: PageView.builder(
+          controller: widget.pageController,
+          itemCount: widget.galleryThemes.length,
+          physics: const BouncingScrollPhysics(),
+          // Defer preview updates until scrolling settles to avoid heavy churn.
+          onPageChanged: (_) {
+            _pendingScrollUpdate = true;
+            _scheduleScrollUpdate();
+          },
+          itemBuilder: (context, index) {
+            final theme = widget.galleryThemes[index];
+            final colors = ThemeDefinitions.getTheme(theme);
+            final isLocked = widget.isLockedTheme(theme);
+            final isSelected = widget.themeProvider.currentTheme == theme;
+
+            return CarouselItemTransform(
+              pageController: widget.pageController,
+              index: index,
+              child: ThemeGalleryCard(
+                compact: widget.compact,
+                dummyTime: widget.dummyTime,
+                theme: theme,
+                colors: colors,
+                isLocked: isLocked,
+                isSelected: isSelected,
+                fontFamilyForTheme: widget.fontFamilyForTheme,
+                highContrast: widget.highContrast,
+                onThemePreview: widget.onThemePreview,
+                onThemeSelected: widget.onThemeSelected,
+                onLockedThemeTap: widget.onLockedThemeTap,
+              ),
+            );
+          },
+        ),
       ),
     );
   }
