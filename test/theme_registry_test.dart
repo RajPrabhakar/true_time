@@ -1,12 +1,8 @@
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:true_time/models/app_theme.dart';
 
 void main() {
   group('Theme Registry Integrity Tests', () {
-
-
-
     late List<AppThemeType> allThemes;
 
     setUp(() {
@@ -62,7 +58,8 @@ void main() {
         'All skins category themes must provide customClockBuilder',
         () {
           final skinThemes = allThemes
-              .where((t) => ThemeDefinitions.getAppTheme(t).category ==
+              .where((t) =>
+                  ThemeDefinitions.getAppTheme(t).category ==
                   ThemeCategory.skins)
               .toList();
 
@@ -172,7 +169,11 @@ void main() {
             final theme = ThemeDefinitions.getAppTheme(themeType);
             expect(
               theme.category,
-              isIn([ThemeCategory.basic, ThemeCategory.premium, ThemeCategory.skins]),
+              isIn([
+                ThemeCategory.basic,
+                ThemeCategory.premium,
+                ThemeCategory.skins
+              ]),
               reason: 'Theme ${theme.name} has invalid category',
             );
           }

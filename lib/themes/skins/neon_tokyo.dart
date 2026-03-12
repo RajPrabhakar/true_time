@@ -95,7 +95,8 @@ class _GlitchEffectClockState extends State<GlitchEffectClock> {
         ),
         Transform.translate(
           offset: Offset(_dxRed, 0),
-          child: Text(widget.timeString, style: _style(_hotPink, opacity: 0.65)),
+          child:
+              Text(widget.timeString, style: _style(_hotPink, opacity: 0.65)),
         ),
         Transform.translate(
           offset: Offset(_sliceDx, 0),

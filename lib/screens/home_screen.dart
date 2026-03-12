@@ -134,9 +134,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             final activeTheme = themeProvider.activeTheme;
             final activeThemeData = ThemeDefinitions.getAppTheme(activeTheme);
             const showSecondaryUi = true;
-            final storeHeight = _menuOpen
-              ? MediaQuery.of(context).size.height * 0.35
-              : 0.0;
+            final storeHeight =
+                _menuOpen ? MediaQuery.of(context).size.height * 0.35 : 0.0;
 
             final scaffold = Scaffold(
               backgroundColor: themeColors.backgroundColor,
@@ -150,17 +149,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           child: SafeArea(
                             child: Stack(
                               children: [
-                                if (activeThemeData.customBackgroundBuilder != null)
+                                if (activeThemeData.customBackgroundBuilder !=
+                                    null)
                                   Positioned.fill(
-                                    child: activeThemeData.customBackgroundBuilder!(
+                                    child: activeThemeData
+                                        .customBackgroundBuilder!(
                                       context,
-                                      scaffoldData.localMeanTime ?? DateTime.now(),
+                                      scaffoldData.localMeanTime ??
+                                          DateTime.now(),
                                     ),
                                   ),
                                 Center(
                                   child: RepaintBoundary(
                                     child: _buildTimeDisplay(
-
                                       themeColors: themeColors,
                                       activeTheme: activeTheme,
                                       showSecondaryUi: showSecondaryUi,

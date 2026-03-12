@@ -51,7 +51,8 @@ class ThemeMenuHeader extends StatelessWidget {
                   onChanged: on24HourModeChanged,
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   activeThumbColor: themeColors.accentColor,
-                  activeTrackColor: themeColors.accentColor.withValues(alpha: 0.4),
+                  activeTrackColor:
+                      themeColors.accentColor.withValues(alpha: 0.4),
                   inactiveThumbColor: themeColors.secondaryTextColor,
                   inactiveTrackColor:
                       themeColors.secondaryTextColor.withValues(alpha: 0.2),

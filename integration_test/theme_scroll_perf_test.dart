@@ -99,14 +99,14 @@ void main() {
 Future<void> _analyzeFrameTimings(WidgetTester tester) async {
   // Note: In integration tests, FrameTiming data is collected automatically
   // by the binding. We can access frame data through the binding.
-  
+
   // Simulated frame timing analysis based on typical gauge metrics
   // In a real scenario, you would integrate with a real frame timing profiler
-  
+
   print('\n╔════════════════════════════════════════════════════════╗');
   print('║        FRAME TIMING ANALYSIS & JANK DETECTION            ║');
   print('╚════════════════════════════════════════════════════════╝');
-  
+
   // Simulate realistic frame timing data from carousel scrolling
   // These represent actual frame durations (in milliseconds) during theme scrolling
   final List<int> frameDurations = [
@@ -119,7 +119,7 @@ Future<void> _analyzeFrameTimings(WidgetTester tester) async {
     18, 19, 17, 18, 20, // Light jank
     15, 16, 15, 16, 15, // Back to normal
   ];
-  
+
   if (frameDurations.isEmpty) {
     print('\n⚠️  No frame timing data available');
     return;
@@ -137,8 +137,8 @@ Future<void> _analyzeFrameTimings(WidgetTester tester) async {
   // Calculate percentiles for performance analysis
   final int p50 = sortedDurations[(sortedDurations.length * 0.5).toInt()];
   final int p90 = sortedDurations[(sortedDurations.length * 0.9).toInt()];
-  final int p99 = sortedDurations.length > 1 
-      ? sortedDurations[(sortedDurations.length * 0.99).toInt()] 
+  final int p99 = sortedDurations.length > 1
+      ? sortedDurations[(sortedDurations.length * 0.99).toInt()]
       : sortedDurations.last;
 
   // Detect jank: frames exceeding 60fps threshold (~16.67ms for 60fps)
@@ -165,8 +165,7 @@ Future<void> _analyzeFrameTimings(WidgetTester tester) async {
   print(
     'Max Frame Duration:          ${maxDuration}ms',
   );
-  print(
-    '\nPercentiles:');
+  print('\nPercentiles:');
   print(
     '  P50 (Median):              ${p50}ms',
   );
@@ -177,8 +176,7 @@ Future<void> _analyzeFrameTimings(WidgetTester tester) async {
     '  P99:                       ${p99}ms',
   );
 
-  print(
-    '\nJank Detection (FPS threshold):');
+  print('\nJank Detection (FPS threshold):');
   print(
     '  Target:                    60 FPS (~16.67ms per frame)',
   );
@@ -221,7 +219,7 @@ Future<void> _analyzeFrameTimings(WidgetTester tester) async {
     final offendingFrames =
         frameDurations.where((d) => d > jankyThreshold).toList();
     offendingFrames.sort();
-    
+
     print('\n⚠️  Janky Frame Details (showing up to 10):');
     for (var i = 0; i < offendingFrames.length && i < 10; i++) {
       print('  Frame ${i + 1}: ${offendingFrames[i]}ms');

@@ -155,8 +155,7 @@ class ThemeDefinitions {
           fontWeight: FontWeight.w300,
           letterSpacing: 6,
           color: skin_themes
-              .skinThemes[AppThemeType.horologicalInstrument]!
-              .textColor,
+              .skinThemes[AppThemeType.horologicalInstrument]!.textColor,
           fontFamily: 'Courier',
           shadows: skin_themes.horologicalGlow(),
         ),
@@ -181,9 +180,9 @@ class ThemeDefinitions {
       colors: skin_themes.skinThemes[AppThemeType.neonTokyo]!,
       fontFamily: 'monospace',
       customClockBuilder: (context, timeString) =>
-        GlitchEffectClock(timeString: timeString),
+          GlitchEffectClock(timeString: timeString),
       customPreviewBackgroundBuilder: (context) =>
-        const NeonTokyoPreviewBackground(),
+          const NeonTokyoPreviewBackground(),
     ),
   };
 

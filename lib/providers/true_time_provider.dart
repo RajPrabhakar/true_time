@@ -87,7 +87,8 @@ class TrueTimeProvider extends ChangeNotifier {
     if (permission == LocationPermission.denied) {
       throw Exception('Location permission denied by user.');
     } else if (permission == LocationPermission.deniedForever) {
-      throw Exception('Location permission permanently denied. Enable in settings.');
+      throw Exception(
+          'Location permission permanently denied. Enable in settings.');
     }
     // If permission is granted (whileInUse or always), proceed
   }

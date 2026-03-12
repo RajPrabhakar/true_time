@@ -6,7 +6,8 @@ void main() {
     // Get the system timezone name for consistent testing
     final timeZoneName = DateTime.now().timeZoneName;
 
-    test('Positive Offset (East) with default timezone produces correct string', () {
+    test('Positive Offset (East) with default timezone produces correct string',
+        () {
       const duration = Duration(hours: 5, minutes: 30, seconds: 15);
       final result = formatDelta(duration);
       expect(result, '$timeZoneName + 05:30:15');

@@ -66,7 +66,8 @@ class ThemeMenuFilterStrip extends StatelessWidget {
                   border: Border.all(
                     color: selected
                         ? themeColors.accentColor
-                        : themeColors.secondaryTextColor.withValues(alpha: 0.35),
+                        : themeColors.secondaryTextColor
+                            .withValues(alpha: 0.35),
                   ),
                 ),
                 child: Text(
