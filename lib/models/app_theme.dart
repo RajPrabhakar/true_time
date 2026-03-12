@@ -167,8 +167,6 @@ class ThemeDefinitions {
       fontFamily: 'monospace',
       customClockBuilder: (context, timeString) =>
         GlitchEffectClock(timeString: timeString),
-      customBackgroundBuilder: (context, _) =>
-        const AnimatedNeonGridBackground(),
       customPreviewBackgroundBuilder: (context) =>
         const NeonTokyoPreviewBackground(),
     ),
