@@ -35,5 +35,8 @@ jobs:
       - name: Analyze code
         run: flutter analyze
 
+      - name: Generate golden files for Linux
+        run: flutter test test/goldens/ --update-goldens
+
       - name: Run tests
         run: flutter test --coverage
