@@ -5,11 +5,38 @@ import 'package:true_time/models/app_theme.dart';
 import 'package:true_time/providers/theme_provider.dart';
 import 'package:true_time/providers/true_time_provider.dart';
 import 'package:true_time/screens/widgets/home_support_widgets.dart';
-import 'package:true_time/screens/widgets/home_screen_parts/home_status_panels.dart';
 import 'package:true_time/screens/widgets/home_screen_parts/home_theme_upgrade_sheet.dart';
 import 'package:true_time/screens/widgets/home_theme_menu.dart';
 import 'package:true_time/screens/widgets/home_time_display.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+
+/// Holds the time-related slice of [TrueTimeProvider] state that the scaffold
+/// needs. Uses minute-level equality for [localMeanTime] so the scaffold only
+/// rebuilds when the minute rolls over (for solar-dynamic theme colours) or
+/// when [is24HourMode] is toggled — not on every clock tick.
+@immutable
+class _ScaffoldTimeData {
+  final DateTime? localMeanTime;
+  final bool is24HourMode;
+
+  const _ScaffoldTimeData({
+    this.localMeanTime,
+    required this.is24HourMode,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! _ScaffoldTimeData) return false;
+    return is24HourMode == other.is24HourMode &&
+        localMeanTime?.hour == other.localMeanTime?.hour &&
+        localMeanTime?.minute == other.localMeanTime?.minute;
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(is24HourMode, localMeanTime?.hour, localMeanTime?.minute);
+}
 
 /// The main screen of the TruTime app.
 /// Displays Local Mean Time in a hyper-minimalist design.
@@ -93,10 +120,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {
-        return Consumer<TrueTimeProvider>(
-          builder: (context, timeProvider, _) {
+        return Selector<TrueTimeProvider, _ScaffoldTimeData>(
+          selector: (_, p) => _ScaffoldTimeData(
+            localMeanTime: p.currentTimeResult?.localMeanTime,
+            is24HourMode: p.is24HourMode,
+          ),
+          builder: (context, scaffoldData, _) {
             final themeColors = themeProvider.getCurrentThemeColors(
-              localMeanTime: timeProvider.currentTimeResult?.localMeanTime,
+              localMeanTime: scaffoldData.localMeanTime,
             );
 
             _updateSystemChromeStyle(themeColors.backgroundColor);
@@ -136,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 Center(
                                   child: RepaintBoundary(
                                     child: _buildTimeDisplay(
-                                      timeProvider: timeProvider,
+
                                       themeColors: themeColors,
                                       activeTheme: activeTheme,
                                       showSecondaryUi: showSecondaryUi,
@@ -235,29 +266,33 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 : null,
                           ),
                           child: _menuOpen
-                              ? HomeThemeMenu(
-                                  themeProvider: themeProvider,
-                                  themeColors: themeColors,
-                                  is24HourMode: timeProvider.is24HourMode,
-                                  on24HourModeChanged: (value) {
-                                    timeProvider.set24HourMode(value);
-                                  },
-                                  onThemePreview: (theme) {
-                                    themeProvider.previewTheme(theme);
-                                  },
-                                  onThemeSelected: (theme) async {
-                                    await themeProvider.setTheme(theme);
-                                    setState(() {
-                                      _menuOpen = false;
-                                    });
-                                  },
-                                  onLockedThemeTap: (theme) {
-                                    showUpgradeToProSheet(
-                                      context,
-                                      lockedTheme: theme,
-                                      themeColors: themeColors,
-                                    );
-                                  },
+                              ? RepaintBoundary(
+                                  child: HomeThemeMenu(
+                                    themeProvider: themeProvider,
+                                    themeColors: themeColors,
+                                    is24HourMode: scaffoldData.is24HourMode,
+                                    on24HourModeChanged: (value) {
+                                      context
+                                          .read<TrueTimeProvider>()
+                                          .set24HourMode(value);
+                                    },
+                                    onThemePreview: (theme) {
+                                      themeProvider.previewTheme(theme);
+                                    },
+                                    onThemeSelected: (theme) async {
+                                      await themeProvider.setTheme(theme);
+                                      setState(() {
+                                        _menuOpen = false;
+                                      });
+                                    },
+                                    onLockedThemeTap: (theme) {
+                                      showUpgradeToProSheet(
+                                        context,
+                                        lockedTheme: theme,
+                                        themeColors: themeColors,
+                                      );
+                                    },
+                                  ),
                                 )
                               : const SizedBox.shrink(),
                         ),
@@ -295,33 +330,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Widget _buildTimeDisplay({
-    required TrueTimeProvider timeProvider,
     required AppThemeColors themeColors,
     required AppThemeType activeTheme,
     required bool showSecondaryUi,
   }) {
-    if (timeProvider.isLoading) {
-      return HomeLoadingIndicator(themeColors: themeColors);
-    }
-
-    if (timeProvider.error != null) {
-      return HomeErrorState(
-        error: timeProvider.error!,
-        themeColors: themeColors,
-      );
-    }
-
-    final result = timeProvider.currentTimeResult;
-    if (result == null) {
-      return HomeLoadingIndicator(themeColors: themeColors);
-    }
-
+    // Loading, error, and null-result states are now handled inside
+    // HomeTimeDisplay via its own Selector<TrueTimeProvider, _ClockData>.
     return HomeTimeDisplay(
-      result: result,
       themeColors: themeColors,
       currentTheme: activeTheme,
       isSolarMode: _isSolarMode,
-      is24HourMode: timeProvider.is24HourMode,
       showSecondaryUi: showSecondaryUi,
       onToggleMode: () {
         setState(() {
