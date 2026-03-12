@@ -5,8 +5,8 @@ import 'package:true_time/models/app_theme.dart';
 import 'package:true_time/models/local_time_result.dart';
 import 'package:true_time/providers/true_time_provider.dart';
 import 'package:true_time/screens/widgets/home_screen_parts/home_status_panels.dart';
+import 'package:true_time/themes/skins/retro_flip_clock.dart';
 // import 'package:true_time/screens/utils/delta_formatter.dart';
-import 'package:true_time/screens/widgets/retro_flip_clock.dart';
 
 /// Captures only the time-related state that [HomeTimeDisplay] needs.
 /// Equality is second-level: the clock rebuilds once per tick and no more.
