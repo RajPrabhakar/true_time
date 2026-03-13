@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -129,6 +131,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           builder: (context, scaffoldData, _) {
             final themeColors = themeProvider.getCurrentThemeColors(
               localMeanTime: scaffoldData.localMeanTime,
+            );
+
+            final displayedTime = _isSolarMode
+                ? (scaffoldData.localMeanTime ?? DateTime.now())
+                : DateTime.now();
+            unawaited(
+              themeProvider.syncWidgetSnapshot(
+                displayedTime: displayedTime,
+                is24HourMode: scaffoldData.is24HourMode,
+                isSolarMode: _isSolarMode,
+              ),
             );
 
             _updateSystemChromeStyle(themeColors.backgroundColor);

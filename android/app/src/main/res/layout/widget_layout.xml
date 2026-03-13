@@ -5,6 +5,15 @@
     android:layout_height="match_parent"
     android:padding="12dp">
 
+    <ImageView
+        android:id="@+id/widget_snapshot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop"
+        android:visibility="gone" />
+
     <TextClock
         android:id="@+id/widget_time"
         android:layout_width="wrap_content"

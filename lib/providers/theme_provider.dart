@@ -13,6 +13,7 @@ class ThemeProvider extends ChangeNotifier {
   bool _hasPro;
   bool _isRestoringPurchases = false;
   bool _isInitialized = false;
+  String? _lastWidgetSyncSignature;
 
   ThemeProvider({
     required ThemeService themeService,
@@ -72,6 +73,36 @@ class ThemeProvider extends ChangeNotifier {
     final bgHex = _widgetSyncService.colorToHex(colors.backgroundColor);
     final textHex = _widgetSyncService.colorToHex(colors.textColor);
     await _widgetSyncService.updateWidgetTheme(bgHex, textHex);
+  }
+
+  Future<void> syncWidgetSnapshot({
+    required DateTime displayedTime,
+    required bool is24HourMode,
+    required bool isSolarMode,
+  }) async {
+    final active = activeTheme;
+    final minuteBucket =
+        '${displayedTime.year}-${displayedTime.month}-${displayedTime.day}-${displayedTime.hour}-${displayedTime.minute}';
+    final signature =
+        '${active.name}-$minuteBucket-$is24HourMode-$isSolarMode';
+
+    if (_lastWidgetSyncSignature == signature) {
+      return;
+    }
+
+    _lastWidgetSyncSignature = signature;
+    final colors = getCurrentThemeColors(localMeanTime: displayedTime);
+    final bgHex = _widgetSyncService.colorToHex(colors.backgroundColor);
+    final textHex = _widgetSyncService.colorToHex(colors.textColor);
+
+    await _widgetSyncService.updateWidgetSnapshot(
+      themeType: active,
+      displayedTime: displayedTime,
+      is24HourMode: is24HourMode,
+      isSolarMode: isSolarMode,
+      bgHex: bgHex,
+      textHex: textHex,
+    );
   }
 
   Future<void> setProUnlocked(bool value) async {
