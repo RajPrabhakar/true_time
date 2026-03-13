@@ -141,7 +141,7 @@ class NeonTokyoPreviewBackground extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [start, middle, end],
-          stops: [0.0, 0.55, 1.0],
+          stops: const [0.0, 0.55, 1.0],
         ),
       ),
     );
