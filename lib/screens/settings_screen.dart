@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:true_time/models/app_theme.dart';
@@ -190,6 +191,61 @@ class SettingsScreen extends StatelessWidget {
                                 );
                             },
                     ),
+                    if (kDebugMode) ...[
+                      Divider(color: themeColors.dividerColor, height: 1),
+                      SwitchListTile.adaptive(
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 12),
+                        value: themeProvider.hasPro,
+                        activeThumbColor: themeColors.accentColor,
+                        activeTrackColor:
+                            themeColors.accentColor.withValues(alpha: 0.45),
+                        title: Text(
+                          'QA: Force Pro Unlock',
+                          style: TextStyle(
+                            color: titleColor,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Debug only. Overrides Pro state for this install.',
+                          style: TextStyle(
+                            color: subtitleColor,
+                            fontSize: 12,
+                          ),
+                        ),
+                        onChanged: (value) async {
+                          await themeProvider.setProUnlocked(value);
+                          if (!context.mounted) {
+                            return;
+                          }
+
+                          final backgroundColor = value
+                              ? themeColors.successColor
+                              : themeColors.neutralSnackbarColor;
+                          final message = value
+                              ? 'Pro unlocked for testing.'
+                              : 'Pro relocked for testing.';
+
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(
+                              SnackBar(
+                                backgroundColor: backgroundColor,
+                                content: Text(
+                                  message,
+                                  style: TextStyle(
+                                    color: themeColors.highContrastOn(
+                                      backgroundColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                        },
+                      ),
+                    ],
                     if (!themeProvider.hasPro) ...[
                       Divider(color: themeColors.dividerColor, height: 1),
                       ListTile(
