@@ -55,14 +55,17 @@ class _WidgetSnapshotView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: appTheme.colors.backgroundColor,
-      child: SizedBox.expand(
+    return SizedBox.fromSize(
+      size: WidgetSnapshotRenderer.defaultLogicalSize,
+      child: Material(
+        color: appTheme.colors.backgroundColor,
         child: Stack(
           fit: StackFit.expand,
           children: [
             if (appTheme.customBackgroundBuilder != null)
-              appTheme.customBackgroundBuilder!(context, displayedTime),
+              Positioned.fill(
+                child: appTheme.customBackgroundBuilder!(context, displayedTime),
+              ),
             Center(
               child: FittedBox(
                 fit: BoxFit.scaleDown,

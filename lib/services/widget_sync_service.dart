@@ -10,6 +10,8 @@ class WidgetSyncService {
   static const String _appGroupId = 'group.com.stellorah.truetime';
   static const String bgHexKey = 'bgHex';
   static const String textHexKey = 'textHex';
+  static const String fontFamilyKey = 'widgetFontFamily';
+  static const String clockStyleKey = 'widgetClockStyle';
   static const String snapshotPathKey = 'widgetSnapshotPath';
   static const String snapshotThemeKey = 'widgetThemeId';
   static const String snapshotTimeKey = 'widgetTimeString';
@@ -25,10 +27,17 @@ class WidgetSyncService {
   WidgetSyncService({WidgetSnapshotRenderer? snapshotRenderer})
       : _snapshotRenderer = snapshotRenderer ?? WidgetSnapshotRenderer();
 
-  Future<void> updateWidgetTheme(String bgHex, String textHex) async {
+  Future<void> updateWidgetTheme(
+    String bgHex,
+    String textHex,
+    String fontFamily,
+    String clockStyle,
+  ) async {
     await _prepareSharedStore();
     await HomeWidget.saveWidgetData<String>(bgHexKey, bgHex);
     await HomeWidget.saveWidgetData<String>(textHexKey, textHex);
+    await HomeWidget.saveWidgetData<String>(fontFamilyKey, fontFamily);
+    await HomeWidget.saveWidgetData<String>(clockStyleKey, clockStyle);
     await _requestWidgetRefresh();
   }
 
@@ -39,11 +48,15 @@ class WidgetSyncService {
     required bool isSolarMode,
     required String bgHex,
     required String textHex,
+    required String fontFamily,
+    required String clockStyle,
   }) async {
     await _prepareSharedStore();
 
     await HomeWidget.saveWidgetData<String>(bgHexKey, bgHex);
     await HomeWidget.saveWidgetData<String>(textHexKey, textHex);
+    await HomeWidget.saveWidgetData<String>(fontFamilyKey, fontFamily);
+    await HomeWidget.saveWidgetData<String>(clockStyleKey, clockStyle);
 
     final formatter = DateFormat(is24HourMode ? 'HH:mm:ss' : 'hh:mm:ss a');
     final snapshotPath = await _snapshotRenderer.renderSnapshot(

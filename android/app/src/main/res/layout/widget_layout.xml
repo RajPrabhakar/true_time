@@ -2,8 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="12dp">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/widget_snapshot"
@@ -13,17 +12,5 @@
         android:contentDescription="@null"
         android:scaleType="centerCrop"
         android:visibility="gone" />
-
-    <TextClock
-        android:id="@+id/widget_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:fontFamily="monospace"
-        android:format12Hour="hh:mm:ss a"
-        android:format24Hour="HH:mm:ss"
-        android:text="00:00"
-        android:textSize="36sp"
-        android:textStyle="bold" />
 
 </FrameLayout>

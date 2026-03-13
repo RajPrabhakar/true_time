@@ -69,10 +69,19 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   Future<void> _syncWidgetTheme() async {
-    final colors = getCurrentThemeColors(localMeanTime: DateTime.now());
+    final appTheme = ThemeDefinitions.getAppTheme(activeTheme);
+    final colors = appTheme.colors;
     final bgHex = _widgetSyncService.colorToHex(colors.backgroundColor);
     final textHex = _widgetSyncService.colorToHex(colors.textColor);
-    await _widgetSyncService.updateWidgetTheme(bgHex, textHex);
+    final clockStyle = appTheme.customClockBuilder == null
+      ? 'default'
+      : appTheme.id.name;
+    await _widgetSyncService.updateWidgetTheme(
+      bgHex,
+      textHex,
+      appTheme.fontFamily,
+      clockStyle,
+    );
   }
 
   Future<void> syncWidgetSnapshot({
@@ -91,9 +100,13 @@ class ThemeProvider extends ChangeNotifier {
     }
 
     _lastWidgetSyncSignature = signature;
-    final colors = getCurrentThemeColors(localMeanTime: displayedTime);
+    final appTheme = ThemeDefinitions.getAppTheme(active);
+    final colors = appTheme.colors;
     final bgHex = _widgetSyncService.colorToHex(colors.backgroundColor);
     final textHex = _widgetSyncService.colorToHex(colors.textColor);
+    final clockStyle = appTheme.customClockBuilder == null
+      ? 'default'
+      : appTheme.id.name;
 
     await _widgetSyncService.updateWidgetSnapshot(
       themeType: active,
@@ -102,6 +115,8 @@ class ThemeProvider extends ChangeNotifier {
       isSolarMode: isSolarMode,
       bgHex: bgHex,
       textHex: textHex,
+      fontFamily: appTheme.fontFamily,
+        clockStyle: clockStyle,
     );
   }
 

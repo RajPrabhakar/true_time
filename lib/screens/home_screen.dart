@@ -76,9 +76,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.didChangeDependencies();
     _provider = Provider.of<TrueTimeProvider>(context, listen: false);
     if (!_initialized) {
-      _provider.initialize(
-        default24HourMode: MediaQuery.of(context).alwaysUse24HourFormat,
-      );
+      final default24HourMode = MediaQuery.of(context).alwaysUse24HourFormat;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        unawaited(
+          _provider.initialize(default24HourMode: default24HourMode),
+        );
+      });
       _initialized = true;
     }
   }
