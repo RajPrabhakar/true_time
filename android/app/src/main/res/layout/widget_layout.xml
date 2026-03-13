@@ -3,7 +3,6 @@
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
     android:padding="12dp">
 
     <TextClock
@@ -15,7 +14,6 @@
         android:format12Hour="hh:mm:ss a"
         android:format24Hour="HH:mm:ss"
         android:text="00:00"
-        android:textColor="#FFFFFF"
         android:textSize="36sp"
         android:textStyle="bold" />
 

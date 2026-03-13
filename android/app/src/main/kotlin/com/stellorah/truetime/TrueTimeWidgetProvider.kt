@@ -9,6 +9,11 @@ import android.widget.RemoteViews
 
 class TrueTimeWidgetProvider : AppWidgetProvider() {
 
+    private companion object {
+        private const val DEFAULT_BG_HEX = "#000000"
+        private const val DEFAULT_TEXT_HEX = "#FFFFFF"
+    }
+
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -35,11 +40,11 @@ class TrueTimeWidgetProvider : AppWidgetProvider() {
         appWidgetIds: IntArray,
     ) {
         val prefs = context.getSharedPreferences("HomeWidgetPreferences", Context.MODE_PRIVATE)
-        val bgHex = prefs.getString("bgHex", "#000000") ?: "#000000"
-        val textHex = prefs.getString("textHex", "#FFFFFF") ?: "#FFFFFF"
+        val bgHex = prefs.getString("bgHex", DEFAULT_BG_HEX) ?: DEFAULT_BG_HEX
+        val textHex = prefs.getString("textHex", DEFAULT_TEXT_HEX) ?: DEFAULT_TEXT_HEX
 
-        val safeBg = parseColorOrDefault(bgHex, Color.BLACK)
-        val safeText = parseColorOrDefault(textHex, Color.WHITE)
+        val safeBg = parseColorOrDefault(bgHex, Color.parseColor(DEFAULT_BG_HEX))
+        val safeText = parseColorOrDefault(textHex, Color.parseColor(DEFAULT_TEXT_HEX))
 
         for (widgetId in appWidgetIds) {
             val views = RemoteViews(context.packageName, R.layout.widget_layout)
@@ -50,10 +55,19 @@ class TrueTimeWidgetProvider : AppWidgetProvider() {
     }
 
     private fun parseColorOrDefault(value: String, fallback: Int): Int {
+        val normalized = normalizeHexColor(value)
         return try {
-            Color.parseColor(value)
+            Color.parseColor(normalized)
         } catch (_: IllegalArgumentException) {
             fallback
         }
+    }
+
+    private fun normalizeHexColor(value: String): String {
+        val trimmed = value.trim()
+        if (trimmed.isEmpty()) {
+            return DEFAULT_BG_HEX
+        }
+        return if (trimmed.startsWith("#")) trimmed else "#$trimmed"
     }
 }

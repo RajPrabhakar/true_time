@@ -5,6 +5,7 @@ import 'package:true_time/models/app_theme.dart';
 import 'package:true_time/providers/theme_provider.dart';
 import 'package:true_time/providers/true_time_provider.dart';
 import 'package:true_time/screens/widgets/home_screen_parts/home_theme_upgrade_sheet.dart';
+import 'package:true_time/themes/theme_ui_tokens.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -16,31 +17,33 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final voidThemeFont =
-        ThemeDefinitions.getAppTheme(AppThemeType.void_).fontFamily;
-
     return Consumer2<TrueTimeProvider, ThemeProvider>(
       builder: (context, trueTimeProvider, themeProvider, _) {
         final localMeanTime = trueTimeProvider.currentTimeResult?.localMeanTime;
         final themeColors =
             themeProvider.getCurrentThemeColors(localMeanTime: localMeanTime);
+        final activeTheme =
+            ThemeDefinitions.getAppTheme(themeProvider.activeTheme);
+        final titleColor = themeColors.textColor;
+        final subtitleColor = themeColors.mutedTextColor;
+        final sectionFont = activeTheme.fontFamily;
 
         return Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: themeColors.backgroundColor,
           appBar: AppBar(
-            backgroundColor: Colors.black,
+            backgroundColor: themeColors.backgroundColor,
             elevation: 0,
             centerTitle: true,
             title: Text(
               'Settings',
               style: TextStyle(
-                color: Colors.white,
-                fontFamily: voidThemeFont,
+                color: titleColor,
+                fontFamily: sectionFont,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.8,
               ),
             ),
-            iconTheme: const IconThemeData(color: Colors.white),
+            iconTheme: IconThemeData(color: titleColor),
           ),
           body: SafeArea(
             child: ListView(
@@ -48,10 +51,12 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 _SectionHeader(
                   label: 'Time & Physics',
-                  fontFamily: voidThemeFont,
+                  fontFamily: sectionFont,
+                  themeColors: themeColors,
                 ),
                 const SizedBox(height: 8),
                 _SettingsGroup(
+                  themeColors: themeColors,
                   children: [
                     SwitchListTile.adaptive(
                       contentPadding:
@@ -60,18 +65,18 @@ class SettingsScreen extends StatelessWidget {
                       activeThumbColor: themeColors.accentColor,
                       activeTrackColor:
                           themeColors.accentColor.withValues(alpha: 0.45),
-                      title: const Text(
+                      title: Text(
                         '12/24 Hour Toggle',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: titleColor,
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      subtitle: const Text(
+                      subtitle: Text(
                         'Use 24-hour solar time format',
                         style: TextStyle(
-                          color: Colors.white70,
+                          color: subtitleColor,
                           fontSize: 12,
                         ),
                       ),
@@ -80,14 +85,14 @@ class SettingsScreen extends StatelessWidget {
                         trueTimeProvider.set24HourMode(value);
                       },
                     ),
-                    const Divider(color: Colors.white12, height: 1),
+                    Divider(color: themeColors.dividerColor, height: 1),
                     ListTile(
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 12),
-                      title: const Text(
+                      title: Text(
                         'Location Accuracy',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: titleColor,
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                         ),
@@ -97,8 +102,8 @@ class SettingsScreen extends StatelessWidget {
                           trueTimeProvider.latitude,
                           trueTimeProvider.longitude,
                         ),
-                        style: const TextStyle(
-                          color: Colors.white70,
+                        style: TextStyle(
+                          color: subtitleColor,
                           fontSize: 12,
                         ),
                       ),
@@ -108,45 +113,47 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 18),
                 _SectionHeader(
                   label: 'Boutique Store',
-                  fontFamily: voidThemeFont,
+                  fontFamily: sectionFont,
+                  themeColors: themeColors,
                 ),
                 const SizedBox(height: 8),
                 _SettingsGroup(
+                  themeColors: themeColors,
                   children: [
                     ListTile(
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 12),
-                      leading: const Icon(
+                      leading: Icon(
                         Icons.refresh_rounded,
-                        color: Colors.white,
+                        color: titleColor,
                       ),
-                      title: const Text(
+                      title: Text(
                         'Restore Purchases',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: titleColor,
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      subtitle: const Text(
+                      subtitle: Text(
                         'Sync your previous Pro unlock',
                         style: TextStyle(
-                          color: Colors.white70,
+                          color: subtitleColor,
                           fontSize: 12,
                         ),
                       ),
                       trailing: themeProvider.isRestoringPurchases
-                          ? const SizedBox(
+                          ? SizedBox(
                               width: 22,
                               height: 22,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: Colors.white,
+                                color: titleColor,
                               ),
                             )
-                          : const Icon(
+                          : Icon(
                               Icons.chevron_right_rounded,
-                              color: Colors.white70,
+                              color: subtitleColor,
                             ),
                       onTap: themeProvider.isRestoringPurchases
                           ? null
@@ -165,16 +172,26 @@ class SettingsScreen extends StatelessWidget {
                                 ..hideCurrentSnackBar()
                                 ..showSnackBar(
                                   SnackBar(
-                                    content: Text(message),
+                                    content: Text(
+                                      message,
+                                      style: TextStyle(
+                                        color: themeColors.highContrastOn(
+                                          restored
+                                              ? themeColors.successColor
+                                              : themeColors
+                                                  .neutralSnackbarColor,
+                                        ),
+                                      ),
+                                    ),
                                     backgroundColor: restored
-                                        ? Colors.green.shade700
-                                        : Colors.grey.shade900,
+                                        ? themeColors.successColor
+                                        : themeColors.neutralSnackbarColor,
                                   ),
                                 );
                             },
                     ),
                     if (!themeProvider.hasPro) ...[
-                      const Divider(color: Colors.white12, height: 1),
+                      Divider(color: themeColors.dividerColor, height: 1),
                       ListTile(
                         tileColor:
                             themeColors.accentColor.withValues(alpha: 0.2),
@@ -187,24 +204,26 @@ class SettingsScreen extends StatelessWidget {
                           Icons.auto_awesome,
                           color: themeColors.accentColor,
                         ),
-                        title: const Text(
+                        title: Text(
                           'Upgrade to Pro',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: themeColors.highContrastOn(
+                              themeColors.accentColor.withValues(alpha: 0.2),
+                            ),
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
-                        subtitle: const Text(
+                        subtitle: Text(
                           'Unlock premium themes and experiences',
                           style: TextStyle(
-                            color: Colors.white70,
+                            color: subtitleColor,
                             fontSize: 12,
                           ),
                         ),
-                        trailing: const Icon(
+                        trailing: Icon(
                           Icons.chevron_right_rounded,
-                          color: Colors.white,
+                          color: titleColor,
                         ),
                         onTap: () {
                           showUpgradeToProSheet(
@@ -220,54 +239,65 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 18),
                 _SectionHeader(
                   label: 'Support & Legal',
-                  fontFamily: voidThemeFont,
+                  fontFamily: sectionFont,
+                  themeColors: themeColors,
                 ),
                 const SizedBox(height: 8),
                 _SettingsGroup(
+                  themeColors: themeColors,
                   children: [
                     ListTile(
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 12),
-                      title: const Text(
+                      title: Text(
                         'Privacy Policy',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: titleColor,
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      trailing: const Icon(
+                      trailing: Icon(
                         Icons.chevron_right_rounded,
-                        color: Colors.white70,
+                        color: subtitleColor,
                       ),
-                      onTap: () => _launchUri(context, _privacyPolicyUrl),
+                      onTap: () => _launchUri(
+                        context,
+                        _privacyPolicyUrl,
+                        themeColors: themeColors,
+                      ),
                     ),
-                    const Divider(color: Colors.white12, height: 1),
+                    Divider(color: themeColors.dividerColor, height: 1),
                     ListTile(
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 12),
-                      title: const Text(
+                      title: Text(
                         'Contact Support',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: titleColor,
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      trailing: const Icon(
+                      trailing: Icon(
                         Icons.chevron_right_rounded,
-                        color: Colors.white70,
+                        color: subtitleColor,
                       ),
-                      onTap: () => _launchUri(context, _supportEmailUri),
+                      onTap: () => _launchUri(
+                        context,
+                        _supportEmailUri,
+                        themeColors: themeColors,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 24),
-                const Center(
+                Center(
                   child: Text(
                     'v1.0.0 (Build 1)',
                     style: TextStyle(
-                      color: Colors.white54,
+                      color:
+                          themeColors.secondaryTextColor.withValues(alpha: 0.7),
                       fontSize: 12,
                       letterSpacing: 0.4,
                     ),
@@ -289,14 +319,25 @@ class SettingsScreen extends StatelessWidget {
     return 'Lat ${latitude.toStringAsFixed(6)} | Long ${longitude.toStringAsFixed(6)}';
   }
 
-  Future<void> _launchUri(BuildContext context, Uri uri) async {
+  Future<void> _launchUri(
+    BuildContext context,
+    Uri uri, {
+    required AppThemeColors themeColors,
+  }) async {
     final launched = await launchUrl(uri);
     if (!launched && context.mounted) {
+      final backgroundColor = themeColors.neutralSnackbarColor;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          const SnackBar(
-            content: Text('Unable to open link right now.'),
+          SnackBar(
+            backgroundColor: backgroundColor,
+            content: Text(
+              'Unable to open link right now.',
+              style: TextStyle(
+                color: themeColors.highContrastOn(backgroundColor),
+              ),
+            ),
           ),
         );
     }
@@ -306,10 +347,12 @@ class SettingsScreen extends StatelessWidget {
 class _SectionHeader extends StatelessWidget {
   final String label;
   final String fontFamily;
+  final AppThemeColors themeColors;
 
   const _SectionHeader({
     required this.label,
     required this.fontFamily,
+    required this.themeColors,
   });
 
   @override
@@ -320,7 +363,7 @@ class _SectionHeader extends StatelessWidget {
         label.toUpperCase(),
         style: TextStyle(
           fontFamily: fontFamily,
-          color: Colors.white60,
+          color: themeColors.secondaryTextColor.withValues(alpha: 0.8),
           fontSize: 12,
           fontWeight: FontWeight.w700,
           letterSpacing: 1.3,
@@ -332,17 +375,18 @@ class _SectionHeader extends StatelessWidget {
 
 class _SettingsGroup extends StatelessWidget {
   final List<Widget> children;
+  final AppThemeColors themeColors;
 
-  const _SettingsGroup({required this.children});
+  const _SettingsGroup({required this.children, required this.themeColors});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF101010),
+        color: themeColors.surfaceColor,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: Colors.white10,
+          color: themeColors.surfaceBorderColor,
           width: 1,
         ),
       ),

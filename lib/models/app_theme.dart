@@ -181,8 +181,9 @@ class ThemeDefinitions {
       fontFamily: 'monospace',
       customClockBuilder: (context, timeString) =>
           GlitchEffectClock(timeString: timeString),
-      customPreviewBackgroundBuilder: (context) =>
-          const NeonTokyoPreviewBackground(),
+      customPreviewBackgroundBuilder: (context) => NeonTokyoPreviewBackground(
+        colors: skin_themes.skinThemes[AppThemeType.neonTokyo]!,
+      ),
     ),
   };
 

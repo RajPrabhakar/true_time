@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:true_time/models/app_theme.dart';
+import 'package:true_time/themes/theme_ui_tokens.dart';
 
 class ThemeGalleryCard extends StatelessWidget {
   static const String _previewTimeSnapshot = '10:09';
@@ -24,18 +25,14 @@ class ThemeGalleryCard extends StatelessWidget {
     required this.onLockedThemeTap,
   });
 
-  Color _highContrast(Color bg) {
-    return bg.computeLuminance() > 0.45
-        ? const Color(0xFF111111)
-        : Colors.white;
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = appTheme.colors;
-    final titleColor = _highContrast(colors.backgroundColor);
-    final checkIconColor =
-        colors.accentColor.computeLuminance() > 0.7 ? titleColor : Colors.white;
+    final titleColor = colors.highContrastOn(colors.backgroundColor);
+    final checkIconColor = colors.highContrastOn(colors.accentColor);
+    final lockOverlayColor = colors.lockOverlayColor;
+    final lockBorderColor = colors.lockBorderColor;
+    final lockIconColor = colors.lockIconColor;
 
     return GestureDetector(
       onTapDown: (_) {
@@ -179,17 +176,17 @@ class ThemeGalleryCard extends StatelessWidget {
                     width: 22,
                     height: 22,
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.6),
+                      color: lockOverlayColor,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.45),
+                        color: lockBorderColor,
                         width: 1,
                       ),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.lock_outline,
                       size: 14,
-                      color: Colors.white,
+                      color: lockIconColor,
                     ),
                   ),
                 ),

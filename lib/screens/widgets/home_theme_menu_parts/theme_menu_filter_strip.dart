@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:true_time/models/app_theme.dart';
+import 'package:true_time/themes/theme_ui_tokens.dart';
 
 class ThemeMenuFilterStrip extends StatelessWidget {
   final List<ThemeCategory?> filters;
@@ -28,12 +29,6 @@ class ThemeMenuFilterStrip extends StatelessWidget {
       case ThemeCategory.skins:
         return 'SKINS';
     }
-  }
-
-  Color _highContrast(Color bg) {
-    return bg.computeLuminance() > 0.45
-        ? const Color(0xFF111111)
-        : Colors.white;
   }
 
   @override
@@ -78,7 +73,7 @@ class ThemeMenuFilterStrip extends StatelessWidget {
                     letterSpacing: 1.4,
                     fontWeight: FontWeight.w700,
                     color: selected
-                        ? _highContrast(themeColors.accentColor)
+                        ? themeColors.highContrastOn(themeColors.accentColor)
                         : themeColors.textColor,
                   ),
                 ),

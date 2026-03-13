@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:true_time/models/theme_types.dart';
 
 // ---------------------------------------------------------------------------
 // Glitch Effect Clock
@@ -112,16 +113,34 @@ class _GlitchEffectClockState extends State<GlitchEffectClock> {
 // ---------------------------------------------------------------------------
 
 class NeonTokyoPreviewBackground extends StatelessWidget {
-  const NeonTokyoPreviewBackground({super.key});
+  final AppThemeColors colors;
+
+  const NeonTokyoPreviewBackground({
+    super.key,
+    required this.colors,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final start = Color.alphaBlend(
+      colors.accentColor.withValues(alpha: 0.16),
+      colors.backgroundColor,
+    );
+    final middle = Color.alphaBlend(
+      colors.accentColor.withValues(alpha: 0.3),
+      colors.backgroundColor,
+    );
+    final end = Color.alphaBlend(
+      colors.secondaryTextColor.withValues(alpha: 0.22),
+      colors.backgroundColor,
+    );
+
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF0A0A0A), Color(0xFF1A0022), Color(0xFF00090F)],
+          colors: [start, middle, end],
           stops: [0.0, 0.55, 1.0],
         ),
       ),
