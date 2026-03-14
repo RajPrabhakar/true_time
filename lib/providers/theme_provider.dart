@@ -73,9 +73,8 @@ class ThemeProvider extends ChangeNotifier {
     final colors = appTheme.colors;
     final bgHex = _widgetSyncService.colorToHex(colors.backgroundColor);
     final textHex = _widgetSyncService.colorToHex(colors.textColor);
-    final clockStyle = appTheme.customClockBuilder == null
-      ? 'default'
-      : appTheme.id.name;
+    final clockStyle =
+        appTheme.customClockBuilder == null ? 'default' : appTheme.id.name;
     await _widgetSyncService.updateWidgetTheme(
       bgHex,
       textHex,
@@ -84,16 +83,12 @@ class ThemeProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> syncWidgetSnapshot({
-    required DateTime displayedTime,
+  Future<void> syncWidgetTheme({
     required bool is24HourMode,
     required bool isSolarMode,
   }) async {
     final active = activeTheme;
-    final minuteBucket =
-        '${displayedTime.year}-${displayedTime.month}-${displayedTime.day}-${displayedTime.hour}-${displayedTime.minute}';
-    final signature =
-        '${active.name}-$minuteBucket-$is24HourMode-$isSolarMode';
+    final signature = '${active.name}-$is24HourMode-$isSolarMode';
 
     if (_lastWidgetSyncSignature == signature) {
       return;
@@ -103,20 +98,18 @@ class ThemeProvider extends ChangeNotifier {
     final appTheme = ThemeDefinitions.getAppTheme(active);
     final colors = appTheme.colors;
     final bgHex = _widgetSyncService.colorToHex(colors.backgroundColor);
-    final textHex = _widgetSyncService.colorToHex(colors.textColor);
-    final clockStyle = appTheme.customClockBuilder == null
-      ? 'default'
-      : appTheme.id.name;
+    final textHex = _widgetSyncService.colorToHex(
+      isSolarMode ? colors.textColor : colors.secondaryTextColor,
+    );
+    final clockStyle =
+        appTheme.customClockBuilder == null ? 'default' : appTheme.id.name;
 
-    await _widgetSyncService.updateWidgetSnapshot(
-      themeType: active,
-      displayedTime: displayedTime,
+    await _widgetSyncService.updateWidgetTheme(
+      bgHex,
+      textHex,
+      appTheme.fontFamily,
+      clockStyle,
       is24HourMode: is24HourMode,
-      isSolarMode: isSolarMode,
-      bgHex: bgHex,
-      textHex: textHex,
-      fontFamily: appTheme.fontFamily,
-        clockStyle: clockStyle,
     );
   }
 

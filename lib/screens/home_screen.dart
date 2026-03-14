@@ -137,12 +137,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               localMeanTime: scaffoldData.localMeanTime,
             );
 
-            final displayedTime = _isSolarMode
-                ? (scaffoldData.localMeanTime ?? DateTime.now())
-                : DateTime.now();
             unawaited(
-              themeProvider.syncWidgetSnapshot(
-                displayedTime: displayedTime,
+              themeProvider.syncWidgetTheme(
                 is24HourMode: scaffoldData.is24HourMode,
                 isSolarMode: _isSolarMode,
               ),

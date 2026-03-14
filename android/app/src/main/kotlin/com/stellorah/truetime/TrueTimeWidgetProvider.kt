@@ -4,14 +4,17 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.widget.RemoteViews
-import java.io.File
 
 class TrueTimeWidgetProvider : AppWidgetProvider() {
 
     private companion object {
-        private const val SNAPSHOT_PATH_KEY = "widgetSnapshotPath"
+        private const val BG_HEX_KEY = "bgHex"
+        private const val TEXT_HEX_KEY = "textHex"
+        private const val IS_24_HOUR_MODE_KEY = "widgetIs24HourMode"
+        private const val DEFAULT_BG_COLOR = Color.BLACK
+        private const val DEFAULT_TEXT_COLOR = Color.WHITE
     }
 
     override fun onUpdate(
@@ -40,36 +43,42 @@ class TrueTimeWidgetProvider : AppWidgetProvider() {
         appWidgetIds: IntArray,
     ) {
         val prefs = context.getSharedPreferences("HomeWidgetPreferences", Context.MODE_PRIVATE)
-        val snapshotPath = prefs.getString(SNAPSHOT_PATH_KEY, null)
-        val snapshotBitmap = loadSnapshotBitmap(snapshotPath)
+        val bgHex = prefs.getString(BG_HEX_KEY, null)
+        val textHex = prefs.getString(TEXT_HEX_KEY, null)
+        val bgColor = parseColorOrDefault(bgHex, DEFAULT_BG_COLOR)
+        val textColor = parseColorOrDefault(textHex, DEFAULT_TEXT_COLOR)
+        val has24HourPreference = prefs.contains(IS_24_HOUR_MODE_KEY)
+        val is24HourMode = prefs.getBoolean(IS_24_HOUR_MODE_KEY, false)
 
         for (widgetId in appWidgetIds) {
             val views = RemoteViews(context.packageName, R.layout.widget_layout)
 
-            if (snapshotBitmap != null) {
-                views.setImageViewBitmap(R.id.widget_snapshot, snapshotBitmap)
-                views.setViewVisibility(R.id.widget_snapshot, android.view.View.VISIBLE)
-            } else {
-                views.setViewVisibility(R.id.widget_snapshot, android.view.View.GONE)
+            views.setInt(R.id.widget_root, "setBackgroundColor", bgColor)
+            views.setTextColor(R.id.widget_clock, textColor)
+
+            if (has24HourPreference) {
+                if (is24HourMode) {
+                    views.setCharSequence(R.id.widget_clock, "setFormat12Hour", "HH:mm:ss")
+                    views.setCharSequence(R.id.widget_clock, "setFormat24Hour", "HH:mm:ss")
+                } else {
+                    views.setCharSequence(R.id.widget_clock, "setFormat12Hour", "hh:mm:ss a")
+                    views.setCharSequence(R.id.widget_clock, "setFormat24Hour", "hh:mm:ss a")
+                }
             }
+
             appWidgetManager.updateAppWidget(widgetId, views)
         }
     }
 
-    private fun loadSnapshotBitmap(path: String?): android.graphics.Bitmap? {
-        if (path.isNullOrBlank()) {
-            return null
-        }
-
-        val file = File(path)
-        if (!file.exists()) {
-            return null
-        }
-
+    private fun parseColorOrDefault(hex: String?, fallback: Int): Int {
         return try {
-            BitmapFactory.decodeFile(file.absolutePath)
+            if (hex.isNullOrBlank()) {
+                fallback
+            } else {
+                Color.parseColor(hex)
+            }
         } catch (e: Exception) {
-            null
+            fallback
         }
     }
 }
