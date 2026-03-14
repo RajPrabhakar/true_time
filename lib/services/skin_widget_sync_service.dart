@@ -3,10 +3,10 @@ import 'dart:ui';
 import 'package:home_widget/home_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:true_time/models/app_theme.dart';
-import 'package:true_time/services/widget_snapshot_renderer.dart';
+import 'package:true_time/services/skin_widget_snapshot_renderer.dart';
 
 /// Bridges Flutter theme colors to native home screen widgets.
-class WidgetSyncService {
+class SkinWidgetSyncService {
   static const String _appGroupId = 'group.com.stellorah.truetime';
   static const String bgHexKey = 'bgHex';
   static const String textHexKey = 'textHex';
@@ -20,14 +20,14 @@ class WidgetSyncService {
   static const String snapshotRenderVersionKey = 'widgetRenderVersion';
   static const String widgetThemeNameKey = 'widgetThemeName';
   static const String widgetThemeCategoryKey = 'widgetThemeCategory';
-  static const String _androidWidgetName = 'TrueTimeWidgetProvider';
+  static const String _androidWidgetName = 'SkinThemeWidgetProvider';
   static const String _iosWidgetKind = 'TrueTimeWidget';
   static const int _renderVersion = 1;
 
-  final WidgetSnapshotRenderer _snapshotRenderer;
+  final SkinWidgetSnapshotRenderer _snapshotRenderer;
 
-  WidgetSyncService({WidgetSnapshotRenderer? snapshotRenderer})
-      : _snapshotRenderer = snapshotRenderer ?? WidgetSnapshotRenderer();
+    SkinWidgetSyncService({SkinWidgetSnapshotRenderer? snapshotRenderer})
+      : _snapshotRenderer = snapshotRenderer ?? SkinWidgetSnapshotRenderer();
 
   Future<void> updateWidgetTheme(
     String bgHex,

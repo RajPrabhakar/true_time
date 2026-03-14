@@ -10,7 +10,7 @@ import java.io.File
 
 // The widget displays a rendered snapshot only when a skin theme is active.
 // Non-skin themes clear the snapshot path (set to ""), which hides the widget content.
-class TrueTimeWidgetProvider : AppWidgetProvider() {
+class SkinThemeWidgetProvider : AppWidgetProvider() {
 
     private companion object {
         private const val SNAPSHOT_PATH_KEY = "widgetSnapshotPath"
@@ -32,7 +32,7 @@ class TrueTimeWidgetProvider : AppWidgetProvider() {
         if (intent.action == "es.antonborri.home_widget.action.UPDATE") {
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val appWidgetIds = appWidgetManager.getAppWidgetIds(
-                android.content.ComponentName(context, TrueTimeWidgetProvider::class.java),
+                android.content.ComponentName(context, SkinThemeWidgetProvider::class.java),
             )
             updateWidgets(context, appWidgetManager, appWidgetIds)
         }
@@ -54,7 +54,7 @@ class TrueTimeWidgetProvider : AppWidgetProvider() {
         val unsupportedMessage = buildUnsupportedMessage(themeName, themeCategory)
 
         for (widgetId in appWidgetIds) {
-            val views = RemoteViews(context.packageName, R.layout.widget_layout)
+            val views = RemoteViews(context.packageName, R.layout.skin_theme_widget_layout)
 
             if (snapshotBitmap != null) {
                 views.setImageViewBitmap(R.id.widget_snapshot, snapshotBitmap)

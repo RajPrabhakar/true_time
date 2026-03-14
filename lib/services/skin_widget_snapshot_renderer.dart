@@ -5,7 +5,7 @@ import 'package:home_widget/home_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:true_time/models/app_theme.dart';
 
-class WidgetSnapshotRenderer {
+class SkinWidgetSnapshotRenderer {
   static const Size defaultLogicalSize = Size(720, 360);
 
   Future<String?> renderSnapshot({
@@ -56,7 +56,7 @@ class _WidgetSnapshotView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox.fromSize(
-      size: WidgetSnapshotRenderer.defaultLogicalSize,
+      size: SkinWidgetSnapshotRenderer.defaultLogicalSize,
       child: Material(
         color: appTheme.colors.backgroundColor,
         child: Stack(

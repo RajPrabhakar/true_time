@@ -34,7 +34,7 @@
             android:value="2" />
 
         <receiver
-            android:name=".TrueTimeWidgetProvider"
+            android:name=".SkinThemeWidgetProvider"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -43,7 +43,7 @@
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/true_time_widget_info" />
+                android:resource="@xml/skin_theme_widget_info" />
         </receiver>
     </application>
     <!-- Required to query activities that can process text, see:

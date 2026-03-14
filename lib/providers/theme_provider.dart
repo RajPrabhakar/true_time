@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:true_time/models/app_theme.dart';
 import 'package:true_time/services/theme_service.dart';
-import 'package:true_time/services/widget_sync_service.dart';
+import 'package:true_time/services/skin_widget_sync_service.dart';
 
 /// Provider that manages the app's theme selection and persists it.
 class ThemeProvider extends ChangeNotifier {
   final ThemeService _themeService;
-  final WidgetSyncService _widgetSyncService;
+  final SkinWidgetSyncService _widgetSyncService;
 
   AppThemeType _currentTheme;
   AppThemeType? _previewTheme;
@@ -17,7 +17,7 @@ class ThemeProvider extends ChangeNotifier {
 
   ThemeProvider({
     required ThemeService themeService,
-    required WidgetSyncService widgetSyncService,
+    required SkinWidgetSyncService widgetSyncService,
     AppThemeType initialTheme = AppThemeType.void_,
     bool initialHasPro = false,
   })  : _themeService = themeService,
