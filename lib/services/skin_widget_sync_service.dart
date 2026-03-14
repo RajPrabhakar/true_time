@@ -60,7 +60,7 @@ class SkinWidgetSyncService {
     await HomeWidget.saveWidgetData<String>(fontFamilyKey, fontFamily);
     await HomeWidget.saveWidgetData<String>(clockStyleKey, clockStyle);
 
-    final formatter = DateFormat(is24HourMode ? 'HH:mm:ss' : 'hh:mm:ss a');
+    final formatter = DateFormat(is24HourMode ? 'HH:mm' : 'hh:mm a');
     final snapshotPath = await _snapshotRenderer.renderSnapshot(
       themeType: themeType,
       displayedTime: displayedTime,
@@ -72,7 +72,7 @@ class SkinWidgetSyncService {
     await HomeWidget.saveWidgetData<String>(snapshotThemeKey, themeType.name);
     await HomeWidget.saveWidgetData<String>(
       snapshotTimeKey,
-      formatter.format(displayedTime),
+      formatter.format(displayedTime).toLowerCase(),
     );
     await HomeWidget.saveWidgetData<bool>(snapshot24HourKey, is24HourMode);
     await HomeWidget.saveWidgetData<bool>(snapshotSolarModeKey, isSolarMode);

@@ -17,8 +17,8 @@ class SkinWidgetSnapshotRenderer {
   }) async {
     final appTheme = ThemeDefinitions.getAppTheme(themeType);
     final colors = appTheme.colors;
-    final formatter = DateFormat(is24HourMode ? 'HH:mm:ss' : 'hh:mm:ss a');
-    final timeString = formatter.format(displayedTime);
+    final formatter = DateFormat(is24HourMode ? 'HH:mm' : 'hh:mm a');
+    final timeString = formatter.format(displayedTime).toLowerCase();
 
     final renderedPath = await HomeWidget.renderFlutterWidget(
       _WidgetSnapshotView(
