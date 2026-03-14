@@ -70,18 +70,14 @@ class ThemeProvider extends ChangeNotifier {
 
   Future<void> _syncWidgetTheme() async {
     final appTheme = ThemeDefinitions.getAppTheme(activeTheme);
-    final colors = appTheme.colors;
-    final bgHex = _widgetSyncService.colorToHex(colors.backgroundColor);
-    final textHex = _widgetSyncService.colorToHex(colors.textColor);
-    final clockStyle = appTheme.customClockBuilder == null
-      ? 'default'
-      : appTheme.id.name;
-    await _widgetSyncService.updateWidgetTheme(
-      bgHex,
-      textHex,
-      appTheme.fontFamily,
-      clockStyle,
-    );
+    if (appTheme.category != ThemeCategory.skins) {
+      _lastWidgetSyncSignature = null;
+      await _widgetSyncService.clearWidgetSnapshot(
+        themeName: appTheme.name,
+        themeCategory: appTheme.category.name,
+      );
+    }
+    // For skin themes, syncWidgetSnapshot() handles the widget update.
   }
 
   Future<void> syncWidgetSnapshot({
@@ -90,6 +86,10 @@ class ThemeProvider extends ChangeNotifier {
     required bool isSolarMode,
   }) async {
     final active = activeTheme;
+    final activeAppTheme = ThemeDefinitions.getAppTheme(active);
+    if (activeAppTheme.category != ThemeCategory.skins) {
+      return;
+    }
     final minuteBucket =
         '${displayedTime.year}-${displayedTime.month}-${displayedTime.day}-${displayedTime.hour}-${displayedTime.minute}';
     final signature =

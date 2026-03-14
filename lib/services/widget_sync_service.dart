@@ -18,6 +18,8 @@ class WidgetSyncService {
   static const String snapshot24HourKey = 'widgetIs24HourMode';
   static const String snapshotSolarModeKey = 'widgetIsSolarMode';
   static const String snapshotRenderVersionKey = 'widgetRenderVersion';
+  static const String widgetThemeNameKey = 'widgetThemeName';
+  static const String widgetThemeCategoryKey = 'widgetThemeCategory';
   static const String _androidWidgetName = 'TrueTimeWidgetProvider';
   static const String _iosWidgetKind = 'TrueTimeWidget';
   static const int _renderVersion = 1;
@@ -80,6 +82,17 @@ class WidgetSyncService {
       await HomeWidget.saveWidgetData<String>(snapshotPathKey, snapshotPath);
     }
 
+    await _requestWidgetRefresh();
+  }
+
+  Future<void> clearWidgetSnapshot({
+    required String themeName,
+    required String themeCategory,
+  }) async {
+    await _prepareSharedStore();
+    await HomeWidget.saveWidgetData<String>(snapshotPathKey, '');
+    await HomeWidget.saveWidgetData<String>(widgetThemeNameKey, themeName);
+    await HomeWidget.saveWidgetData<String>(widgetThemeCategoryKey, themeCategory);
     await _requestWidgetRefresh();
   }
 

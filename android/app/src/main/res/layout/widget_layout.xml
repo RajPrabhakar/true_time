@@ -13,4 +13,16 @@
         android:scaleType="centerCrop"
         android:visibility="gone" />
 
+    <TextView
+        android:id="@+id/widget_unsupported_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CC000000"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.4"
+        android:padding="12dp"
+        android:textColor="#AAFFFFFF"
+        android:textSize="11sp"
+        android:visibility="gone" />
+
 </FrameLayout>
