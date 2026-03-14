@@ -53,6 +53,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late TrueTimeProvider _provider;
   late AppLifecycleListener _lifecycleListener;
+  Timer? _widgetSnapshotTimer;
+  String? _lastWidgetSnapshotMinuteKey;
   bool _initialized = false;
   bool _menuOpen = false;
   bool _isSolarMode = true;
@@ -83,20 +85,67 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           _provider.initialize(default24HourMode: default24HourMode),
         );
       });
+      _startWidgetSnapshotSyncTimer();
       _initialized = true;
     }
   }
 
   void _handleAppResumed() {
     _provider.resumeTimer();
+    _startWidgetSnapshotSyncTimer();
   }
 
   void _handleAppPaused() {
     _provider.pauseTimer();
+    _stopWidgetSnapshotSyncTimer();
   }
 
   void _handleAppDetached() {
     _provider.pauseTimer();
+    _stopWidgetSnapshotSyncTimer();
+  }
+
+  void _startWidgetSnapshotSyncTimer() {
+    _stopWidgetSnapshotSyncTimer();
+
+    // Sync immediately, then check each second for minute rollovers.
+    _syncWidgetSnapshotIfMinuteChanged(force: true);
+    _widgetSnapshotTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      _syncWidgetSnapshotIfMinuteChanged();
+    });
+  }
+
+  void _stopWidgetSnapshotSyncTimer() {
+    _widgetSnapshotTimer?.cancel();
+    _widgetSnapshotTimer = null;
+  }
+
+  void _syncWidgetSnapshotIfMinuteChanged({bool force = false}) {
+    if (!mounted) {
+      return;
+    }
+
+    final themeProvider = context.read<ThemeProvider>();
+    final currentResult = _provider.currentTimeResult;
+    final is24HourMode = _provider.is24HourMode;
+    final displayedTime =
+        _isSolarMode ? (currentResult?.localMeanTime ?? DateTime.now()) : DateTime.now();
+
+    final minuteKey =
+      '${themeProvider.activeTheme.name}-${displayedTime.year}-${displayedTime.month}-${displayedTime.day}-${displayedTime.hour}-${displayedTime.minute}-$is24HourMode-$_isSolarMode';
+
+    if (!force && _lastWidgetSnapshotMinuteKey == minuteKey) {
+      return;
+    }
+
+    _lastWidgetSnapshotMinuteKey = minuteKey;
+    unawaited(
+      themeProvider.syncWidgetSnapshot(
+        displayedTime: displayedTime,
+        is24HourMode: is24HourMode,
+        isSolarMode: _isSolarMode,
+      ),
+    );
   }
 
   void _updateSystemChromeStyle(Color backgroundColor) {
@@ -118,6 +167,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     _lifecycleListener.dispose();
+    _stopWidgetSnapshotSyncTimer();
     WidgetsBinding.instance.removeObserver(this);
     WakelockPlus.disable();
     super.dispose();
@@ -135,17 +185,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           builder: (context, scaffoldData, _) {
             final themeColors = themeProvider.getCurrentThemeColors(
               localMeanTime: scaffoldData.localMeanTime,
-            );
-
-            final displayedTime = _isSolarMode
-                ? (scaffoldData.localMeanTime ?? DateTime.now())
-                : DateTime.now();
-            unawaited(
-              themeProvider.syncWidgetSnapshot(
-                displayedTime: displayedTime,
-                is24HourMode: scaffoldData.is24HourMode,
-                isSolarMode: _isSolarMode,
-              ),
             );
 
             _updateSystemChromeStyle(themeColors.backgroundColor);
@@ -353,6 +392,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         setState(() {
           _isSolarMode = !_isSolarMode;
         });
+        _syncWidgetSnapshotIfMinuteChanged(force: true);
       },
     );
   }
